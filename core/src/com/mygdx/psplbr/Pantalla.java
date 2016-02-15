@@ -5,14 +5,11 @@ import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-//import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
@@ -39,7 +36,7 @@ public class Pantalla implements Screen {
         BMF_texto.setColor(Color.BLACK);*/
     }
 
-    public void setStageButton(PsPlbr juego) {
+    public void setStageButton(final PsPlbr juego) {
         stage_botones = new Stage();
         stage_botones.addListener(new InputListener() {
             @Override
@@ -51,7 +48,7 @@ public class Pantalla implements Screen {
                                 Gdx.app.exit();
                                 break;
                             default:
-                                juego.setScreen(new PsPlbr(juego));
+                                juego.setScreen(new Menu(juego));
                                 break;
                         }
                         break;
@@ -65,7 +62,7 @@ public class Pantalla implements Screen {
         });
     }
 
-    public ImageTextButton setButton(String imagen, String texto, PsPlbr juego) {
+    public ImageTextButton setButton(final String imagen, String texto, final PsPlbr juego) {
         ImageTextButton.ImageTextButtonStyle estilo_boton = new ImageTextButton.ImageTextButtonStyle();
         Skin skin = new Skin();
         skin.add("boton", new Texture(imagen));
@@ -82,7 +79,33 @@ public class Pantalla implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
-                    case "data/boton_jugar.png": juego.setScreen(new PsPlbr(juego));
+                    case "data/boton_inicio_parada.png": //reiniciar tiempo o pararlo;
+                        break;
+                    case "data/boton_reinicio.png": juego.setScreen(new Rosco());
+                        break;
+                    default: break;
+                }
+            }
+        });
+        return boton;
+    }
+
+    public ImageButton setButton(final String imagen, final PsPlbr juego) {
+        ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
+        Skin skin = new Skin();
+        skin.add("boton", new Texture(imagen));
+        estilo_boton.up = skin.getDrawable("boton");
+        estilo_boton.unpressedOffsetY = -(lado / 6);
+        estilo_boton.pressedOffsetY = -(lado / 6);
+
+        ImageButton boton = new ImageButton(estilo_boton);
+        boton.setSize(lado / 4, lado / 4);
+
+        boton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                switch (imagen) {
+                    case "data/boton_jugar.jpg": juego.setScreen(new Rosco());
                         break;
                     default: break;
                 }
