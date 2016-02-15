@@ -7,12 +7,9 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import javafx.scene.layout.Background;
 
-public class Menu extends Pantalla {
-
+public class Menu extends Pantalla{
     PsPlbr juego;
     Stage stage;
     OrthographicCamera camara;
@@ -29,13 +26,13 @@ public class Menu extends Pantalla {
         stage = new Stage();
         batch = new SpriteBatch();
 
-        pantalla_actual = 0;
+        pantalla_actual = 1;
 
         fondo = new Texture("data/menu/fondo_menu.jpg");
         boton_jugar = setButton("data/menu/boton_jugar.jpg", juego);
         boton_jugar.setPosition((float)(anchura_juego * 0.75) - boton_jugar.getWidth() / 2, (float)(altura_juego * 0.33) - boton_jugar.getHeight() / 2);
         boton_mas = setButton("data/menu/boton_mas.jpg", juego);
-        boton_mas.setPosition((float)(anchura_juego * 0.33) - boton_mas.getWidth() / 2, (float)(altura_juego * 0.33) + boton_mas.getHeight());
+        boton_mas.setPosition((float)(anchura_juego * 0.33) - boton_mas.getWidth() / 2, (float)(altura_juego * 0.33));
         boton_menos = setButton("data/menu/boton_menos.jpg", juego);
         boton_menos.setPosition((float)(anchura_juego * 0.33) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.33) - boton_menos.getHeight());
     }
@@ -48,6 +45,9 @@ public class Menu extends Pantalla {
         camara.update();
 
         batch.setProjectionMatrix(camara.combined);
+        batch.begin();
+        batch.draw(fondo, 0, 0);
+        batch.end();
 
         stage.act();
         stage.draw();

@@ -73,7 +73,7 @@ public class Pantalla implements Screen {
         estilo_boton.pressedOffsetY = -(lado / 6);
         
         ImageTextButton boton = new ImageTextButton(texto, estilo_boton);
-        boton.setSize(lado / 4, lado / 4);
+        //boton.setSize(lado / 4, lado / 4);
 
         boton.addListener(new ClickListener() {
             @Override
@@ -81,7 +81,7 @@ public class Pantalla implements Screen {
                 switch (imagen) {
                     case "data/boton_inicio_parada.png": //reiniciar tiempo o pararlo;
                         break;
-                    case "data/boton_reinicio.png": juego.setScreen(new Rosco());
+                    case "data/boton_reinicio.png": juego.setScreen(new Rosco(juego));
                         break;
                     default: break;
                 }
@@ -99,13 +99,13 @@ public class Pantalla implements Screen {
         estilo_boton.pressedOffsetY = -(lado / 6);
 
         ImageButton boton = new ImageButton(estilo_boton);
-        boton.setSize(lado / 4, lado / 4);
+        //boton.setSize(lado / 4, lado / 4);
 
         boton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
-                    case "data/boton_jugar.jpg": juego.setScreen(new Rosco());
+                    case "data/menu/boton_jugar.jpg": juego.setScreen(new Rosco(juego));
                         break;
                     default: break;
                 }
