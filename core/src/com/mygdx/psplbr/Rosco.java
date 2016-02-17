@@ -6,8 +6,11 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 public class Rosco extends Pantalla {
 
@@ -16,27 +19,35 @@ public class Rosco extends Pantalla {
     OrthographicCamera camara;
     SpriteBatch batch;
 
+    Texture fondo;
     ImageButton boton_inicio_parada, boton_reinicio, boton_acierto, boton_fallo;
-    public Texture fondo;
 
-    public Rosco(PsPlbr juego) {
+    Object[] partidas_jugadores, elementos_mostrar;
+    boolean jugando = false;
+    Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0, tiempo = 0;
+    int letras[];
+
+    public Rosco(Object[] partidas_jugadores, Object[] elementos_mostrar, PsPlbr juego) {
         this.juego = juego;
+        this.partidas_jugadores = partidas_jugadores;
+        this.elementos_mostrar = elementos_mostrar;
 
         camara = new OrthographicCamera();
         camara.setToOrtho(false);
         stage = new Stage();
         batch = new SpriteBatch();
+        letras = new int[26];
 
         pantalla_actual = 2;
 
         fondo = new Texture("data/rosco/fondo_rosco.jpg");
-        boton_inicio_parada = setButton("data/rosco/boton_inicio_parada.jpg", juego);
+        boton_inicio_parada = setButton("data/rosco/boton_inicio_parada.jpg");
         boton_inicio_parada.setPosition((float)(anchura_juego * 0.75) - boton_inicio_parada.getWidth(), (float)(altura_juego * 0.33));
-        boton_reinicio = setButton("data/rosco/boton_reinicio.jpg", juego);
+        boton_reinicio = setButton("data/rosco/boton_reinicio.jpg");
         boton_reinicio.setPosition((float)(anchura_juego * 0.75), (float)(altura_juego * 0.33));
-        boton_acierto = setButton("data/rosco/boton_acierto.jpg", juego);
+        boton_acierto = setButton("data/rosco/boton_acierto.jpg");
         boton_acierto.setPosition((float)(anchura_juego * 0.75) - boton_acierto.getWidth(), (float)(altura_juego * 0.33) - boton_acierto.getHeight());
-        boton_fallo = setButton("data/rosco/boton_fallo.jpg", juego);
+        boton_fallo = setButton("data/rosco/boton_fallo.jpg");
         boton_fallo.setPosition((float)(anchura_juego * 0.75), (float)(altura_juego * 0.33) - boton_fallo.getHeight());
     }
 
@@ -50,6 +61,7 @@ public class Rosco extends Pantalla {
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
         batch.draw(fondo, 0, 0);
+        mostrar_elementos();
         batch.end();
 
         stage.act();
@@ -82,5 +94,60 @@ public class Rosco extends Pantalla {
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
         batch.dispose();
         stage.dispose();
+    }
+    public ImageButton setButton(final String imagen) {
+        ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
+        Skin skin = new Skin();
+        skin.add("boton", new Texture(imagen));
+        estilo_boton.up = skin.getDrawable("boton");
+        estilo_boton.unpressedOffsetY = -(lado / 6);
+        estilo_boton.pressedOffsetY = -(lado / 6);
+
+        ImageButton boton = new ImageButton(estilo_boton);
+        //boton.setSize(lado / 4, lado / 4);
+
+        boton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                switch (imagen) {
+                    case "data/rosco/boton_inicio_parada.jpg": if (jugando) siguiente_jugador(); else siguiente_letra();
+                        break;
+                    case "data/rosco/boton_reinicio.jpg": juego.setScreen(new Menu(juego));
+                        break;
+                    case "data/rosco/boton_acierto.jpg": letras[letra_actual] = 1; ++letra_actual; ++n_aciertos; siguiente_letra();
+                        break;
+                    case "data/rosco/boton_fallo.jpg": letras[letra_actual] = 2; ++letra_actual; ++n_fallos; siguiente_jugador();
+                        break;
+                    default: break;
+                }
+            }
+        });
+        return boton;
+    }
+
+    public void siguiente_jugador() {
+        jugador_actual = jugador_actual + 1 == n_jugadores ? 0 : ++jugador_actual;
+
+        juego.setScreen((Rosco)partidas_jugadores[jugador_actual]);
+    }
+
+    public void siguiente_letra() {
+        jugando = true;
+        ++letra_actual;
+    }
+
+    public void mostrar_elementos() {
+
+        for (int i = 0; i < 3; ++i) {
+            if (letra_actual == i)
+                batch.draw(((Texture[])(elementos_mostrar[0]))[i], 0, 0);
+            if (letras[i] == 2)
+                batch.draw(((Texture[])(elementos_mostrar[3]))[i], 0, 0);
+            else if (letras[i] == 1)
+                batch.draw(((Texture[])(elementos_mostrar[4]))[i], 0, 0);
+        }
+
+        batch.draw(((Texture[][])(elementos_mostrar[1]))[n_aciertos/10][n_aciertos%10], 0, 0);
+        batch.draw(((Texture[][])(elementos_mostrar[2]))[tiempo/10][tiempo%10], 0, 0);
     }
 }

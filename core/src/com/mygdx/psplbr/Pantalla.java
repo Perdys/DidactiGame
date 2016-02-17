@@ -21,20 +21,12 @@ public class Pantalla implements Screen {
     public static float proporcion_ancho_juego = anchura_juego / 1280;
     public static float proporcion_alto_juego = altura_juego / 720;
     public static float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
-    public Integer pantalla_actual = 0;
+    public Integer pantalla_actual = 0, n_jugadores = 1, jugador_actual = 0;
     public static Stage stage_botones;
     //public FreeTypeFontGenerator generator;
     //public BitmapFont BMF_titulo, BMF_boton, BMF_texto;
 
-    public Pantalla() {
-        /*generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/pixel.ttf"));
-        BMF_titulo = generator.generateFont((int) anchura_juego / 4);
-        BMF_boton = generator.generateFont((int) anchura_juego / 12);
-        BMF_texto = generator.generateFont((int) anchura_juego / 13);
-        BMF_titulo.setColor(Color.BLACK);
-        BMF_boton.setColor(Color.BLACK);
-        BMF_texto.setColor(Color.BLACK);*/
-    }
+    public Pantalla() {}
 
     public void setStageButton(final PsPlbr juego) {
         stage_botones = new Stage();
@@ -60,58 +52,6 @@ public class Pantalla implements Screen {
                 return false;
             }
         });
-    }
-
-    public ImageTextButton setButton(final String imagen, String texto, final PsPlbr juego) {
-        ImageTextButton.ImageTextButtonStyle estilo_boton = new ImageTextButton.ImageTextButtonStyle();
-        Skin skin = new Skin();
-        skin.add("boton", new Texture(imagen));
-        estilo_boton.up = skin.getDrawable("boton");
-        //estilo_boton.font = BMF_boton;
-        estilo_boton.fontColor = Color.BLACK;
-        estilo_boton.unpressedOffsetY = -(lado / 6);
-        estilo_boton.pressedOffsetY = -(lado / 6);
-        
-        ImageTextButton boton = new ImageTextButton(texto, estilo_boton);
-        //boton.setSize(lado / 4, lado / 4);
-
-        boton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                switch (imagen) {
-                    case "data/boton_inicio_parada.png": //reiniciar tiempo o pararlo;
-                        break;
-                    case "data/boton_reinicio.png": juego.setScreen(new Rosco(juego));
-                        break;
-                    default: break;
-                }
-            }
-        });
-        return boton;
-    }
-
-    public ImageButton setButton(final String imagen, final PsPlbr juego) {
-        ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
-        Skin skin = new Skin();
-        skin.add("boton", new Texture(imagen));
-        estilo_boton.up = skin.getDrawable("boton");
-        estilo_boton.unpressedOffsetY = -(lado / 6);
-        estilo_boton.pressedOffsetY = -(lado / 6);
-
-        ImageButton boton = new ImageButton(estilo_boton);
-        //boton.setSize(lado / 4, lado / 4);
-
-        boton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                switch (imagen) {
-                    case "data/menu/boton_jugar.jpg": juego.setScreen(new Rosco(juego));
-                        break;
-                    default: break;
-                }
-            }
-        });
-        return boton;
     }
 
     public static TextureRegion[] getSprites(String filepath, int col, int fil) {
@@ -140,7 +80,43 @@ public class Pantalla implements Screen {
     public void hide() { dispose(); }
 
     public void dispose () {}
+}
+        /*generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/pixel.ttf"));
+        BMF_titulo = generator.generateFont((int) anchura_juego / 4);
+        BMF_boton = generator.generateFont((int) anchura_juego / 12);
+        BMF_texto = generator.generateFont((int) anchura_juego / 13);
+        BMF_titulo.setColor(Color.BLACK);
+        BMF_boton.setColor(Color.BLACK);
+        BMF_texto.setColor(Color.BLACK);*/
+/*
+    public ImageTextButton setButton(final String imagen, String texto, final PsPlbr juego) {
+        ImageTextButton.ImageTextButtonStyle estilo_boton = new ImageTextButton.ImageTextButtonStyle();
+        Skin skin = new Skin();
+        skin.add("boton", new Texture(imagen));
+        estilo_boton.up = skin.getDrawable("boton");
+        //estilo_boton.font = BMF_boton;
+        estilo_boton.fontColor = Color.BLACK;
+        estilo_boton.unpressedOffsetY = -(lado / 6);
+        estilo_boton.pressedOffsetY = -(lado / 6);
 
+        ImageTextButton boton = new ImageTextButton(texto, estilo_boton);
+        //boton.setSize(lado / 4, lado / 4);
+
+        boton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                switch (imagen) {
+                    case "data/boton_inicio_parada.png": //reiniciar tiempo o pararlo;
+                        break;
+                    case "data/boton_reinicio.png": juego.setScreen(new Rosco(juego));
+                        break;
+                    default: break;
+                }
+            }
+        });
+        return boton;
+    }
+*/
     /*public class Texto extends Actor {
 
         public String texto;
@@ -180,4 +156,3 @@ public class Pantalla implements Screen {
             }
         }
     }*/
-}
