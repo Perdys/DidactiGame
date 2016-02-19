@@ -22,15 +22,14 @@ public class Rosco extends Pantalla {
     Texture fondo;
     ImageButton boton_inicio_parada, boton_reinicio, boton_acierto, boton_fallo;
 
-    Object[] partidas_jugadores, elementos_mostrar;
+    Object[] elementos_mostrar;
     boolean jugando = false;
-    Integer letra_actual = 0, n_aciertos = 0, n_fallos = 0;
-    float contador = 0, tiempo = 150;
+    Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
+    float contador = 0, tiempo = 0;
     int letras[];
 
-    public Rosco(Object[] partidas_jugadores, Object[] elementos_mostrar, PsPlbr juego) {
+    public Rosco(Object[] elementos_mostrar, PsPlbr juego) {
         this.juego = juego;
-        this.partidas_jugadores = partidas_jugadores;
         this.elementos_mostrar = elementos_mostrar;
 
         camara = new OrthographicCamera();
@@ -113,14 +112,27 @@ public class Rosco extends Pantalla {
                     case "data/rosco/boton_inicio_parada.jpg":
                         if (jugando) {
                             siguiente_jugador();
-                        } else
+                        } else {
                             jugando = true;
+                            ++letra_actual;
+                        }
                         break;
                     case "data/rosco/boton_reinicio.jpg": juego.setScreen(new Menu(juego));
                         break;
-                    case "data/rosco/boton_acierto.jpg": letras[letra_actual] = 1; ++letra_actual; ++n_aciertos;
+                    case "data/rosco/boton_acierto.jpg":
+                        if (jugando) {
+                            letras[letra_actual] = 1;
+                            ++letra_actual;
+                            ++n_aciertos;
+                        }
                         break;
-                    case "data/rosco/boton_fallo.jpg": letras[letra_actual] = 2; ++letra_actual; ++n_fallos; siguiente_jugador();
+                    case "data/rosco/boton_fallo.jpg":
+                        if (jugando) {
+                            letras[letra_actual] = 2;
+                            ++letra_actual;
+                            ++n_fallos;
+                            siguiente_jugador();
+                        }
                         break;
                     default: break;
                 }
@@ -133,12 +145,12 @@ public class Rosco extends Pantalla {
         jugador_actual = jugador_actual + 1 == n_jugadores ? 0 : jugador_actual + 1;
         jugando = false;
 
-        juego.setScreen((Rosco) partidas_jugadores[jugador_actual]);
+        juego.setScreen(partidas_jugadores[jugador_actual]);
     }
 
     public void mostrar_elementos() {
 
-        for (int i = 0; i < 10; ++i) {
+        for (int i = 0; i < 26; ++i) {
             if (letra_actual == i)
                 batch.draw(((Texture[])(elementos_mostrar[0]))[i], 0, 0);
             if (letras[i] == 2)
@@ -146,13 +158,13 @@ public class Rosco extends Pantalla {
             else if (letras[i] == 1)
                 batch.draw(((Texture[])(elementos_mostrar[4]))[i], 0, 0);
         }
-
+/*
         contador += Gdx.graphics.getDeltaTime();
         if(contador >= 1.0f) {
             contador = 0;
-            tiempo--;
+            tiempo++;
         }
-
+*/
         batch.draw(((Texture[][])(elementos_mostrar[1]))[0][n_aciertos%10], 0, 0);
         batch.draw(((Texture[][])(elementos_mostrar[1]))[1][n_aciertos/10], 0, 0);
         batch.draw(((Texture[][])(elementos_mostrar[2]))[0][(int)tiempo%10], 0, 0);
