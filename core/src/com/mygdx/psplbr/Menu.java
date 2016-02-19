@@ -112,7 +112,7 @@ public class Menu extends Pantalla{
                         break;
                     case "data/menu/boton_mas.jpg": ++n_jugadores;
                         break;
-                    case "data/menu/boton_menos.jpg": if (n_jugadores > 1) --n_jugadores;
+                    case "data/menu/boton_menos.jpg": if (n_jugadores > 2) --n_jugadores;
                         break;
                     default: break;
                 }
@@ -130,20 +130,20 @@ public class Menu extends Pantalla{
         tiempo = new Texture[3][10];
         elementos_mostrar = new Object[]{ letras, puntuacion, tiempo, rojos, verdes};
 
-        for (int i = 0; i < 3; ++i){
+        for (int i = 0; i < 26; ++i){
             letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
             rojos[i] = new Texture("data/rosco/rojo/r" + i + ".png");
             verdes[i] = new Texture("data/rosco/verde/v" + i + ".png");
-            for (int j = 0; j < 3; ++j) {
-                if (i < 2)
-                    puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
-                tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
-            }
+            if (i < 3)
+                for (int j = 0; j < 10; ++j) {
+                    if (i < 2)
+                        puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
+                    tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
+                }
         }
 
-        for(int i = 0; i < n_jugadores; ++i){
+        for(int i = 0; i < n_jugadores; ++i)
             partidas_jugadores[i] = new Rosco(partidas_jugadores, elementos_mostrar, juego);
-        }
 
         juego.setScreen((Rosco)partidas_jugadores[jugador_actual]);
     }
