@@ -12,6 +12,8 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
+import java.util.ArrayList;
+
 public class Rosco extends Pantalla {
 
     PsPlbr juego;
@@ -22,21 +24,31 @@ public class Rosco extends Pantalla {
     Texture fondo;
     ImageButton boton_inicio_parada, boton_reinicio, boton_acierto, boton_fallo;
 
-    Object[] elementos_mostrar;
-    boolean jugando = false;
-    Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
-    float contador = 0, tiempo = 0;
-    int letras[];
 
-    public Rosco(Object[] elementos_mostrar, PsPlbr juego) {
+    public class Jugador {
+        boolean jugando = false;
+        Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
+        float contador = 0, tiempo = 150;
+        int letras[];
+    }
+
+    ArrayList<Jugador> jugadores;
+
+    public Rosco(PsPlbr juego) {
         this.juego = juego;
-        this.elementos_mostrar = elementos_mostrar;
 
         camara = new OrthographicCamera();
         camara.setToOrtho(false);
         stage = new Stage();
         batch = new SpriteBatch();
-        letras = new int[26];
+
+        jugadores = new ArrayList<>(n_jugadores);
+
+        for(int i = 0; i < n_jugadores; ++i) {
+            Jugador jugador = new Jugador();
+            jugador.letras = new int[26];
+            jugadores.add(i, jugador);
+        }
 
         pantalla_actual = 2;
 
@@ -95,6 +107,7 @@ public class Rosco extends Pantalla {
         batch.dispose();
         stage.dispose();
     }
+
     public ImageButton setButton(final String imagen) {
         ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
         Skin skin = new Skin();
@@ -110,27 +123,29 @@ public class Rosco extends Pantalla {
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
                     case "data/rosco/boton_inicio_parada.jpg":
-                        if (jugando) {
+                        if (jugadores.get(jugador_actual).jugando) {
+                            jugadores.get(jugador_actual).jugando = false;
                             siguiente_jugador();
                         } else {
-                            jugando = true;
-                            ++letra_actual;
+                            jugadores.get(jugador_actual).jugando = true;
+                            ++jugadores.get(jugador_actual).letra_actual;
                         }
                         break;
                     case "data/rosco/boton_reinicio.jpg": juego.setScreen(new Menu(juego));
                         break;
                     case "data/rosco/boton_acierto.jpg":
-                        if (jugando) {
-                            letras[letra_actual] = 1;
-                            ++letra_actual;
-                            ++n_aciertos;
+                        if (jugadores.get(jugador_actual).jugando) {
+                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 1;
+                            ++jugadores.get(jugador_actual).letra_actual;
+                            ++jugadores.get(jugador_actual).n_aciertos;
                         }
                         break;
                     case "data/rosco/boton_fallo.jpg":
-                        if (jugando) {
-                            letras[letra_actual] = 2;
-                            ++letra_actual;
-                            ++n_fallos;
+                        if (jugadores.get(jugador_actual).jugando) {
+                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 2;
+                            ++jugadores.get(jugador_actual).letra_actual;
+                            ++jugadores.get(jugador_actual).n_fallos;
+                            jugadores.get(jugador_actual).jugando = false;
                             siguiente_jugador();
                         }
                         break;
@@ -142,33 +157,33 @@ public class Rosco extends Pantalla {
     }
 
     public void siguiente_jugador() {
-        jugador_actual = jugador_actual + 1 == n_jugadores ? 0 : jugador_actual + 1;
-        jugando = false;
-
-        juego.setScreen(partidas_jugadores[jugador_actual]);
+        if (jugador_actual + 1 == n_jugadores)
+            jugador_actual = 0;
+        else
+            ++jugador_actual;
     }
 
     public void mostrar_elementos() {
 
         for (int i = 0; i < 26; ++i) {
-            if (letra_actual == i)
-                batch.draw(((Texture[])(elementos_mostrar[0]))[i], 0, 0);
-            if (letras[i] == 2)
-                batch.draw(((Texture[])(elementos_mostrar[3]))[i], 0, 0);
-            else if (letras[i] == 1)
-                batch.draw(((Texture[])(elementos_mostrar[4]))[i], 0, 0);
+            if (jugadores.get(jugador_actual).letras[i] != 0 || jugadores.get(jugador_actual).letra_actual == i)
+                batch.draw(((Texture[])(Menu.elementos_mostrar[0]))[i], 0, 0);
+            if (jugadores.get(jugador_actual).letras[i] == 2)
+                batch.draw(((Texture[])(Menu.elementos_mostrar[3]))[i], 0, 0);
+            else if (jugadores.get(jugador_actual).letras[i] == 1)
+                batch.draw(((Texture[])(Menu.elementos_mostrar[4]))[i], 0, 0);
         }
-/*
-        contador += Gdx.graphics.getDeltaTime();
-        if(contador >= 1.0f) {
-            contador = 0;
-            tiempo++;
+
+        jugadores.get(jugador_actual).contador += Gdx.graphics.getDeltaTime();
+        if(jugadores.get(jugador_actual).contador >= 1.0f) {
+            jugadores.get(jugador_actual).contador = 0;
+            jugadores.get(jugador_actual).tiempo--;
         }
-*/
-        batch.draw(((Texture[][])(elementos_mostrar[1]))[0][n_aciertos%10], 0, 0);
-        batch.draw(((Texture[][])(elementos_mostrar[1]))[1][n_aciertos/10], 0, 0);
-        batch.draw(((Texture[][])(elementos_mostrar[2]))[0][(int)tiempo%10], 0, 0);
-        batch.draw(((Texture[][])(elementos_mostrar[2]))[1][((int)tiempo%100)/10], 0, 0);
-        batch.draw(((Texture[][])(elementos_mostrar[2]))[2][((int)tiempo%1000)/100], 0, 0);
+
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[1]))[0][jugadores.get(jugador_actual).n_aciertos%10], 0, 0);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[1]))[1][jugadores.get(jugador_actual).n_aciertos/10], 0, 0);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[0][(int)jugadores.get(jugador_actual).tiempo%10], 0, 0);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[1][((int)jugadores.get(jugador_actual).tiempo%100)/10], 0, 0);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[2][((int)jugadores.get(jugador_actual).tiempo%1000)/100], 0, 0);
     }
 }

@@ -10,13 +10,9 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.ArraySelection;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.ArrayMap;
-import javafx.util.Pair;
 
-import java.util.Map;
+import java.util.ArrayList;
 
 public class Menu extends Pantalla{
     PsPlbr juego;
@@ -27,9 +23,11 @@ public class Menu extends Pantalla{
     Texture fondo;
     ImageButton boton_jugar, boton_mas, boton_menos;
 
-    public Object[] elementos_mostrar;
+    public static Object[] elementos_mostrar;
     public Texture[] letras, rojos, verdes;
     public Texture[][] tiempo, puntuacion, jugadores;
+
+    public Rosco rosco;
 
     public Menu(PsPlbr juego) {
         this.juego = juego;
@@ -61,6 +59,7 @@ public class Menu extends Pantalla{
         puntuacion = new Texture[2][10];
         tiempo = new Texture[3][10];
         elementos_mostrar = new Object[]{ letras, puntuacion, tiempo, rojos, verdes};
+        rosco = new Rosco(juego);
 
         for (int i = 0; i < 26; ++i){
             letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
@@ -134,7 +133,7 @@ public class Menu extends Pantalla{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
-                    case "data/menu/boton_jugar.jpg": jugar(elementos_mostrar, juego);
+                    case "data/menu/boton_jugar.jpg": juego.setScreen(rosco);
                         break;
                     case "data/menu/boton_mas.jpg": ++n_jugadores;
                         break;

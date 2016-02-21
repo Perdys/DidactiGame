@@ -3,16 +3,15 @@ package com.mygdx.psplbr;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageTextButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import com.badlogic.gdx.utils.Array;
+
+import java.util.ArrayList;
+import java.util.Set;
 
 public class Pantalla implements Screen {
 
@@ -21,22 +20,10 @@ public class Pantalla implements Screen {
     public static float proporcion_ancho_juego = anchura_juego / 1280;
     public static float proporcion_alto_juego = altura_juego / 720;
     public static float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
-    public Rosco[] partidas_jugadores;
     public Integer pantalla_actual = 0, n_jugadores = 1, jugador_actual = 0;
     public static Stage stage_botones;
-    //public FreeTypeFontGenerator generator;
-    //public BitmapFont BMF_titulo, BMF_boton, BMF_texto;
 
     public Pantalla() {}
-
-    public void jugar (Object[] elementos_mostrar, PsPlbr juego){
-        partidas_jugadores = new Rosco[n_jugadores];
-
-        for(int i = 0; i < n_jugadores; ++i)
-            partidas_jugadores[i] = new Rosco(elementos_mostrar, juego);
-
-        juego.setScreen(partidas_jugadores[jugador_actual]);
-    }
 
     public void setStageButton(final PsPlbr juego) {
         stage_botones = new Stage();
