@@ -1,0 +1,5 @@
+{
+  com.badlogic.gdx.scenes.scene2d.ui.Window$WindowStyle: {
+  dialog: { titleFont: default-font, background: default-window, titleFontColor: white, stageBackground: dialogDim }
+}
+}

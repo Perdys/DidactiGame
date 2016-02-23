@@ -8,10 +8,6 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.utils.Array;
-
-import java.util.ArrayList;
-import java.util.Set;
 
 public class Pantalla implements Screen {
 
@@ -20,7 +16,7 @@ public class Pantalla implements Screen {
     public static float proporcion_ancho_juego = anchura_juego / 1280;
     public static float proporcion_alto_juego = altura_juego / 720;
     public static float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
-    public Integer pantalla_actual = 0, n_jugadores = 1, jugador_actual = 0;
+    public Integer pantalla_actual = 0;
     public static Stage stage_botones;
 
     public Pantalla() {}
