@@ -31,9 +31,6 @@ public class Rosco extends Pantalla {
     ImageButton boton_inicio_parada, boton_reinicio, boton_acierto, boton_fallo;
     Integer n_jugadores, jugador_actual = 0, posicion = 1;
 
-    Skin skinDialog = new Skin(Gdx.files.internal("data/ficheros/uiskin.json"));
-    Dialog dialog = new Dialog("dialog", skinDialog, "dialog").text("Are you enjoying this demo?");
-
     public class Jugador {
         boolean jugando = false;
         Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
@@ -53,20 +50,6 @@ public class Rosco extends Pantalla {
         camara.setToOrtho(false);
         stage = new Stage();
         batch = new SpriteBatch();
-
-
-
-
-        Label.LabelStyle style = new Label.LabelStyle(new BitmapFont(), Color.WHITE);
-        Label label1 = new Label("HAS TERMINADO EL " + posicion + "º", style);
-        label1.setAlignment(Align.center);
-
-        dialog.getContentTable().add(label1).padTop(40f);
-
-
-
-
-
 
         jugadores = new ArrayList<>(n_jugadores);
 
@@ -164,7 +147,6 @@ public class Rosco extends Pantalla {
                         break;
                     case "data/rosco/boton_acierto.jpg":
                         if (jugadores.get(jugador_actual).jugando) {
-                            Gdx.app.log("acierto_principio", jugadores.get(jugador_actual).letra_actual.toString());
                             jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 1;
                             ++jugadores.get(jugador_actual).n_aciertos;
                             if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) < 26)
@@ -175,10 +157,9 @@ public class Rosco extends Pantalla {
                             else {
                                 jugadores.get(jugador_actual).jugando = false;
                                 //HAS TERMINADO: 1º, 2º,...
-                                dialog.show(stage);
-                                dialog.setName("GAME OVER");
                                 ++posicion;
                                 jugadores.remove((int)jugador_actual);
+                                --n_jugadores;
                                 siguiente_jugador();
                             }
                         }
@@ -192,6 +173,7 @@ public class Rosco extends Pantalla {
                                 //HAS TERMINADO: 1º, 2º,...
                                 ++posicion;
                                 jugadores.remove((int)jugador_actual);
+                                --n_jugadores;
                             }
                             siguiente_jugador();
                         }
