@@ -35,6 +35,16 @@ public class Fichero {
         } catch (Exception ex) {}
     }
 
+    public void escribir (String descripcion) {
+        OutputStream salida = null;
+
+        try {
+            salida = fichero.write(false);
+            salida.write(descripcion.getBytes());
+            salida.close();
+        } catch (Exception ex) {}
+    }
+
     public void leer () {
         try {
             String linea = lector.readLine();

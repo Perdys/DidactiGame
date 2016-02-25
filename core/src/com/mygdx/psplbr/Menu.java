@@ -1,10 +1,12 @@
 package com.mygdx.psplbr;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -25,6 +27,9 @@ public class Menu extends Pantalla{
     public Texture[] letras, rojos, verdes;
     public Texture[][] tiempo, puntuacion, jugadores;
     public Integer n_jugadores;
+
+    Fichero fichero;
+    String descripcion_entrada;
 
     public Menu(PsPlbr juego) {
         this.juego = juego;
@@ -136,10 +141,29 @@ public class Menu extends Pantalla{
                         break;
                     case "data/menu/boton_menos.jpg": if (n_jugadores > 1) --n_jugadores;
                         break;
+                    case "data/menu/boton_anadir.jpg": anadir();
+                        break;
                     default: break;
                 }
             }
         });
         return boton;
+    }
+
+    public void anadir () {
+
+        Gdx.input.getTextInput (new Input.TextInputListener() {
+
+            public void input(String descripcion) {
+                descripcion_entrada = descripcion;
+            }
+
+            public void canceled() {
+                descripcion_entrada = "";
+            }
+        }, "Introduzca la descripcion de la letra", "?-Empieza por '?':...", "hola");
+
+        fichero = new Fichero("data/ficheros/rosco.txt");
+        fichero.escribir(descripcion_entrada);
     }
 }
