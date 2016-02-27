@@ -13,8 +13,6 @@ public class Pantalla implements Screen {
 
     public static float anchura_juego = Gdx.graphics.getWidth();
     public static float altura_juego = Gdx.graphics.getHeight();
-    public static float proporcion_ancho_juego = anchura_juego / 1280;
-    public static float proporcion_alto_juego = altura_juego / 720;
     public static float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
     public Integer pantalla_actual = 0;
     public static Stage stage_botones;
@@ -47,19 +45,6 @@ public class Pantalla implements Screen {
         });
     }
 
-    public static TextureRegion[] getSprites(String filepath, int col, int fil) {
-        Texture walkSheet = new Texture(Gdx.files.internal(filepath));
-        TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / col, walkSheet.getHeight() / fil);
-        TextureRegion[] walkFrames = new TextureRegion[col * fil];
-        int index = 0;
-        for (int i = 0; i < col; i++) {
-            for (int j = 0; j < fil; j++) {
-                walkFrames[index++] = tmp[i][j];
-            }
-        }
-        return walkFrames;
-    }
-
     public void render(float delta) {}
 
     public void resize(int width, int height) {}
@@ -74,7 +59,22 @@ public class Pantalla implements Screen {
 
     public void dispose () {}
 }
-        /*generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/pixel.ttf"));
+        /*
+
+    public static TextureRegion[] getSprites(String filepath, int col, int fil) {
+        Texture walkSheet = new Texture(Gdx.files.internal(filepath));
+        TextureRegion[][] tmp = TextureRegion.split(walkSheet, walkSheet.getWidth() / col, walkSheet.getHeight() / fil);
+        TextureRegion[] walkFrames = new TextureRegion[col * fil];
+        int index = 0;
+        for (int i = 0; i < col; i++) {
+            for (int j = 0; j < fil; j++) {
+                walkFrames[index++] = tmp[i][j];
+            }
+        }
+        return walkFrames;
+    }
+
+        generator = new FreeTypeFontGenerator(Gdx.files.internal("fonts/pixel.ttf"));
         BMF_titulo = generator.generateFont((int) anchura_juego / 4);
         BMF_boton = generator.generateFont((int) anchura_juego / 12);
         BMF_texto = generator.generateFont((int) anchura_juego / 13);
@@ -82,7 +82,7 @@ public class Pantalla implements Screen {
         BMF_boton.setColor(Color.BLACK);
         BMF_texto.setColor(Color.BLACK);*/
 /*
-    public ImageTextButton setButton(final String imagen, String texto, final PsPlbr juego) {
+    public ImageTextButton boton_crear(final String imagen, String texto, final PsPlbr juego) {
         ImageTextButton.ImageTextButtonStyle estilo_boton = new ImageTextButton.ImageTextButtonStyle();
         Skin skin = new Skin();
         skin.add("boton", new Texture(imagen));

@@ -6,13 +6,14 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+
+import java.util.ArrayList;
 
 public class Menu extends Pantalla{
     PsPlbr juego;
@@ -21,15 +22,14 @@ public class Menu extends Pantalla{
     SpriteBatch batch;
 
     Texture fondo;
-    ImageButton boton_jugar, boton_mas, boton_menos;
+    ImageButton boton_jugar, boton_mas, boton_menos, boton_anadir;
 
     public static Object[] elementos_mostrar;
     public Texture[] letras, rojos, verdes;
     public Texture[][] tiempo, puntuacion, jugadores;
-    public Integer n_jugadores;
+    public Integer n_jugadores = 1;
 
-    Fichero fichero;
-    String descripcion_entrada;
+    ArrayList<ArrayList<String>> descripciones;
 
     public Menu(PsPlbr juego) {
         this.juego = juego;
@@ -41,39 +41,12 @@ public class Menu extends Pantalla{
 
         pantalla_actual = 1;
 
-        fondo = new Texture("data/menu/fondo_menu.jpg");
-        boton_jugar = setButton("data/menu/boton_jugar.jpg");
-        boton_jugar.setPosition((float)(anchura_juego * 0.75) - boton_jugar.getWidth() / 2, (float)(altura_juego * 0.33) - boton_jugar.getHeight() / 2);
-        boton_mas = setButton("data/menu/boton_mas.jpg");
-        boton_mas.setPosition((float)(anchura_juego * 0.33) - boton_mas.getWidth() / 2, (float)(altura_juego * 0.33));
-        boton_menos = setButton("data/menu/boton_menos.jpg");
-        boton_menos.setPosition((float)(anchura_juego * 0.33) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.33) - boton_menos.getHeight());
+        descripciones = new ArrayList<>(26);
 
-        jugadores = new Texture[2][10];
-        n_jugadores = 1;
+        Fichero fichero = new Fichero("data/ficheros/rosco.txt");
+        fichero.fichero_leer(descripciones);
 
-        for (int i = 0; i < 2; ++i)
-            for (int j = 0; j < 10; ++j)
-                jugadores[i][j] = new Texture("data/menu/jugadores/j" + i + "_" + j + ".png");
-
-        letras = new Texture[26];
-        rojos = new Texture[26];
-        verdes = new Texture[26];
-        puntuacion = new Texture[2][10];
-        tiempo = new Texture[3][10];
-        elementos_mostrar = new Object[]{ letras, puntuacion, tiempo, rojos, verdes};
-
-        for (int i = 0; i < 26; ++i){
-            letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
-            rojos[i] = new Texture("data/rosco/rojo/r" + i + ".png");
-            verdes[i] = new Texture("data/rosco/verde/v" + i + ".png");
-            if (i < 3)
-                for (int j = 0; j < 10; ++j) {
-                    if (i < 2)
-                        puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
-                    tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
-                }
-        }
+        texturas_cargar();
     }
 
     public void render(float delta) {	/*ejecutarse todas las veces posible por segundo, ejecuten todas las acciones del juego
@@ -104,6 +77,7 @@ public class Menu extends Pantalla{
         stage.addActor(boton_jugar);
         stage.addActor(boton_mas);
         stage.addActor(boton_menos);
+        stage.addActor(boton_anadir);
         setStageButton(juego);
 
         InputMultiplexer inputs = new InputMultiplexer();
@@ -121,7 +95,44 @@ public class Menu extends Pantalla{
         stage.dispose();
     }
 
-    public ImageButton setButton(final String imagen) {
+    public void texturas_cargar() {
+        fondo = new Texture("data/menu/fondo_menu.jpg");
+        boton_jugar = boton_crear("data/menu/boton_jugar.jpg");
+        boton_jugar.setPosition((float)(anchura_juego * 0.75) - boton_jugar.getWidth() / 2, (float)(altura_juego * 0.33) - boton_jugar.getHeight() / 2);
+        boton_mas = boton_crear("data/menu/boton_mas.jpg");
+        boton_mas.setPosition((float)(anchura_juego * 0.33) - boton_mas.getWidth() / 2, (float)(altura_juego * 0.33));
+        boton_menos = boton_crear("data/menu/boton_menos.jpg");
+        boton_menos.setPosition((float)(anchura_juego * 0.33) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.33) - boton_menos.getHeight());
+        boton_anadir = boton_crear("data/menu/boton_anadir.jpg");
+        boton_anadir.setPosition((float)(anchura_juego * 0.75) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.75) - boton_anadir.getHeight());
+
+        jugadores = new Texture[2][10];
+
+        for (int i = 0; i < 2; ++i)
+            for (int j = 0; j < 10; ++j)
+                jugadores[i][j] = new Texture("data/menu/jugadores/j" + i + "_" + j + ".png");
+
+        letras = new Texture[26];
+        rojos = new Texture[26];
+        verdes = new Texture[26];
+        puntuacion = new Texture[2][10];
+        tiempo = new Texture[3][10];
+        elementos_mostrar = new Object[]{ letras, puntuacion, tiempo, rojos, verdes};
+
+        for (int i = 0; i < 26; ++i){
+            letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
+            rojos[i] = new Texture("data/rosco/rojo/r" + i + ".png");
+            verdes[i] = new Texture("data/rosco/verde/v" + i + ".png");
+            if (i < 3)
+                for (int j = 0; j < 10; ++j) {
+                    if (i < 2)
+                        puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
+                    tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
+                }
+        }
+    }
+
+    public ImageButton boton_crear(final String imagen) {
         ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
         Skin skin = new Skin();
         skin.add("boton", new Texture(imagen));
@@ -135,13 +146,13 @@ public class Menu extends Pantalla{
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
-                    case "data/menu/boton_jugar.jpg": juego.setScreen(new Rosco(n_jugadores, juego));
+                    case "data/menu/boton_jugar.jpg": juego.setScreen(new Rosco(n_jugadores, descripciones, juego));
                         break;
                     case "data/menu/boton_mas.jpg": ++n_jugadores;
                         break;
                     case "data/menu/boton_menos.jpg": if (n_jugadores > 1) --n_jugadores;
                         break;
-                    case "data/menu/boton_anadir.jpg": anadir();
+                    case "data/menu/boton_anadir.jpg": descripcion_anadir();
                         break;
                     default: break;
                 }
@@ -150,20 +161,24 @@ public class Menu extends Pantalla{
         return boton;
     }
 
-    public void anadir () {
+    public void descripcion_anadir() {
 
         Gdx.input.getTextInput (new Input.TextInputListener() {
 
             public void input(String descripcion) {
-                descripcion_entrada = descripcion;
+                String[] letras = {"aA", "bB", "cC", "dD", "eE", "fF", "gG", "hH", "iI", "jJ", "kK", "lL", "mM",
+                                   "nN", "oO", "pP", "qQ", "rR", "sS", "tT", "uU", "vV", "wW", "xX", "yY", "zZ"};
+
+                int i = 0;
+                while (!letras[i].contains(Character.toString(descripcion.charAt(0))) || i > 25)
+                    //mientras que la primera letra de la linea no coincide con alguna del vector de letras
+                    //o pueda existir la primera letra de la linea
+                    ++i;
+                if (!descripciones.get(i).contains(descripcion)) //si la nueva linea no esta añadida todavia se añade
+                    descripciones.get(i).add(descripcion);
             }
 
-            public void canceled() {
-                descripcion_entrada = "";
-            }
-        }, "Introduzca la descripcion de la letra", "?-Empieza por '?':...", "hola");
-
-        fichero = new Fichero("data/ficheros/rosco.txt");
-        fichero.escribir(descripcion_entrada);
+            public void canceled() {}
+        }, "Introduzca la descripcion de la letra", "", "?-Empieza por '?':...");
     }
 }
