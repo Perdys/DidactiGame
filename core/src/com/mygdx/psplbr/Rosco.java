@@ -241,11 +241,11 @@ public class Rosco extends Pantalla {
         //Mostrar letras, aciertos y fallos
         for (int i = 0; i < 26; ++i) {
             if (jugadores.get(jugador_actual).letras[i] != 0 || jugadores.get(jugador_actual).letra_actual == i) {
-                batch.draw(((Texture[]) (Menu.elementos_mostrar[0]))[i], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu.elementos_mostrar.letras[i], 0, 0, anchura_juego, altura_juego);
                 if (jugadores.get(jugador_actual).letras[i] == 2)
-                    batch.draw(((Texture[]) (Menu.elementos_mostrar[3]))[i], 0, 0, anchura_juego, altura_juego);
+                    batch.draw(Menu.elementos_mostrar.rojos[i], 0, 0, anchura_juego, altura_juego);
                 else if (jugadores.get(jugador_actual).letras[i] == 1)
-                    batch.draw(((Texture[]) (Menu.elementos_mostrar[4]))[i], 0, 0, anchura_juego, altura_juego);
+                    batch.draw(Menu.elementos_mostrar.verdes[i], 0, 0, anchura_juego, altura_juego);
             }
         }
 
@@ -264,11 +264,11 @@ public class Rosco extends Pantalla {
         }
 
         //Mostrar el tiempo y la puntuacion
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[1]))[0][jugadores.get(jugador_actual).n_aciertos%10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[1]))[1][jugadores.get(jugador_actual).n_aciertos/10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[0][(int)jugadores.get(jugador_actual).tiempo%10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[1][((int)jugadores.get(jugador_actual).tiempo%100)/10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[2][((int)jugadores.get(jugador_actual).tiempo%1000)/100], 0, 0, anchura_juego, altura_juego);
+        batch.draw(Menu.elementos_mostrar.puntuacion[0][jugadores.get(jugador_actual).n_aciertos%10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(Menu.elementos_mostrar.puntuacion[1][jugadores.get(jugador_actual).n_aciertos/10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(Menu.elementos_mostrar.tiempo[0][(int)jugadores.get(jugador_actual).tiempo%10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(Menu.elementos_mostrar.tiempo[1][((int)jugadores.get(jugador_actual).tiempo%100)/10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(Menu.elementos_mostrar.tiempo[2][((int)jugadores.get(jugador_actual).tiempo%1000)/100], 0, 0, anchura_juego, altura_juego);
 
         //Mostrar la descripcion de la letra actual
         if (descripciones.size() > jugadores.get(jugador_actual).letra_actual && jugadores.get(jugador_actual).letra_actual > -1)

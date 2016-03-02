@@ -24,12 +24,14 @@ public class Menu extends Pantalla{
     Texture fondo;
     ImageButton boton_jugar, boton_mas, boton_menos, boton_anadir;
 
-    public static Object[] elementos_mostrar;
-    public Texture[] letras, rojos, verdes;
-    public Texture[][] tiempo, puntuacion, jugadores;
+    public static class Elementos_Mostrar {
+        public Texture[] letras, rojos, verdes;
+        public Texture[][] tiempo, puntuacion, jugadores;
+    }
     public Integer n_jugadores = 1;
 
     ArrayList<ArrayList<String>> descripciones;
+    static Elementos_Mostrar elementos_mostrar;
 
     public Menu(PsPlbr juego) {
         this.juego = juego;
@@ -42,6 +44,7 @@ public class Menu extends Pantalla{
         pantalla_actual = 1;
 
         descripciones = new ArrayList<>(26);
+        elementos_mostrar = new Elementos_Mostrar();
 
         Fichero fichero = new Fichero("assets/data/ficheros/rosco.txt");
         fichero.fichero_leer(descripciones);
@@ -59,8 +62,8 @@ public class Menu extends Pantalla{
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
         batch.draw(fondo, 0, 0, anchura_juego, altura_juego);
-        batch.draw(jugadores[0][n_jugadores%10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(jugadores[1][n_jugadores/10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(elementos_mostrar.jugadores[0][n_jugadores%10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(elementos_mostrar.jugadores[1][n_jugadores/10], 0, 0, anchura_juego, altura_juego);
         batch.end();
 
         stage.act();
@@ -157,28 +160,27 @@ public class Menu extends Pantalla{
         boton_anadir = imagen_texto_boton_crear("data/menu/boton_anadir.jpg");
         boton_anadir.setPosition((float)(anchura_juego * 0.75) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.75) - boton_anadir.getHeight());
 
-        jugadores = new Texture[2][10];
+        elementos_mostrar.jugadores = new Texture[2][10];
 
         for (int i = 0; i < 2; ++i)
             for (int j = 0; j < 10; ++j)
-                jugadores[i][j] = new Texture("data/menu/jugadores/j" + i + "_" + j + ".png");
+                elementos_mostrar.jugadores[i][j] = new Texture("data/menu/jugadores/j" + i + "_" + j + ".png");
 
-        letras = new Texture[26];
-        rojos = new Texture[26];
-        verdes = new Texture[26];
-        puntuacion = new Texture[2][10];
-        tiempo = new Texture[3][10];
-        elementos_mostrar = new Object[]{ letras, puntuacion, tiempo, rojos, verdes};
+        elementos_mostrar.letras = new Texture[26];
+        elementos_mostrar.rojos = new Texture[26];
+        elementos_mostrar.verdes = new Texture[26];
+        elementos_mostrar.puntuacion = new Texture[2][10];
+        elementos_mostrar.tiempo = new Texture[3][10];
 
         for (int i = 0; i < 26; ++i){
-            letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
-            rojos[i] = new Texture("data/rosco/rojo/r" + i + ".png");
-            verdes[i] = new Texture("data/rosco/verde/v" + i + ".png");
+            elementos_mostrar.letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
+            elementos_mostrar.rojos[i] = new Texture("data/rosco/rojo/r" + i + ".png");
+            elementos_mostrar.verdes[i] = new Texture("data/rosco/verde/v" + i + ".png");
             if (i < 3)
                 for (int j = 0; j < 10; ++j) {
                     if (i < 2)
-                        puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
-                    tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
+                        elementos_mostrar.puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
+                    elementos_mostrar.tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
                 }
         }
     }
