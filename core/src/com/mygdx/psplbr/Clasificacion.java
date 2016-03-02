@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 public class Clasificacion extends Pantalla {
 
-    public Clasificacion (ArrayList<String> clasificacion, PsPlbr juego) {
+    public Clasificacion (PsPlbr juego) {}
 
-    }
+    public void anadir (int puntuacion, String nombre) {}
 }

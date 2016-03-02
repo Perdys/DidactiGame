@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Menu extends Pantalla{
     PsPlbr juego;
@@ -43,7 +44,7 @@ public class Menu extends Pantalla{
 
         descripciones = new ArrayList<>(26);
 
-        Fichero fichero = new Fichero("data/ficheros/rosco.txt");
+        Fichero fichero = new Fichero("assets/data/ficheros/rosco.txt");
         fichero.fichero_leer(descripciones);
 
         texturas_cargar();

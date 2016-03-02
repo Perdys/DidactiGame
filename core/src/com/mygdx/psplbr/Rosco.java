@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -28,6 +29,7 @@ public class Rosco extends Pantalla {
     ImageButton boton_inicio_parada, boton_reinicio, boton_acierto, boton_fallo;
     Integer n_jugadores, jugador_actual = 0;
     BitmapFont descripcion;
+    String descripcion_actual = "";
 
     public class Jugador {
         String nombre;
@@ -40,7 +42,7 @@ public class Rosco extends Pantalla {
     }
 
     ArrayList<Jugador> jugadores;
-    ArrayList<String> clasificacion;
+    Clasificacion clasificacion;
     ArrayList<ArrayList<String>> descripciones;
 
     public Rosco(Integer n_jugadores, ArrayList<ArrayList<String>> descripciones, PsPlbr juego) {
@@ -56,7 +58,7 @@ public class Rosco extends Pantalla {
         pantalla_actual = 2;
 
         jugadores = new ArrayList<>(n_jugadores);
-        clasificacion = new ArrayList<>(n_jugadores);
+        clasificacion = new Clasificacion(juego);
 
         for(int i = 0; i < n_jugadores; ++i)
             jugadores.add(i, new Jugador(new int[26]));
@@ -176,16 +178,21 @@ public class Rosco extends Pantalla {
         for (; jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] != 0; ++jugadores.get(jugador_actual).letra_actual)
             if (jugadores.get(jugador_actual).letra_actual == 25)
                 jugadores.get(jugador_actual).letra_actual = -1;
+
+        if (descripciones.size() != 0)
+            if (descripciones.get(jugadores.get(jugador_actual).letra_actual).size() != 0)
+                descripcion_actual = descripciones.get(jugadores.get(jugador_actual).letra_actual)
+                                                  .get(MathUtils.random(descripciones.get(jugadores.get(jugador_actual).letra_actual).size()-1));
     }
 
     public void jugador_siguiente() {
         jugadores.get(jugador_actual).jugando = false;
 
         if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) >= 26) {
-            clasificacion.add(jugadores.get(jugador_actual).n_aciertos - jugadores.get(jugador_actual).n_fallos, jugadores.get(jugador_actual).nombre);
+            clasificacion.anadir(jugadores.get(jugador_actual).n_aciertos - jugadores.get(jugador_actual).n_fallos, jugadores.get(jugador_actual).nombre);
 
             if (n_jugadores == 1)
-                juego.setScreen(new Clasificacion(clasificacion, juego));
+                juego.setScreen(new Clasificacion(juego));
 
             jugadores.remove((int)jugador_actual);
             --n_jugadores;
@@ -234,8 +241,7 @@ public class Rosco extends Pantalla {
         //Mostrar la descripcion de la letra actual
         if (descripciones.size() > jugadores.get(jugador_actual).letra_actual && jugadores.get(jugador_actual).letra_actual > -1)
             if (descripciones.get(jugadores.get(jugador_actual).letra_actual).size() > 0)
-                descripcion.draw(batch, descripciones.get(jugadores.get(jugador_actual).letra_actual)
-                                                     .get(MathUtils.random(descripciones.get(jugadores.get(jugador_actual).letra_actual).size())), 0, altura_juego);
+                descripcion.draw(batch, descripcion_actual, 0, altura_juego);
     }
 
     public void texturas_cargar() {
