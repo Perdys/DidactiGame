@@ -19,7 +19,7 @@ public class Pantalla implements Screen {
 
     public Pantalla() {}
 
-    public void setStageButton(final PsPlbr juego) {
+    public void sistema_botones_crear(final PsPlbr juego) {
         stage_botones = new Stage();
         stage_botones.addListener(new InputListener() {
             @Override
@@ -27,8 +27,11 @@ public class Pantalla implements Screen {
                 switch (keycode) {
                     case Input.Keys.BACK:
                         switch (pantalla_actual) {
-                            case 0:
+                            case 0: case 1:
                                 Gdx.app.exit();
+                                break;
+                            case 2:case 3:
+                                juego.setScreen(new Menu(juego));
                                 break;
                             default:
                                 juego.setScreen(new Menu(juego));
@@ -82,7 +85,7 @@ public class Pantalla implements Screen {
         BMF_boton.setColor(Color.BLACK);
         BMF_texto.setColor(Color.BLACK);*/
 /*
-    public ImageTextButton boton_crear(final String imagen, String texto, final PsPlbr juego) {
+    public ImageTextButton imagen_texto_boton_crear(final String imagen, String texto, final PsPlbr juego) {
         ImageTextButton.ImageTextButtonStyle estilo_boton = new ImageTextButton.ImageTextButtonStyle();
         Skin skin = new Skin();
         skin.add("boton", new Texture(imagen));

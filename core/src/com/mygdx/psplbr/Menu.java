@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 
 public class Menu extends Pantalla{
     PsPlbr juego;
@@ -59,9 +58,9 @@ public class Menu extends Pantalla{
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
-        batch.draw(fondo, 0, 0);
-        batch.draw(jugadores[0][n_jugadores%10], 0, 0);
-        batch.draw(jugadores[1][n_jugadores/10], 0, 0);
+        batch.draw(fondo, 0, 0, anchura_juego, altura_juego);
+        batch.draw(jugadores[0][n_jugadores%10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(jugadores[1][n_jugadores/10], 0, 0, anchura_juego, altura_juego);
         batch.end();
 
         stage.act();
@@ -79,7 +78,7 @@ public class Menu extends Pantalla{
         stage.addActor(boton_mas);
         stage.addActor(boton_menos);
         stage.addActor(boton_anadir);
-        setStageButton(juego);
+        sistema_botones_crear(juego);
 
         InputMultiplexer inputs = new InputMultiplexer();
         inputs.addProcessor(stage_botones);
@@ -96,44 +95,7 @@ public class Menu extends Pantalla{
         stage.dispose();
     }
 
-    public void texturas_cargar() {
-        fondo = new Texture("data/menu/fondo_menu.jpg");
-        boton_jugar = boton_crear("data/menu/boton_jugar.jpg");
-        boton_jugar.setPosition((float)(anchura_juego * 0.75) - boton_jugar.getWidth() / 2, (float)(altura_juego * 0.33) - boton_jugar.getHeight() / 2);
-        boton_mas = boton_crear("data/menu/boton_mas.jpg");
-        boton_mas.setPosition((float)(anchura_juego * 0.33) - boton_mas.getWidth() / 2, (float)(altura_juego * 0.33));
-        boton_menos = boton_crear("data/menu/boton_menos.jpg");
-        boton_menos.setPosition((float)(anchura_juego * 0.33) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.33) - boton_menos.getHeight());
-        boton_anadir = boton_crear("data/menu/boton_anadir.jpg");
-        boton_anadir.setPosition((float)(anchura_juego * 0.75) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.75) - boton_anadir.getHeight());
-
-        jugadores = new Texture[2][10];
-
-        for (int i = 0; i < 2; ++i)
-            for (int j = 0; j < 10; ++j)
-                jugadores[i][j] = new Texture("data/menu/jugadores/j" + i + "_" + j + ".png");
-
-        letras = new Texture[26];
-        rojos = new Texture[26];
-        verdes = new Texture[26];
-        puntuacion = new Texture[2][10];
-        tiempo = new Texture[3][10];
-        elementos_mostrar = new Object[]{ letras, puntuacion, tiempo, rojos, verdes};
-
-        for (int i = 0; i < 26; ++i){
-            letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
-            rojos[i] = new Texture("data/rosco/rojo/r" + i + ".png");
-            verdes[i] = new Texture("data/rosco/verde/v" + i + ".png");
-            if (i < 3)
-                for (int j = 0; j < 10; ++j) {
-                    if (i < 2)
-                        puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
-                    tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
-                }
-        }
-    }
-
-    public ImageButton boton_crear(final String imagen) {
+    public ImageButton imagen_texto_boton_crear(final String imagen) {
         ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
         Skin skin = new Skin();
         skin.add("boton", new Texture(imagen));
@@ -180,6 +142,44 @@ public class Menu extends Pantalla{
             }
 
             public void canceled() {}
+
         }, "Introduzca la descripcion de la letra", "", "?-Empieza por '?':...");
+    }
+
+    public void texturas_cargar() {
+        fondo = new Texture("data/menu/fondo_menu.jpg");
+        boton_jugar = imagen_texto_boton_crear("data/menu/boton_jugar.jpg");
+        boton_jugar.setPosition((float)(anchura_juego * 0.75) - boton_jugar.getWidth() / 2, (float)(altura_juego * 0.33) - boton_jugar.getHeight() / 2);
+        boton_mas = imagen_texto_boton_crear("data/menu/boton_mas.jpg");
+        boton_mas.setPosition((float)(anchura_juego * 0.33) - boton_mas.getWidth() / 2, (float)(altura_juego * 0.33));
+        boton_menos = imagen_texto_boton_crear("data/menu/boton_menos.jpg");
+        boton_menos.setPosition((float)(anchura_juego * 0.33) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.33) - boton_menos.getHeight());
+        boton_anadir = imagen_texto_boton_crear("data/menu/boton_anadir.jpg");
+        boton_anadir.setPosition((float)(anchura_juego * 0.75) - boton_menos.getWidth() / 2, (float)(altura_juego * 0.75) - boton_anadir.getHeight());
+
+        jugadores = new Texture[2][10];
+
+        for (int i = 0; i < 2; ++i)
+            for (int j = 0; j < 10; ++j)
+                jugadores[i][j] = new Texture("data/menu/jugadores/j" + i + "_" + j + ".png");
+
+        letras = new Texture[26];
+        rojos = new Texture[26];
+        verdes = new Texture[26];
+        puntuacion = new Texture[2][10];
+        tiempo = new Texture[3][10];
+        elementos_mostrar = new Object[]{ letras, puntuacion, tiempo, rojos, verdes};
+
+        for (int i = 0; i < 26; ++i){
+            letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
+            rojos[i] = new Texture("data/rosco/rojo/r" + i + ".png");
+            verdes[i] = new Texture("data/rosco/verde/v" + i + ".png");
+            if (i < 3)
+                for (int j = 0; j < 10; ++j) {
+                    if (i < 2)
+                        puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
+                    tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
+                }
+        }
     }
 }

@@ -1,11 +1,9 @@
 package com.mygdx.psplbr;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
@@ -13,8 +11,8 @@ import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import javafx.util.Pair;
 
 import java.util.*;
 
@@ -27,12 +25,13 @@ public class Rosco extends Pantalla {
 
     Texture fondo;
     ImageButton boton_inicio_parada, boton_reinicio, boton_acierto, boton_fallo;
+    TextButton boton_nombre;
     Integer n_jugadores, jugador_actual = 0;
     BitmapFont descripcion;
     String descripcion_actual = "";
 
     public class Jugador {
-        String nombre;
+        String nombre = "Introduzca su nombre";
         boolean jugando = false;
         Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
         float contador = 0, tiempo = 150;
@@ -78,7 +77,7 @@ public class Rosco extends Pantalla {
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
-        batch.draw(fondo, 0, 0);
+        batch.draw(fondo, 0, 0, anchura_juego, altura_juego);
         texturas_mostrar();
         batch.end();
 
@@ -93,11 +92,12 @@ public class Rosco extends Pantalla {
     public void resume() {}
 
     public void show() {
+        stage.addActor(boton_nombre);
         stage.addActor(boton_inicio_parada);
         stage.addActor(boton_reinicio);
         stage.addActor(boton_acierto);
         stage.addActor(boton_fallo);
-        setStageButton(juego);
+        sistema_botones_crear(juego);
 
         InputMultiplexer inputs = new InputMultiplexer();
         inputs.addProcessor(stage_botones);
@@ -118,7 +118,7 @@ public class Rosco extends Pantalla {
         stage.dispose();
     }
 
-    public ImageButton setButton(final String imagen) {
+    public ImageButton imagen_texto_boton_crear(final String imagen) {
         ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
         Skin skin = new Skin();
         skin.add("boton", new Texture(imagen));
@@ -127,7 +127,7 @@ public class Rosco extends Pantalla {
         estilo_boton.pressedOffsetY = -(lado / 6);
 
         ImageButton boton = new ImageButton(estilo_boton);
-        boton.setSize(anchura_juego / 5, altura_juego / 5);
+        boton.setSize(anchura_juego / 7, altura_juego / 7);
 
         boton.addListener(new ClickListener() {
             @Override
@@ -174,6 +174,35 @@ public class Rosco extends Pantalla {
         return boton;
     }
 
+    public TextButton texto_boton_crear() {
+        TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
+        textButtonStyle.font = descripcion;
+        textButtonStyle.fontColor = Color.ORANGE;
+
+        TextButton boton = new TextButton(jugadores.get(jugador_actual).nombre, textButtonStyle);
+
+        boton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                nombre_anadir();
+            }
+        });
+        return boton;
+    }
+
+    public void nombre_anadir() {
+
+        Gdx.input.getTextInput (new Input.TextInputListener() {
+
+            public void input(String descripcion) {
+                jugadores.get(jugador_actual).nombre = descripcion;
+                boton_nombre.setText(descripcion);
+            }
+
+            public void canceled() {}
+        }, "Introduzca el nombre del jugador", "", "N_A");
+    }
+
     public void letra_siguiente() {
         for (; jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] != 0; ++jugadores.get(jugador_actual).letra_actual)
             if (jugadores.get(jugador_actual).letra_actual == 25)
@@ -189,19 +218,22 @@ public class Rosco extends Pantalla {
         jugadores.get(jugador_actual).jugando = false;
 
         if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) >= 26) {
-            clasificacion.anadir(jugadores.get(jugador_actual).n_aciertos - jugadores.get(jugador_actual).n_fallos, jugadores.get(jugador_actual).nombre);
+            clasificacion.anadir(jugadores.get(jugador_actual).n_aciertos, jugadores.get(jugador_actual).nombre);
 
             if (n_jugadores == 1)
-                juego.setScreen(new Clasificacion(juego));
+                juego.setScreen(clasificacion);
 
             jugadores.remove((int)jugador_actual);
             --n_jugadores;
         }
 
-            if (jugador_actual + 1 == n_jugadores)
+        if (jugador_actual + 1 >= n_jugadores)
             jugador_actual = 0;
         else
             ++jugador_actual;
+
+        if (!jugadores.isEmpty())
+            boton_nombre.setText(jugadores.get(jugador_actual).nombre);
     }
 
     public void texturas_mostrar() {
@@ -209,11 +241,11 @@ public class Rosco extends Pantalla {
         //Mostrar letras, aciertos y fallos
         for (int i = 0; i < 26; ++i) {
             if (jugadores.get(jugador_actual).letras[i] != 0 || jugadores.get(jugador_actual).letra_actual == i) {
-                batch.draw(((Texture[]) (Menu.elementos_mostrar[0]))[i], 0, 0);
+                batch.draw(((Texture[]) (Menu.elementos_mostrar[0]))[i], 0, 0, anchura_juego, altura_juego);
                 if (jugadores.get(jugador_actual).letras[i] == 2)
-                    batch.draw(((Texture[]) (Menu.elementos_mostrar[3]))[i], 0, 0);
+                    batch.draw(((Texture[]) (Menu.elementos_mostrar[3]))[i], 0, 0, anchura_juego, altura_juego);
                 else if (jugadores.get(jugador_actual).letras[i] == 1)
-                    batch.draw(((Texture[]) (Menu.elementos_mostrar[4]))[i], 0, 0);
+                    batch.draw(((Texture[]) (Menu.elementos_mostrar[4]))[i], 0, 0, anchura_juego, altura_juego);
             }
         }
 
@@ -232,27 +264,29 @@ public class Rosco extends Pantalla {
         }
 
         //Mostrar el tiempo y la puntuacion
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[1]))[0][jugadores.get(jugador_actual).n_aciertos%10], 0, 0);
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[1]))[1][jugadores.get(jugador_actual).n_aciertos/10], 0, 0);
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[0][(int)jugadores.get(jugador_actual).tiempo%10], 0, 0);
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[1][((int)jugadores.get(jugador_actual).tiempo%100)/10], 0, 0);
-        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[2][((int)jugadores.get(jugador_actual).tiempo%1000)/100], 0, 0);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[1]))[0][jugadores.get(jugador_actual).n_aciertos%10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[1]))[1][jugadores.get(jugador_actual).n_aciertos/10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[0][(int)jugadores.get(jugador_actual).tiempo%10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[1][((int)jugadores.get(jugador_actual).tiempo%100)/10], 0, 0, anchura_juego, altura_juego);
+        batch.draw(((Texture[][])(Menu.elementos_mostrar[2]))[2][((int)jugadores.get(jugador_actual).tiempo%1000)/100], 0, 0, anchura_juego, altura_juego);
 
         //Mostrar la descripcion de la letra actual
         if (descripciones.size() > jugadores.get(jugador_actual).letra_actual && jugadores.get(jugador_actual).letra_actual > -1)
             if (descripciones.get(jugadores.get(jugador_actual).letra_actual).size() > 0)
-                descripcion.draw(batch, descripcion_actual, 0, altura_juego);
+                descripcion.draw(batch, descripcion_actual, (float)(anchura_juego * 0.33) , altura_juego / 2);
     }
 
     public void texturas_cargar() {
         fondo = new Texture("data/rosco/fondo_rosco.jpg");
-        boton_inicio_parada = setButton("data/rosco/boton_inicio_parada.jpg");
-        boton_inicio_parada.setPosition(anchura_juego - boton_inicio_parada.getWidth() * 2, (float)(altura_juego * 0.33));
-        boton_reinicio = setButton("data/rosco/boton_reinicio.jpg");
-        boton_reinicio.setPosition(anchura_juego - boton_reinicio.getWidth(), (float)(altura_juego * 0.33));
-        boton_acierto = setButton("data/rosco/boton_acierto.jpg");
-        boton_acierto.setPosition(anchura_juego - boton_acierto.getWidth() * 2, (float)(altura_juego * 0.33) - boton_acierto.getHeight());
-        boton_fallo = setButton("data/rosco/boton_fallo.jpg");
-        boton_fallo.setPosition(anchura_juego - boton_fallo.getWidth(), (float)(altura_juego * 0.33) - boton_fallo.getHeight());
+        boton_nombre = texto_boton_crear();
+        boton_nombre.setPosition((float)(anchura_juego * 0.33), (float)(altura_juego * 0.25));
+        boton_inicio_parada = imagen_texto_boton_crear("data/rosco/boton_inicio_parada.jpg");
+        boton_inicio_parada.setPosition(anchura_juego - boton_inicio_parada.getWidth() * 3, (float)(altura_juego * 0.40));
+        boton_reinicio = imagen_texto_boton_crear("data/rosco/boton_reinicio.jpg");
+        boton_reinicio.setPosition(anchura_juego - boton_reinicio.getWidth() * 2, (float)(altura_juego * 0.40));
+        boton_acierto = imagen_texto_boton_crear("data/rosco/boton_acierto.jpg");
+        boton_acierto.setPosition(anchura_juego - boton_acierto.getWidth() * 3, (float)(altura_juego * 0.40) - boton_acierto.getHeight());
+        boton_fallo = imagen_texto_boton_crear("data/rosco/boton_fallo.jpg");
+        boton_fallo.setPosition(anchura_juego - boton_fallo.getWidth() * 2, (float)(altura_juego * 0.40) - boton_fallo.getHeight());
     }
 }
