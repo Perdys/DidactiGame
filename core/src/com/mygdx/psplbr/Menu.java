@@ -75,7 +75,7 @@ public class Menu extends Pantalla{
 
     public void pause() {}	/*, y resume() y pause(), que son funciones que se ejecutan en Android cuando salimos de la aplicaci�n o se interrumpe la ejecuci�n de la misma y volvemos a ella.*/
 
-    public void resume() {}
+    public void resume() { pantalla_actual = 1; }
 
     public void show() {
         stage.addActor(boton_jugar);
@@ -92,9 +92,10 @@ public class Menu extends Pantalla{
         Gdx.input.setCatchMenuKey(true);
     }
 
-    public void hide() { dispose(); }
+    public void hide() {}
 
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
+
         batch.dispose();
         stage.dispose();
     }

@@ -34,7 +34,7 @@ public class Rosco extends Pantalla {
         String nombre = "Introduzca su nombre";
         boolean jugando = false;
         Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
-        float contador = 0, tiempo = 150;
+        float contador = 0, tiempo = 20;
         int letras[];
 
         public Jugador(int[] letras) { this.letras = letras; }
@@ -89,7 +89,7 @@ public class Rosco extends Pantalla {
 
     public void pause() {}	/*, y resume() y pause(), que son funciones que se ejecutan en Android cuando salimos de la aplicaci�n o se interrumpe la ejecuci�n de la misma y volvemos a ella.*/
 
-    public void resume() {}
+    public void resume() { pantalla_actual = 2; }
 
     public void show() {
         stage.addActor(boton_nombre);
@@ -107,7 +107,7 @@ public class Rosco extends Pantalla {
         Gdx.input.setCatchMenuKey(true);
     }
 
-    public void hide() { dispose(); }
+    public void hide() {}
 
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
 
@@ -134,37 +134,40 @@ public class Rosco extends Pantalla {
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
                     case "data/rosco/boton_inicio_parada.jpg":
-                        if (jugadores.get(jugador_actual).jugando) {
-                            jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == 25 ? 0 : jugadores.get(jugador_actual).letra_actual + 1;
+                        if (!jugadores.isEmpty())
+                            if (jugadores.get(jugador_actual).jugando) {
+                                jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == 25 ? 0 : jugadores.get(jugador_actual).letra_actual + 1;
 
-                            jugador_siguiente();
-                        } else {
-                            jugadores.get(jugador_actual).jugando = true;
-                            jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == -1 ? 0 : jugadores.get(jugador_actual).letra_actual;
+                                jugador_siguiente();
+                            } else {
+                                jugadores.get(jugador_actual).jugando = true;
+                                jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == -1 ? 0 : jugadores.get(jugador_actual).letra_actual;
 
-                            letra_siguiente();
-                        }
+                                letra_siguiente();
+                            }
                         break;
-                    case "data/rosco/boton_reinicio.jpg": juego.setScreen(new Menu(juego));
+                    case "data/rosco/boton_reinicio.jpg": juego.setScreen(PsPlbr.menu);
                         break;
                     case "data/rosco/boton_acierto.jpg":
-                        if (jugadores.get(jugador_actual).jugando) {
-                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 1;
-                            ++jugadores.get(jugador_actual).n_aciertos;
+                        if (!jugadores.isEmpty())
+                            if (jugadores.get(jugador_actual).jugando) {
+                                jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 1;
+                                ++jugadores.get(jugador_actual).n_aciertos;
 
-                            if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) < 26)
-                                letra_siguiente();
-                            else
-                                jugador_siguiente();
-                        }
+                                if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) < 26)
+                                    letra_siguiente();
+                                else
+                                    jugador_siguiente();
+                            }
                         break;
                     case "data/rosco/boton_fallo.jpg":
-                        if (jugadores.get(jugador_actual).jugando) {
-                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 2;
-                            ++jugadores.get(jugador_actual).n_fallos;
+                        if (!jugadores.isEmpty())
+                            if (jugadores.get(jugador_actual).jugando) {
+                                jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 2;
+                                ++jugadores.get(jugador_actual).n_fallos;
 
-                            jugador_siguiente();
-                        }
+                                jugador_siguiente();
+                            }
                         break;
                     default: juego.setScreen(new Menu(juego));
                         break;
@@ -212,6 +215,8 @@ public class Rosco extends Pantalla {
             if (descripciones.get(jugadores.get(jugador_actual).letra_actual).size() != 0)
                 descripcion_actual = descripciones.get(jugadores.get(jugador_actual).letra_actual)
                                                   .get(MathUtils.random(descripciones.get(jugadores.get(jugador_actual).letra_actual).size()-1));
+            else
+                descripcion_actual = "INTRODUZCA UNA DESCRIPCION PARA ESTA LETRA";
     }
 
     public void jugador_siguiente() {
@@ -238,43 +243,47 @@ public class Rosco extends Pantalla {
 
     public void texturas_mostrar() {
 
-        //Mostrar letras, aciertos y fallos
-        for (int i = 0; i < 26; ++i) {
-            if (jugadores.get(jugador_actual).letras[i] != 0 || jugadores.get(jugador_actual).letra_actual == i) {
-                batch.draw(Menu.elementos_mostrar.letras[i], 0, 0, anchura_juego, altura_juego);
-                if (jugadores.get(jugador_actual).letras[i] == 2)
-                    batch.draw(Menu.elementos_mostrar.rojos[i], 0, 0, anchura_juego, altura_juego);
-                else if (jugadores.get(jugador_actual).letras[i] == 1)
-                    batch.draw(Menu.elementos_mostrar.verdes[i], 0, 0, anchura_juego, altura_juego);
+        if (!jugadores.isEmpty()) {
+            //Mostrar letras, aciertos y fallos
+            for (int i = 0; i < 26; ++i) {
+                if (jugadores.get(jugador_actual).letras[i] != 0 || jugadores.get(jugador_actual).letra_actual == i) {
+                    batch.draw(Menu.elementos_mostrar.letras[i], 0, 0, anchura_juego, altura_juego);
+                    if (jugadores.get(jugador_actual).letras[i] == 2)
+                        batch.draw(Menu.elementos_mostrar.rojos[i], 0, 0, anchura_juego, altura_juego);
+                    else if (jugadores.get(jugador_actual).letras[i] == 1)
+                        batch.draw(Menu.elementos_mostrar.verdes[i], 0, 0, anchura_juego, altura_juego);
+                }
+            }
+
+            //Obtener tiempo restante
+            jugadores.get(jugador_actual).contador += Gdx.graphics.getDeltaTime();
+            if (jugadores.get(jugador_actual).contador >= 1.0f) {
+                jugadores.get(jugador_actual).contador = 0;
+                if (jugadores.get(jugador_actual).jugando)
+                    jugadores.get(jugador_actual).tiempo--;
+            }
+
+            //Comprobar si se ha acabado el tiempo
+            if (jugadores.get(jugador_actual).tiempo < 1) {
+                jugadores.get(jugador_actual).n_fallos = 26 - jugadores.get(jugador_actual).n_aciertos;
+                jugador_siguiente();
+            }
+
+            if (!jugadores.isEmpty()) {
+                //Mostrar el tiempo y la puntuacion
+                batch.draw(Menu.elementos_mostrar.puntuacion[0][jugadores.get(jugador_actual).n_aciertos % 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu.elementos_mostrar.puntuacion[1][jugadores.get(jugador_actual).n_aciertos / 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu.elementos_mostrar.tiempo[0][(int) jugadores.get(jugador_actual).tiempo % 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu.elementos_mostrar.tiempo[1][((int) jugadores.get(jugador_actual).tiempo % 100) / 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu.elementos_mostrar.tiempo[2][((int) jugadores.get(jugador_actual).tiempo % 1000) / 100], 0, 0, anchura_juego, altura_juego);
+
+                //Mostrar la descripcion de la letra actual
+                if (jugadores.get(jugador_actual).letra_actual > -1)
+                    descripcion.draw(batch, descripcion_actual, (float) (anchura_juego * 0.33), altura_juego / 2);
             }
         }
-
-        //Obtener tiempo restante
-        jugadores.get(jugador_actual).contador += Gdx.graphics.getDeltaTime();
-        if (jugadores.get(jugador_actual).contador >= 1.0f) {
-            jugadores.get(jugador_actual).contador = 0;
-            if (jugadores.get(jugador_actual).jugando)
-                jugadores.get(jugador_actual).tiempo--;
-        }
-
-        //Comprobar si se ha acabado el tiempo
-        if (jugadores.get(jugador_actual).tiempo < 2) {
-            jugadores.get(jugador_actual).n_fallos = 26 - jugadores.get(jugador_actual).n_aciertos;
-            jugador_siguiente();
-        }
-
-        //Mostrar el tiempo y la puntuacion
-        batch.draw(Menu.elementos_mostrar.puntuacion[0][jugadores.get(jugador_actual).n_aciertos%10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(Menu.elementos_mostrar.puntuacion[1][jugadores.get(jugador_actual).n_aciertos/10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(Menu.elementos_mostrar.tiempo[0][(int)jugadores.get(jugador_actual).tiempo%10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(Menu.elementos_mostrar.tiempo[1][((int)jugadores.get(jugador_actual).tiempo%100)/10], 0, 0, anchura_juego, altura_juego);
-        batch.draw(Menu.elementos_mostrar.tiempo[2][((int)jugadores.get(jugador_actual).tiempo%1000)/100], 0, 0, anchura_juego, altura_juego);
-
-        //Mostrar la descripcion de la letra actual
-        if (descripciones.size() > jugadores.get(jugador_actual).letra_actual && jugadores.get(jugador_actual).letra_actual > -1)
-            if (descripciones.get(jugadores.get(jugador_actual).letra_actual).size() > 0)
-                descripcion.draw(batch, descripcion_actual, (float)(anchura_juego * 0.33) , altura_juego / 2);
     }
+
 
     public void texturas_cargar() {
         fondo = new Texture("data/rosco/fondo_rosco.jpg");

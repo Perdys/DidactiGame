@@ -4,7 +4,9 @@ import com.badlogic.gdx.Game;
 
 public class PsPlbr extends Game {
 
-	public void create() { setScreen(new Menu(this)); }
+	static Menu menu;
+
+	public void create() { menu = new Menu(this); setScreen(menu); }
 
 	public void render() { super.render(); }
 
