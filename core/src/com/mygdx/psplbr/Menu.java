@@ -44,9 +44,10 @@ public class Menu extends Pantalla{
         pantalla_actual = 1;
 
         descripciones = new ArrayList<>(26);
+        for (int i = 0; i < 26; ++i) descripciones.add(i, new ArrayList<String>(1));
         elementos_mostrar = new Elementos_Mostrar();
 
-        Fichero fichero = new Fichero("assets/data/ficheros/rosco.txt");
+        Fichero fichero = new Fichero("data/ficheros/rosco.txt");
         fichero.fichero_leer(descripciones);
 
         texturas_cargar();
@@ -140,8 +141,9 @@ public class Menu extends Pantalla{
                     //mientras que la primera letra de la linea no coincide con alguna del vector de letras
                     //o pueda existir la primera letra de la linea
                     ++i;
-                if (!descripciones.get(i).contains(descripcion)) //si la nueva linea no esta añadida todavia se añade
-                    descripciones.get(i).add(descripcion);
+
+                if (!descripciones.get(i).contains(descripcion + "\n")) //si la nueva linea no esta añadida todavia se añade
+                    descripciones.get(i).add(descripcion + "\n");
             }
 
             public void canceled() {}

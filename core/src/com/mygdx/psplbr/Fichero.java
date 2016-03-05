@@ -12,6 +12,11 @@ public class Fichero {
 
     public void fichero_escribir (ArrayList<ArrayList<String>> descripciones_entrada) {
 
+        if (!descripciones_entrada.isEmpty() && !descripciones_entrada.get(0).isEmpty()) {
+            fichero.writeString(descripciones_entrada.get(0).get(0), false);
+            descripciones_entrada.get(0).remove(0);
+        }
+
         while (!descripciones_entrada.isEmpty()) {
             while (!descripciones_entrada.get(0).isEmpty()) {
                 Gdx.app.log("fichero_escribir", descripciones_entrada.get(0).get(0));
@@ -28,14 +33,14 @@ public class Fichero {
                            "nN","oO","pP","qQ","rR","sS","tT","uU","vV","wW","xX","yY","zZ"};
 
         String[] lineas = fichero.readString().split("\n"); //leo el fichero entero y lo almaceno en lineas
-        for (int i = 0, j = 0; i < lineas.length; ++i, j = 0) {
-            while (!letras[j].contains(Character.toString(lineas[i].charAt(0))) || j > 25)
-                //mientras que la primera letra de la linea no coincide con alguna del vector de letras
-                //o pueda existir la primera letra de la linea
-                ++j;
+        if (lineas.length > 1)
+            for (int i = 0, j = 0; i < lineas.length; ++i, j = 0) {
+                while (!letras[j].contains(Character.toString(lineas[i].charAt(0))))
+                    //mientras que la primera letra de la linea no coincide con alguna del vector de letras
+                    //o pueda existir la primera letra de la linea
+                    ++j;
 
-            descripciones.add(new ArrayList<String>());
-            descripciones.get(j).add(lineas[i]);
-        }
+                descripciones.get(j).add(lineas[i]);
+            }
     }
 }
