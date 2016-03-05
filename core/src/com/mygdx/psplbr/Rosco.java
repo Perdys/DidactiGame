@@ -31,10 +31,10 @@ public class Rosco extends Pantalla {
     String descripcion_actual = "";
 
     public class Jugador {
-        String nombre = "Introduzca su nombre";
+        String nombre = "Introduzca su nombre y el tiempo";
         boolean jugando = false;
         Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
-        float contador = 0, tiempo = 20;
+        float contador = 0, tiempo = 150;
         int letras[];
 
         public Jugador(int[] letras) { this.letras = letras; }
@@ -187,6 +187,7 @@ public class Rosco extends Pantalla {
         boton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                tiempo_anadir();
                 nombre_anadir();
             }
         });
@@ -198,12 +199,33 @@ public class Rosco extends Pantalla {
         Gdx.input.getTextInput (new Input.TextInputListener() {
 
             public void input(String descripcion) {
+                if (descripcion.isEmpty())
+                    descripcion = "Jugador_" + (jugador_actual + 1);
                 jugadores.get(jugador_actual).nombre = descripcion;
                 boton_nombre.setText(descripcion);
             }
 
+            public void canceled() {
+                jugadores.get(jugador_actual).nombre = "Jugador_" + (jugador_actual + 1);
+                boton_nombre.setText("Jugador_" + (jugador_actual + 1));
+            }
+
+        }, "Introduzca el nombre del jugador", "", "Jugador_" + (jugador_actual + 1));
+    }
+
+    public void tiempo_anadir() {
+
+        Gdx.input.getTextInput (new Input.TextInputListener() {
+
+            public void input(String tiempo) {
+                if (tiempo.isEmpty())
+                    tiempo = "150";
+                jugadores.get(jugador_actual).tiempo = Integer.parseInt(tiempo);
+            }
+
             public void canceled() {}
-        }, "Introduzca el nombre del jugador", "", "N_A");
+
+        }, "Introduzca el tiempo inicial", "", "150''");
     }
 
     public void letra_siguiente() {
