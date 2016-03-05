@@ -40,7 +40,7 @@ public class Fichero {
                     //o pueda existir la primera letra de la linea
                     ++j;
 
-                descripciones.get(j).add(lineas[i]);
+                descripciones.get(j).add(lineas[i] + "\n");
             }
     }
 }
