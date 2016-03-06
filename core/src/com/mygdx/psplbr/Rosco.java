@@ -1,16 +1,13 @@
 package com.mygdx.psplbr;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
-import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 
@@ -22,16 +19,17 @@ public class Rosco extends Pantalla {
     Stage stage;
     OrthographicCamera camara;
     SpriteBatch batch;
+    InputAdapter click;
 
-    Texture fondo;
-    ImageButton boton_inicio_parada, boton_reinicio, boton_acierto, boton_fallo;
+    Texture fondo, jugando;
+    Rectangle boton_inicio, boton_acierto, boton_fallo;
     TextButton boton_nombre;
     Integer n_jugadores, jugador_actual = 0;
     BitmapFont descripcion;
     String descripcion_actual = "";
 
     public class Jugador {
-        String nombre = "Introduzca su nombre y el tiempo";
+        String nombre = "Introduzca su nombre y tiempo";
         boolean jugando = false;
         Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
         float contador = 0, tiempo = 150;
@@ -56,8 +54,8 @@ public class Rosco extends Pantalla {
 
         pantalla_actual = 2;
 
-        jugadores = new ArrayList<>(n_jugadores);
         clasificacion = new Clasificacion(juego);
+        jugadores = new ArrayList<>(n_jugadores);
 
         for(int i = 0; i < n_jugadores; ++i)
             jugadores.add(i, new Jugador(new int[26]));
@@ -65,6 +63,7 @@ public class Rosco extends Pantalla {
         descripcion = new BitmapFont();
         descripcion.setColor(Color.BLACK);
 
+        botones_crear();
         texturas_cargar();
     }
 
@@ -78,6 +77,8 @@ public class Rosco extends Pantalla {
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
         batch.draw(fondo, 0, 0, anchura_juego, altura_juego);
+        if (jugadores.get(jugador_actual).jugando)
+            batch.draw(jugando, 0, 0, anchura_juego, altura_juego);
         texturas_mostrar();
         batch.end();
 
@@ -93,15 +94,12 @@ public class Rosco extends Pantalla {
 
     public void show() {
         stage.addActor(boton_nombre);
-        stage.addActor(boton_inicio_parada);
-        stage.addActor(boton_reinicio);
-        stage.addActor(boton_acierto);
-        stage.addActor(boton_fallo);
         sistema_botones_crear(juego);
 
         InputMultiplexer inputs = new InputMultiplexer();
         inputs.addProcessor(stage_botones);
         inputs.addProcessor(stage);
+        inputs.addProcessor(click);
         Gdx.input.setInputProcessor(inputs);
         Gdx.input.setCatchBackKey(true);
         Gdx.input.setCatchMenuKey(true);
@@ -118,80 +116,65 @@ public class Rosco extends Pantalla {
         stage.dispose();
     }
 
-    public ImageButton imagen_texto_boton_crear(final String imagen) {
-        ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
-        Skin skin = new Skin();
-        skin.add("boton", new Texture(imagen));
-        estilo_boton.up = skin.getDrawable("boton");
-        estilo_boton.unpressedOffsetY = -(lado / 6);
-        estilo_boton.pressedOffsetY = -(lado / 6);
+    public void botones_crear() {
 
-        ImageButton boton = new ImageButton(estilo_boton);
-        boton.setSize(anchura_juego / 7, altura_juego / 7);
-
-        boton.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                switch (imagen) {
-                    case "data/rosco/boton_inicio_parada.jpg":
-                        if (!jugadores.isEmpty())
-                            if (jugadores.get(jugador_actual).jugando) {
-                                jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == 25 ? 0 : jugadores.get(jugador_actual).letra_actual + 1;
-
-                                jugador_siguiente();
-                            } else {
-                                jugadores.get(jugador_actual).jugando = true;
-                                jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == -1 ? 0 : jugadores.get(jugador_actual).letra_actual;
-
-                                letra_siguiente();
-                            }
-                        break;
-                    case "data/rosco/boton_reinicio.jpg": juego.setScreen(PsPlbr.menu);
-                        break;
-                    case "data/rosco/boton_acierto.jpg":
-                        if (!jugadores.isEmpty())
-                            if (jugadores.get(jugador_actual).jugando) {
-                                jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 1;
-                                ++jugadores.get(jugador_actual).n_aciertos;
-
-                                if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) < 26)
-                                    letra_siguiente();
-                                else
-                                    jugador_siguiente();
-                            }
-                        break;
-                    case "data/rosco/boton_fallo.jpg":
-                        if (!jugadores.isEmpty())
-                            if (jugadores.get(jugador_actual).jugando) {
-                                jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 2;
-                                ++jugadores.get(jugador_actual).n_fallos;
-
-                                jugador_siguiente();
-                            }
-                        break;
-                    default: juego.setScreen(new Menu(juego));
-                        break;
-                }
-            }
-        });
-        return boton;
-    }
-
-    public TextButton texto_boton_crear() {
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = descripcion;
         textButtonStyle.fontColor = Color.BLACK;
 
-        TextButton boton = new TextButton(jugadores.get(jugador_actual).nombre, textButtonStyle);
+        boton_nombre = new TextButton(jugadores.get(jugador_actual).nombre, textButtonStyle);
+        boton_nombre.setPosition((float)(anchura_juego * 0.66), (float)(altura_juego * 0.65));
 
-        boton.addListener(new ClickListener() {
+        boton_nombre.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 tiempo_anadir();
                 nombre_anadir();
             }
         });
-        return boton;
+
+        boton_inicio = new Rectangle((float) (anchura_juego * 0.75), (float) (altura_juego * 0.65), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.08));
+        boton_acierto = new Rectangle((float) (anchura_juego * 0.23), (float) (altura_juego * 0.60), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.15));
+        boton_fallo = new Rectangle((float) (anchura_juego * 0.42), (float) (altura_juego * 0.60), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.15));
+
+        click = new InputAdapter() {
+            public boolean touchUp (int x, int y, int pointer, int button) {
+
+                Gdx.app.log("click", "X: " + x + " Y: " + y);
+                if (boton_inicio.contains(x, y))
+                    if (!jugadores.isEmpty())
+                        if (jugadores.get(jugador_actual).jugando) {
+                            jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == 25 ? 0 : jugadores.get(jugador_actual).letra_actual + 1;
+
+                            jugador_siguiente();
+                        } else {
+                            jugadores.get(jugador_actual).jugando = true;
+                            jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == -1 ? 0 : jugadores.get(jugador_actual).letra_actual;
+
+                            letra_siguiente();
+                        }
+                if (boton_acierto.contains(x, y))
+                    if (!jugadores.isEmpty())
+                        if (jugadores.get(jugador_actual).jugando) {
+                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 1;
+                            ++jugadores.get(jugador_actual).n_aciertos;
+
+                            if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) < 26)
+                                letra_siguiente();
+                            else
+                                jugador_siguiente();
+                        }
+                if (boton_fallo.contains(x, y))
+                    if (!jugadores.isEmpty())
+                        if (jugadores.get(jugador_actual).jugando) {
+                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 2;
+                            ++jugadores.get(jugador_actual).n_fallos;
+
+                            jugador_siguiente();
+                        }
+                return true; // return true to indicate the event was handled
+            }
+        };
     }
 
     public void nombre_anadir() {
@@ -266,6 +249,7 @@ public class Rosco extends Pantalla {
     public void texturas_mostrar() {
 
         if (!jugadores.isEmpty()) {
+
             //Mostrar letras, aciertos y fallos
             for (int i = 0; i < 26; ++i) {
                 if (jugadores.get(jugador_actual).letras[i] != 0 || jugadores.get(jugador_actual).letra_actual == i) {
@@ -306,18 +290,8 @@ public class Rosco extends Pantalla {
         }
     }
 
-
     public void texturas_cargar() {
         fondo = new Texture("data/rosco/fondo_rosco.jpg");
-        boton_nombre = texto_boton_crear();
-        boton_nombre.setPosition((float)(anchura_juego * 0.66), (float)(altura_juego * 0.65));
-        boton_inicio_parada = imagen_texto_boton_crear("data/rosco/boton_inicio_parada.jpg");
-        boton_inicio_parada.setPosition(anchura_juego - boton_inicio_parada.getWidth() * 3, (float)(altura_juego * 0.40));
-        boton_reinicio = imagen_texto_boton_crear("data/rosco/boton_reinicio.jpg");
-        boton_reinicio.setPosition(anchura_juego - boton_reinicio.getWidth() * 2, (float)(altura_juego * 0.40));
-        boton_acierto = imagen_texto_boton_crear("data/rosco/boton_acierto.jpg");
-        boton_acierto.setPosition(anchura_juego - boton_acierto.getWidth() * 3, (float)(altura_juego * 0.40) - boton_acierto.getHeight());
-        boton_fallo = imagen_texto_boton_crear("data/rosco/boton_fallo.jpg");
-        boton_fallo.setPosition(anchura_juego - boton_fallo.getWidth() * 2, (float)(altura_juego * 0.40) - boton_fallo.getHeight());
+        jugando = new Texture("data/rosco/boton_on.png");
     }
 }
