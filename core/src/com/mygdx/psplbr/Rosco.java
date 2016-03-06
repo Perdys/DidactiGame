@@ -140,7 +140,6 @@ public class Rosco extends Pantalla {
         click = new InputAdapter() {
             public boolean touchUp (int x, int y, int pointer, int button) {
 
-                Gdx.app.log("click", "X: " + x + " Y: " + y);
                 if (boton_inicio.contains(x, y))
                     if (!jugadores.isEmpty())
                         if (jugadores.get(jugador_actual).jugando) {
