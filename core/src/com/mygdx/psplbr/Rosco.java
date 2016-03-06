@@ -63,7 +63,7 @@ public class Rosco extends Pantalla {
             jugadores.add(i, new Jugador(new int[26]));
 
         descripcion = new BitmapFont();
-        descripcion.setColor(Color.RED);
+        descripcion.setColor(Color.BLACK);
 
         texturas_cargar();
     }
@@ -180,7 +180,7 @@ public class Rosco extends Pantalla {
     public TextButton texto_boton_crear() {
         TextButton.TextButtonStyle textButtonStyle = new TextButton.TextButtonStyle();
         textButtonStyle.font = descripcion;
-        textButtonStyle.fontColor = Color.ORANGE;
+        textButtonStyle.fontColor = Color.BLACK;
 
         TextButton boton = new TextButton(jugadores.get(jugador_actual).nombre, textButtonStyle);
 
@@ -301,7 +301,7 @@ public class Rosco extends Pantalla {
 
                 //Mostrar la descripcion de la letra actual
                 if (jugadores.get(jugador_actual).letra_actual > -1)
-                    descripcion.draw(batch, descripcion_actual, (float) (anchura_juego * 0.33), altura_juego / 2);
+                    descripcion.draw(batch, descripcion_actual, (float)(anchura_juego * 0.2), (float)(altura_juego * 0.68));
             }
         }
     }
@@ -310,7 +310,7 @@ public class Rosco extends Pantalla {
     public void texturas_cargar() {
         fondo = new Texture("data/rosco/fondo_rosco.jpg");
         boton_nombre = texto_boton_crear();
-        boton_nombre.setPosition((float)(anchura_juego * 0.33), (float)(altura_juego * 0.25));
+        boton_nombre.setPosition((float)(anchura_juego * 0.66), (float)(altura_juego * 0.65));
         boton_inicio_parada = imagen_texto_boton_crear("data/rosco/boton_inicio_parada.jpg");
         boton_inicio_parada.setPosition(anchura_juego - boton_inicio_parada.getWidth() * 3, (float)(altura_juego * 0.40));
         boton_reinicio = imagen_texto_boton_crear("data/rosco/boton_reinicio.jpg");
