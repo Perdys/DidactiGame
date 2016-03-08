@@ -30,7 +30,7 @@ public class Menu extends Pantalla{
     }
     public Integer n_jugadores = 1;
 
-    ArrayList<ArrayList<String>> descripciones;
+    ArrayList<ArrayList<String[]>> descripciones;
     static Elementos_Mostrar elementos_mostrar;
 
     public Menu(PsPlbr juego) {
@@ -44,7 +44,7 @@ public class Menu extends Pantalla{
         pantalla_actual = 1;
 
         descripciones = new ArrayList<>(26);
-        for (int i = 0; i < 26; ++i) descripciones.add(i, new ArrayList<String>(1));
+        for (int i = 0; i < 26; ++i) descripciones.add(i, new ArrayList<String[]>(1));
         elementos_mostrar = new Elementos_Mostrar();
 
         Fichero fichero = new Fichero("data/ficheros/rosco.txt");
@@ -133,23 +133,24 @@ public class Menu extends Pantalla{
 
         Gdx.input.getTextInput (new Input.TextInputListener() {
 
-            public void input(String descripcion) {
+            public void input(String letra_nueva) {
                 String[] letras = {"aA", "bB", "cC", "dD", "eE", "fF", "gG", "hH", "iI", "jJ", "kK", "lL", "mM",
                                    "nN", "oO", "pP", "qQ", "rR", "sS", "tT", "uU", "vV", "wW", "xX", "yY", "zZ"};
 
                 int i = 0;
-                while (!letras[i].contains(Character.toString(descripcion.charAt(0))) || i > 25)
+                while (!letras[i].contains(Character.toString(letra_nueva.charAt(0))) || i > 25)
                     //mientras que la primera letra de la linea no coincide con alguna del vector de letras
                     //o pueda existir la primera letra de la linea
                     ++i;
 
-                if (!descripciones.get(i).contains(descripcion + "\n")) //si la nueva linea no esta añadida todavia se añade
-                    descripciones.get(i).add(descripcion + "\n");
+                String palabra = letra_nueva.substring(0, letra_nueva.indexOf(" "));
+                String descripcion = letra_nueva.substring(letra_nueva.indexOf(" "));
+                descripciones.get(i).add(new String[]{palabra, descripcion});
             }
 
             public void canceled() {}
 
-        }, "Introduzca la descripcion de la letra", "", "?-Empieza por '?':...");
+        }, "Introduzca la descripcion de la letra", "", "'palabra' Empieza por '?':...");
     }
 
     public void texturas_cargar() {

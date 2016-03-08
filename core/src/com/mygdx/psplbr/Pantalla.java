@@ -30,7 +30,7 @@ public class Pantalla implements Screen {
                             case 0: case 1:
                                 Gdx.app.exit();
                                 break;
-                            case 2:case 3:
+                            case 2: case 3:
                                 juego.setScreen(PsPlbr.menu);
                                 break;
                             default:

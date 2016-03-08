@@ -22,11 +22,11 @@ public class Rosco extends Pantalla {
     InputAdapter click;
 
     Texture fondo, jugando;
-    Rectangle boton_inicio, boton_acierto, boton_fallo;
+    Rectangle boton_inicio, boton_acierto, boton_fallo, boton_pregunta;
     TextButton boton_nombre;
     Integer n_jugadores, jugador_actual = 0;
     BitmapFont descripcion;
-    String descripcion_actual = "";
+    String[] descripcion_actual = {"", ""};
 
     public class Jugador {
         String nombre = "Introduzca su nombre y tiempo";
@@ -34,15 +34,16 @@ public class Rosco extends Pantalla {
         Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
         float contador = 0, tiempo = 150;
         int letras[];
+        Color fondo_color = Color.CYAN;
 
         public Jugador(int[] letras) { this.letras = letras; }
     }
 
     ArrayList<Jugador> jugadores;
     Clasificacion clasificacion;
-    ArrayList<ArrayList<String>> descripciones;
+    ArrayList<ArrayList<String[]>> descripciones;
 
-    public Rosco(Integer n_jugadores, ArrayList<ArrayList<String>> descripciones, PsPlbr juego) {
+    public Rosco(Integer n_jugadores, ArrayList<ArrayList<String[]>> descripciones, PsPlbr juego) {
         this.juego = juego;
         this.n_jugadores = n_jugadores;
         this.descripciones = descripciones;
@@ -69,7 +70,8 @@ public class Rosco extends Pantalla {
 
     public void render(float delta) {	/*ejecutarse todas las veces posible por segundo, ejecuten todas las acciones del juego
 		dibujar los elementos por pantalla, procesar la entrada y salida, mover los personajes, detectar colisiones, etc. */
-        Gdx.gl.glClearColor(1, 1, 1, 1);
+        Gdx.gl.glClearColor(jugadores.get(jugador_actual).fondo_color.r, jugadores.get(jugador_actual).fondo_color.g,
+                            jugadores.get(jugador_actual).fondo_color.b, jugadores.get(jugador_actual).fondo_color.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camara.update();
@@ -105,7 +107,7 @@ public class Rosco extends Pantalla {
         Gdx.input.setCatchMenuKey(true);
     }
 
-    public void hide() {}
+    public void hide() { dispose(); }
 
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
 
@@ -134,13 +136,34 @@ public class Rosco extends Pantalla {
         });
 
         boton_inicio = new Rectangle((float) (anchura_juego * 0.75), (float) (altura_juego * 0.65), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.08));
-        boton_acierto = new Rectangle((float) (anchura_juego * 0.23), (float) (altura_juego * 0.60), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.15));
-        boton_fallo = new Rectangle((float) (anchura_juego * 0.42), (float) (altura_juego * 0.60), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.15));
+        boton_acierto = new Rectangle((float) (anchura_juego * 0.14), (float) (altura_juego * 0.60), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.15));
+        boton_fallo = new Rectangle((float) (anchura_juego * 0.49), (float) (altura_juego * 0.60), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.15));
+        boton_pregunta = new Rectangle((float) (anchura_juego * 0.31), (float) (altura_juego * 0.60), (float) (anchura_juego * 0.07), (float) (altura_juego * 0.15));
 
         click = new InputAdapter() {
             public boolean touchUp (int x, int y, int pointer, int button) {
+                if (boton_acierto.contains(x, y)) {
+                    if (!jugadores.isEmpty())
+                        if (jugadores.get(jugador_actual).jugando) {
+                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 1;
+                            ++jugadores.get(jugador_actual).n_aciertos;
 
-                if (boton_inicio.contains(x, y))
+                            if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) < 26)
+                                letra_siguiente();
+                            else
+                                jugador_siguiente();
+                        }
+                } else
+                if (boton_fallo.contains(x, y)) {
+                    if (!jugadores.isEmpty())
+                        if (jugadores.get(jugador_actual).jugando) {
+                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 2;
+                            ++jugadores.get(jugador_actual).n_fallos;
+
+                            jugador_siguiente();
+                        }
+                } else
+                if (boton_inicio.contains(x, y)) {
                     if (!jugadores.isEmpty())
                         if (jugadores.get(jugador_actual).jugando) {
                             jugadores.get(jugador_actual).letra_actual = jugadores.get(jugador_actual).letra_actual == 25 ? 0 : jugadores.get(jugador_actual).letra_actual + 1;
@@ -152,26 +175,17 @@ public class Rosco extends Pantalla {
 
                             letra_siguiente();
                         }
-                if (boton_acierto.contains(x, y))
+                } else
+                if (boton_pregunta.contains(x, y)) {
                     if (!jugadores.isEmpty())
                         if (jugadores.get(jugador_actual).jugando) {
-                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 1;
-                            ++jugadores.get(jugador_actual).n_aciertos;
-
-                            if ((jugadores.get(jugador_actual).n_aciertos + jugadores.get(jugador_actual).n_fallos) < 26)
-                                letra_siguiente();
-                            else
-                                jugador_siguiente();
+                            String aux = descripcion_actual[0];
+                            descripcion_actual[0] = descripcion_actual[1];
+                            descripcion_actual[1] = aux;
                         }
-                if (boton_fallo.contains(x, y))
-                    if (!jugadores.isEmpty())
-                        if (jugadores.get(jugador_actual).jugando) {
-                            jugadores.get(jugador_actual).letras[jugadores.get(jugador_actual).letra_actual] = 2;
-                            ++jugadores.get(jugador_actual).n_fallos;
+                }
 
-                            jugador_siguiente();
-                        }
-                return true; // return true to indicate the event was handled
+                return true;
             }
         };
     }
@@ -216,11 +230,13 @@ public class Rosco extends Pantalla {
                 jugadores.get(jugador_actual).letra_actual = -1;
 
         if (descripciones.size() != 0)
-            if (descripciones.get(jugadores.get(jugador_actual).letra_actual).size() != 0)
-                descripcion_actual = descripciones.get(jugadores.get(jugador_actual).letra_actual)
-                                                  .get(MathUtils.random(descripciones.get(jugadores.get(jugador_actual).letra_actual).size()-1));
+            if (descripciones.get(jugadores.get(jugador_actual).letra_actual).size() != 0) {
+                int descripcion_aleatoria = MathUtils.random(descripciones.get(jugadores.get(jugador_actual).letra_actual).size() - 1);
+                descripcion_actual = new String[]{descripciones.get(jugadores.get(jugador_actual).letra_actual).get(descripcion_aleatoria)[1],
+                                                  descripciones.get(jugadores.get(jugador_actual).letra_actual).get(descripcion_aleatoria)[0]};
+            }
             else
-                descripcion_actual = "INTRODUZCA UNA DESCRIPCION PARA ESTA LETRA";
+                descripcion_actual = new String[]{"INTRODUZCA UNA DESCRIPCION PARA ESTA LETRA", "NINGUNA"};
     }
 
     public void jugador_siguiente() {
@@ -284,13 +300,13 @@ public class Rosco extends Pantalla {
 
                 //Mostrar la descripcion de la letra actual
                 if (jugadores.get(jugador_actual).letra_actual > -1)
-                    descripcion.draw(batch, descripcion_actual, (float)(anchura_juego * 0.2), (float)(altura_juego * 0.68));
+                    descripcion.draw(batch, descripcion_actual[0], (float)(anchura_juego * 0.2), (float)(altura_juego * 0.68));
             }
         }
     }
 
     public void texturas_cargar() {
-        fondo = new Texture("data/rosco/fondo_rosco.jpg");
+        fondo = new Texture("data/rosco/fondo_rosco.png");
         jugando = new Texture("data/rosco/boton_on.png");
     }
 }
