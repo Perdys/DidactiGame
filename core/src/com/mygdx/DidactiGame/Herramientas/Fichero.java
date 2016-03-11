@@ -1,4 +1,4 @@
-package com.mygdx.psplbr;
+package com.mygdx.DidactiGame.Herramientas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -12,7 +12,6 @@ public class Fichero {
 
     public void fichero_escribir (ArrayList<ArrayList<String[]>> descripciones_entrada) {
 
-        Gdx.app.log("linea", "yesssssssssssssssssssssssss");
         if (!descripciones_entrada.isEmpty() && !descripciones_entrada.get(0).isEmpty()) {
             fichero.writeString(descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n", false);
             descripciones_entrada.get(0).remove(0);
@@ -41,7 +40,6 @@ public class Fichero {
                     //o pueda existir la primera letra de la linea
                     ++j;
 
-                Gdx.app.log("linea", lineas[i]);
                 if (lineas[i].contains(" ")) {
                     palabra = lineas[i].substring(0, lineas[i].indexOf(" "));
                     descripcion = lineas[i].substring(lineas[i].indexOf(" "));

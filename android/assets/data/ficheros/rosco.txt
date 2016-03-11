@@ -1,4 +1,4 @@
-amor  hola
-gloton  loquillo
-holita  locuron
-palabra1  descripcion1
+amor                hola
+gloton                loquillo
+holita                locuron
+palabra1                descripcion1

@@ -1,9 +1,9 @@
-package com.mygdx.psplbr.client;
+package com.mygdx.DidactiGame.client;
 
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
-import com.mygdx.psplbr.PsPlbr;
+import com.mygdx.DidactiGame.DidactiGame;
 
 public class HtmlLauncher extends GwtApplication {
 
@@ -14,6 +14,6 @@ public class HtmlLauncher extends GwtApplication {
 
         @Override
         public ApplicationListener createApplicationListener () {
-                return new PsPlbr();
+                return new DidactiGame();
         }
 }

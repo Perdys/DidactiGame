@@ -1,4 +1,4 @@
-package com.mygdx.psplbr;
+package com.mygdx.DidactiGame;
 
 import android.os.Bundle;
 
@@ -15,6 +15,6 @@ public class AndroidLauncher extends AndroidApplication {
 
 		//config.useGL20 = true;
 
-		initialize(new PsPlbr(), config);
+		initialize(new DidactiGame(), config);
 	}
 }

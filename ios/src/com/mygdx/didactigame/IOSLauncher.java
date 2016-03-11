@@ -1,17 +1,17 @@
-package com.mygdx.psplbr;
+package com.mygdx.DidactiGame;
 
 import org.robovm.apple.foundation.NSAutoreleasePool;
 import org.robovm.apple.uikit.UIApplication;
 
 import com.badlogic.gdx.backends.iosrobovm.IOSApplication;
 import com.badlogic.gdx.backends.iosrobovm.IOSApplicationConfiguration;
-import com.mygdx.psplbr.PsPlbr;
+import com.mygdx.DidactiGame.DidactiGame;
 
 public class IOSLauncher extends IOSApplication.Delegate {
     @Override
     protected IOSApplication createApplication() {
         IOSApplicationConfiguration config = new IOSApplicationConfiguration();
-        return new IOSApplication(new PsPlbr(), config);
+        return new IOSApplication(new DidactiGame(), config);
     }
 
     public static void main(String[] argv) {

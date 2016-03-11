@@ -1,12 +1,13 @@
-package com.mygdx.psplbr;
+package com.mygdx.DidactiGame;
 
 import com.badlogic.gdx.Game;
+import com.mygdx.DidactiGame.Pantallas.Menu_Juegos;
 
-public class PsPlbr extends Game {
+public class DidactiGame extends Game {
 
-	static Menu menu;
+	public static Menu_Juegos menu_juegos;
 
-	public void create() { menu = new Menu(this); setScreen(menu); }
+	public void create() { menu_juegos = new Menu_Juegos(this); setScreen(menu_juegos); }
 
 	public void render() { super.render(); }
 
