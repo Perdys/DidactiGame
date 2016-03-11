@@ -42,7 +42,7 @@ public class Fichero {
 
                 if (lineas[i].contains(" ")) {
                     palabra = lineas[i].substring(0, lineas[i].indexOf(" "));
-                    descripcion = lineas[i].substring(lineas[i].indexOf(" "));
+                    descripcion = lineas[i].substring(lineas[i].indexOf(" ") + 1);
                     descripciones.get(j).add(new String[]{palabra, descripcion});
                 }
             }

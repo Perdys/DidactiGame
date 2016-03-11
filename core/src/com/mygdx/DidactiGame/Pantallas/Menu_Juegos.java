@@ -74,7 +74,7 @@ public class Menu_Juegos extends Pantalla {
         stage.draw();
     }
 
-    public void resize(int width, int height) {} //sirve para recalcular el tama�o de los elementos cuando se modifica la pantalla
+    public void resize(int width, int height) { anchura_juego = width; altura_juego = height; } //sirve para recalcular el tama�o de los elementos cuando se modifica la pantalla
 
     public void pause() {}	/*, y resume() y pause(), que son funciones que se ejecutan en Android cuando salimos de la aplicaci�n o se interrumpe la ejecuci�n de la misma y volvemos a ella.*/
 
@@ -117,7 +117,7 @@ public class Menu_Juegos extends Pantalla {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
-                    case "data/menu_juegos/boton_jugar.jpg": juego.setScreen(new Rosco(n_jugadores, descripciones, juego));
+                    case "data/menu_juegos/boton_jugar.jpg": juego.setScreen(new Juego_Rosco(n_jugadores, descripciones, juego));
                         break;
                     case "data/menu_juegos/boton_mas.jpg": ++n_jugadores;
                         break;
@@ -147,7 +147,7 @@ public class Menu_Juegos extends Pantalla {
                     ++i;
 
                 String palabra = letra_nueva.substring(0, letra_nueva.indexOf(" "));
-                String descripcion = letra_nueva.substring(letra_nueva.indexOf(" "));
+                String descripcion = letra_nueva.substring(letra_nueva.indexOf(" ") + 1);
                 descripciones.get(i).add(new String[]{palabra, descripcion});
             }
 

@@ -3,6 +3,8 @@ package com.mygdx.DidactiGame.Herramientas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
@@ -10,9 +12,11 @@ import com.mygdx.DidactiGame.DidactiGame;
 
 public class Pantalla implements Screen {
 
-    public static float anchura_juego = Gdx.graphics.getWidth();
-    public static float altura_juego = Gdx.graphics.getHeight();
-    public static float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
+    public float anchura_juego = Gdx.graphics.getWidth();
+    public float altura_juego = Gdx.graphics.getHeight();
+    public float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
+    public static FreeTypeFontGenerator generador_texto = new FreeTypeFontGenerator(new FileHandle("fonts/pixel.ttf"));
+    public static FreeTypeFontGenerator.FreeTypeFontParameter tamano_texto = new FreeTypeFontGenerator.FreeTypeFontParameter();
     public Integer pantalla_actual = 0;
     public static Stage stage_botones;
 
@@ -63,7 +67,7 @@ public class Pantalla implements Screen {
 
     public void hide() { dispose(); }
 
-    public void dispose () {}
+    public void dispose () { generador_texto.dispose(); }
 }
         /*
 
@@ -107,7 +111,7 @@ public class Pantalla implements Screen {
                 switch (imagen) {
                     case "data/boton_inicio_parada.png": //reiniciar tiempo o pararlo;
                         break;
-                    case "data/boton_reinicio.png": juego.setScreen(new Rosco(juego));
+                    case "data/boton_reinicio.png": juego.setScreen(new Juego_Rosco(juego));
                         break;
                     default: break;
                 }

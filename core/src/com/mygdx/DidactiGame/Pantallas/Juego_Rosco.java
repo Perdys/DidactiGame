@@ -1,8 +1,13 @@
 package com.mygdx.DidactiGame.Pantallas;
 
 import com.badlogic.gdx.*;
+import com.badlogic.gdx.InputAdapter;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.*;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
@@ -13,26 +18,27 @@ import com.mygdx.DidactiGame.Herramientas.Pantalla;
 
 import java.util.*;
 
-public class Rosco extends Pantalla {
+public class Juego_Rosco extends Pantalla {
 
     DidactiGame juego;
     Stage stage;
     OrthographicCamera camara;
     SpriteBatch batch;
     InputAdapter click;
-
     Texture fondo, boton_jugando;
     Rectangle boton_inicio, boton_acierto, boton_fallo, boton_pregunta, boton_nombre, boton_tiempo;
     Integer n_jugadores, jugador_actual = 0;
-    BitmapFont descripcion;
+
+    BitmapFont texto_fuente;
     String[] descripcion_actual = {"", ""};
+    GlyphLayout texto_estilo;
 
     public class Jugador {
-        String nombre = "Introduzca su nombre";
+        String nombre = "Nombre";
         boolean jugando = false;
         Integer letra_actual = -1, n_aciertos = 0, n_fallos = 0;
-        float contador = 0, tiempo = 150;
-        int letras[];
+        float contador = 0;
+        int letras[], tiempo = 150;
         Color fondo_color = Color.BLUE;
 
         public Jugador(int[] letras) { this.letras = letras; }
@@ -42,7 +48,7 @@ public class Rosco extends Pantalla {
     Clasificacion clasificacion;
     ArrayList<ArrayList<String[]>> descripciones;
 
-    public Rosco(Integer n_jugadores, ArrayList<ArrayList<String[]>> descripciones, DidactiGame juego) {
+    public Juego_Rosco(Integer n_jugadores, ArrayList<ArrayList<String[]>> descripciones, DidactiGame juego) {
         this.juego = juego;
         this.n_jugadores = n_jugadores;
         this.descripciones = descripciones;
@@ -60,8 +66,9 @@ public class Rosco extends Pantalla {
         for(int i = 0; i < n_jugadores; ++i)
             jugadores.add(i, new Jugador(new int[26]));
 
-        descripcion = new BitmapFont();
-        descripcion.setColor(Color.BLACK);
+        tamano_texto.size = (int)proporcion_y(0.06);
+        texto_estilo = new GlyphLayout();
+        texto_fuente = generador_texto.generateFont(tamano_texto);
 
         fondo = new Texture("data/rosco/fondo_rosco.png");
         boton_jugando = new Texture("data/rosco/boton_on.png");
@@ -89,7 +96,7 @@ public class Rosco extends Pantalla {
         stage.draw();
     }
 
-    public void resize(int width, int height) {} //sirve para recalcular el tama�o de los elementos cuando se modifica la pantalla
+    public void resize(int width, int height) { anchura_juego = width; altura_juego = height; } //sirve para recalcular el tama�o de los elementos cuando se modifica la pantalla
 
     public void pause() {}	/*, y resume() y pause(), que son funciones que se ejecutan en Android cuando salimos de la aplicaci�n o se interrumpe la ejecuci�n de la misma y volvemos a ella.*/
 
@@ -275,16 +282,21 @@ public class Rosco extends Pantalla {
                 //Mostrar el tiempo y la puntuacion
                 batch.draw(Menu_Juegos.elementos_mostrar.puntuacion[0][jugadores.get(jugador_actual).n_aciertos % 10], 0, 0, anchura_juego, altura_juego);
                 batch.draw(Menu_Juegos.elementos_mostrar.puntuacion[1][jugadores.get(jugador_actual).n_aciertos / 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[0][(int) jugadores.get(jugador_actual).tiempo % 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[1][((int) jugadores.get(jugador_actual).tiempo % 100) / 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[2][((int) jugadores.get(jugador_actual).tiempo % 1000) / 100], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[0][jugadores.get(jugador_actual).tiempo % 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[1][(jugadores.get(jugador_actual).tiempo % 100) / 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[2][(jugadores.get(jugador_actual).tiempo % 1000) / 100], 0, 0, anchura_juego, altura_juego);
 
-                //Mostrar la descripcion de la letra actual
-                if (jugadores.get(jugador_actual).letra_actual > -1)
-                    descripcion.draw(batch, descripcion_actual[0], proporcion_x(0.2), proporcion_y(0.675));
+                //Mostrar la texto de la letra actual
+                if (jugadores.get(jugador_actual).letra_actual > -1) {
+                    texto_estilo.setText(texto_fuente, descripcion_actual[0], Color.BLACK, proporcion_x(0.33), 8, true);
+                    texto_fuente.draw(batch, texto_estilo, proporcion_x(0.2), proporcion_y(0.69));
+                }
 
-                //Mostrar el nombre del jugador actual
-                descripcion.draw(batch, jugadores.get(jugador_actual).nombre, proporcion_x(0.66), proporcion_y(0.675));
+                //Mostrar el texto_estilo del jugador actual
+                if (!jugadores.isEmpty()) {
+                    texto_estilo.setText(texto_fuente, jugadores.get(jugador_actual).nombre, Color.BLACK, proporcion_x(0.14), 8, true);
+                    texto_fuente.draw(batch, texto_estilo, proporcion_x(0.66), proporcion_y(0.680));
+                }
             }
         }
     }
