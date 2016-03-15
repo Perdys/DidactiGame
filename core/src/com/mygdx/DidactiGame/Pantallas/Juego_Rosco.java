@@ -11,7 +11,6 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Herramientas.Fichero;
 import com.mygdx.DidactiGame.Herramientas.Pantalla;
@@ -21,7 +20,6 @@ import java.util.*;
 public class Juego_Rosco extends Pantalla {
 
     DidactiGame juego;
-    Stage stage;
     OrthographicCamera camara;
     SpriteBatch batch;
     InputAdapter click;
@@ -55,10 +53,9 @@ public class Juego_Rosco extends Pantalla {
 
         camara = new OrthographicCamera();
         camara.setToOrtho(false);
-        stage = new Stage();
         batch = new SpriteBatch();
 
-        pantalla_actual = 2;
+        pantalla_actual = "Juego_Rosco";
 
         clasificacion = new Clasificacion(juego);
         jugadores = new ArrayList<>(n_jugadores);
@@ -73,7 +70,7 @@ public class Juego_Rosco extends Pantalla {
         fondo = new Texture("data/rosco/fondo_rosco.png");
         boton_jugando = new Texture("data/rosco/boton_on.png");
 
-        botones_crear();
+        botones();
     }
 
     public void render(float delta) {	/*ejecutarse todas las veces posible por segundo, ejecuten todas las acciones del juego
@@ -91,41 +88,27 @@ public class Juego_Rosco extends Pantalla {
             batch.draw(boton_jugando, 0, 0, anchura_juego, altura_juego);
         texturas_mostrar();
         batch.end();
-
-        stage.act();
-        stage.draw();
     }
 
-    public void resize(int width, int height) { anchura_juego = width; altura_juego = height; } //sirve para recalcular el tama�o de los elementos cuando se modifica la pantalla
-
-    public void pause() {}	/*, y resume() y pause(), que son funciones que se ejecutan en Android cuando salimos de la aplicaci�n o se interrumpe la ejecuci�n de la misma y volvemos a ella.*/
-
-    public void resume() { pantalla_actual = 2; }
+    public void resume() { pantalla_actual = "Juego_Rosco"; }
 
     public void show() {
-        sistema_botones_crear(juego);
+        sistema_botones(juego);
 
         InputMultiplexer inputs = new InputMultiplexer();
-        inputs.addProcessor(stage_botones);
-        inputs.addProcessor(stage);
+        inputs.addProcessor(botones_genericos);
         inputs.addProcessor(click);
         Gdx.input.setInputProcessor(inputs);
         Gdx.input.setCatchBackKey(true);
         Gdx.input.setCatchMenuKey(true);
     }
 
-    public void hide() { dispose(); }
-
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
 
-        Fichero fichero = new Fichero("data/ficheros/rosco.txt");
-        fichero.fichero_escribir(descripciones);
-
         batch.dispose();
-        stage.dispose();
     }
 
-    public void botones_crear() {
+    public void botones () {
 
         boton_inicio = new Rectangle(proporcion_x(0.75), proporcion_y(0.65), proporcion_x(0.07), proporcion_y(0.1));
         boton_acierto = new Rectangle(proporcion_x(0.14), proporcion_y(0.60), proporcion_x(0.07), proporcion_y(0.15));
@@ -210,7 +193,7 @@ public class Juego_Rosco extends Pantalla {
                         }, "Introduzca el tiempo inicial", "", "150''");
                 }
 
-                return true;
+                return false;
             }
         };
     }
@@ -295,7 +278,7 @@ public class Juego_Rosco extends Pantalla {
                 //Mostrar el texto_estilo del jugador actual
                 if (!jugadores.isEmpty()) {
                     texto_estilo.setText(texto_fuente, jugadores.get(jugador_actual).nombre, Color.BLACK, proporcion_x(0.14), 8, true);
-                    texto_fuente.draw(batch, texto_estilo, proporcion_x(0.66), proporcion_y(0.680));
+                    texto_fuente.draw(batch, texto_estilo, proporcion_x(0.66), proporcion_y(0.68));
                 }
             }
         }

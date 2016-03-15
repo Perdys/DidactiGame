@@ -24,6 +24,7 @@ public class Menu_Juegos extends Pantalla {
     OrthographicCamera camara;
     SpriteBatch batch;
 
+    Juego_Rosco rosco;
     Texture fondo;
     ImageButton boton_jugar, boton_mas, boton_menos, boton_anadir;
 
@@ -44,13 +45,12 @@ public class Menu_Juegos extends Pantalla {
         stage = new Stage();
         batch = new SpriteBatch();
 
-        pantalla_actual = 1;
+        pantalla_actual = "Menu_Juegos";
+
+        elementos_mostrar = new Elementos_Mostrar();
 
         descripciones = new ArrayList<>(26);
         for (int i = 0; i < 26; ++i) descripciones.add(i, new ArrayList<String[]>(1));
-        elementos_mostrar = new Elementos_Mostrar();
-
-        Fichero fichero = new Fichero("data/ficheros/rosco.txt");
         fichero.fichero_leer(descripciones);
 
         texturas_cargar();
@@ -74,36 +74,33 @@ public class Menu_Juegos extends Pantalla {
         stage.draw();
     }
 
-    public void resize(int width, int height) { anchura_juego = width; altura_juego = height; } //sirve para recalcular el tama�o de los elementos cuando se modifica la pantalla
-
-    public void pause() {}	/*, y resume() y pause(), que son funciones que se ejecutan en Android cuando salimos de la aplicaci�n o se interrumpe la ejecuci�n de la misma y volvemos a ella.*/
-
-    public void resume() { pantalla_actual = 1; }
+    public void resume() { pantalla_actual = "Menu_Juegos"; }
 
     public void show() {
         stage.addActor(boton_jugar);
         stage.addActor(boton_mas);
         stage.addActor(boton_menos);
         stage.addActor(boton_anadir);
-        sistema_botones_crear(juego);
+        sistema_botones(juego);
 
         InputMultiplexer inputs = new InputMultiplexer();
-        inputs.addProcessor(stage_botones);
+        inputs.addProcessor(botones_genericos);
         inputs.addProcessor(stage);
         Gdx.input.setInputProcessor(inputs);
         Gdx.input.setCatchBackKey(true);
         Gdx.input.setCatchMenuKey(true);
     }
 
-    public void hide() {}
-
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
 
+        fichero.fichero_escribir(descripciones);
+        rosco.dispose();
+        generador_texto.dispose();
         batch.dispose();
         stage.dispose();
     }
 
-    public ImageButton imagen_texto_boton_crear(final String imagen) {
+    public ImageButton imagen_texto_boton (final String imagen) {
         ImageButton.ImageButtonStyle estilo_boton = new ImageButton.ImageButtonStyle();
         Skin skin = new Skin();
         skin.add("boton", new Texture(imagen));
@@ -117,7 +114,9 @@ public class Menu_Juegos extends Pantalla {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
-                    case "data/menu_juegos/boton_jugar.jpg": juego.setScreen(new Juego_Rosco(n_jugadores, descripciones, juego));
+                    case "data/menu_juegos/boton_jugar.jpg":
+                        rosco = new Juego_Rosco(n_jugadores, descripciones, juego);
+                        juego.setScreen(rosco);
                         break;
                     case "data/menu_juegos/boton_mas.jpg": ++n_jugadores;
                         break;
@@ -148,7 +147,8 @@ public class Menu_Juegos extends Pantalla {
 
                 String palabra = letra_nueva.substring(0, letra_nueva.indexOf(" "));
                 String descripcion = letra_nueva.substring(letra_nueva.indexOf(" ") + 1);
-                descripciones.get(i).add(new String[]{palabra, descripcion});
+                if (!descripciones.get(i).contains(new String[]{palabra, descripcion}))
+                    descripciones.get(i).add(new String[]{palabra, descripcion});
             }
 
             public void canceled() {}
@@ -157,14 +157,14 @@ public class Menu_Juegos extends Pantalla {
     }
 
     public void texturas_cargar() {
-        fondo = new Texture("data/menu_juegos/fondo_menu.jpg");
-        boton_jugar = imagen_texto_boton_crear("data/menu_juegos/boton_jugar.jpg");
+        fondo = new Texture("data/menu_juegos/fondo_juegos.jpg");
+        boton_jugar = imagen_texto_boton("data/menu_juegos/boton_jugar.jpg");
         boton_jugar.setPosition(proporcion_x(0.75) - boton_jugar.getWidth() / 2, proporcion_y(0.33) - boton_jugar.getHeight() / 2);
-        boton_mas = imagen_texto_boton_crear("data/menu_juegos/boton_mas.jpg");
+        boton_mas = imagen_texto_boton("data/menu_juegos/boton_mas.jpg");
         boton_mas.setPosition(proporcion_x(0.33) - boton_mas.getWidth() / 2, proporcion_y(0.33));
-        boton_menos = imagen_texto_boton_crear("data/menu_juegos/boton_menos.jpg");
+        boton_menos = imagen_texto_boton("data/menu_juegos/boton_menos.jpg");
         boton_menos.setPosition(proporcion_x(0.33) - boton_menos.getWidth() / 2, proporcion_y(0.33) - boton_menos.getHeight());
-        boton_anadir = imagen_texto_boton_crear("data/menu_juegos/boton_anadir.jpg");
+        boton_anadir = imagen_texto_boton("data/menu_juegos/boton_anadir.jpg");
         boton_anadir.setPosition(proporcion_x(0.75) - boton_menos.getWidth() / 2, proporcion_y(0.75) - boton_anadir.getHeight());
 
         elementos_mostrar.jugadores = new Texture[2][10];

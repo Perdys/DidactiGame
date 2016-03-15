@@ -12,18 +12,23 @@ public class Fichero {
 
     public void fichero_escribir (ArrayList<ArrayList<String[]>> descripciones_entrada) {
 
+        String cadena_comprobacion = "";
+
         if (!descripciones_entrada.isEmpty() && !descripciones_entrada.get(0).isEmpty()) {
-            fichero.writeString(descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n", false);
+            cadena_comprobacion += descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n";
             descripciones_entrada.get(0).remove(0);
         }
 
         while (!descripciones_entrada.isEmpty()) {
             while (!descripciones_entrada.get(0).isEmpty()) {
-                fichero.writeString(descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n", true);
+                if (!cadena_comprobacion.contains(descripciones_entrada.get(0).get(0)[1]))
+                    cadena_comprobacion += descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n";
                 descripciones_entrada.get(0).remove(0);
             }
             descripciones_entrada.remove(0);
         }
+
+        fichero.writeString(cadena_comprobacion, false);
     }
 
     public void fichero_leer (ArrayList<ArrayList<String[]>> descripciones) {

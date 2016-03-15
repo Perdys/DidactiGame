@@ -39,14 +39,12 @@ public class Clasificacion extends Pantalla {
         stage = new Stage();
         batch = new SpriteBatch();
 
-        pantalla_actual = 3;
+        pantalla_actual = "Clasificacion";
 
         puntuaciones_tabla = new BitmapFont();
         puntuaciones_tabla.setColor(Color.RED);
         jugadores = new ArrayList<>(1);
     }
-
-    public void resize(int width, int height) { anchura_juego = width; altura_juego = height; } //sirve para recalcular el tama�o de los elementos cuando se modifica la pantalla
 
     public void render(float delta) {	/*ejecutarse todas las veces posible por segundo, ejecuten todas las acciones del juego
 		dibujar los elementos por pantalla, procesar la entrada y salida, mover los personajes, detectar colisiones, etc. */
@@ -63,6 +61,8 @@ public class Clasificacion extends Pantalla {
         stage.act();
         stage.draw();
     }
+
+    public void resume() { pantalla_actual = "Clasificacion"; }
 
     public void anadir (int puntuacion, String nombre) {
         int j = 0;

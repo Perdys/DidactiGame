@@ -2,12 +2,12 @@ package com.mygdx.DidactiGame.Herramientas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
-import com.badlogic.gdx.scenes.scene2d.InputEvent;
-import com.badlogic.gdx.scenes.scene2d.InputListener;
-import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.mygdx.DidactiGame.DidactiGame;
 
 public class Pantalla implements Screen {
@@ -17,47 +17,86 @@ public class Pantalla implements Screen {
     public float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
     public static FreeTypeFontGenerator generador_texto = new FreeTypeFontGenerator(new FileHandle("fonts/pixel.ttf"));
     public static FreeTypeFontGenerator.FreeTypeFontParameter tamano_texto = new FreeTypeFontGenerator.FreeTypeFontParameter();
-    public Integer pantalla_actual = 0;
-    public static Stage stage_botones;
+    public String pantalla_actual = "Defecto";
+    public static InputAdapter botones_genericos;
+    public Fichero fichero = new Fichero("data/ficheros/rosco.txt");
 
     public Pantalla() {}
 
-    public void sistema_botones_crear(final DidactiGame juego) {
-        stage_botones = new Stage();
-        stage_botones.addListener(new InputListener() {
-            @Override
-            public boolean keyUp(InputEvent event, int keycode) {
+    public void sistema_botones (final DidactiGame juego) {
+        botones_genericos = new InputAdapter() {
+
+            public boolean keyUp(int keycode) {
+                Gdx.app.log("click", Integer.toString(keycode));
                 switch (keycode) {
                     case Input.Keys.BACK:
-                        switch (pantalla_actual) {
-                            case 0: case 1:
-                                Gdx.app.exit();
-                                break;
-                            case 2: case 3:
-                                juego.setScreen(DidactiGame.menu_juegos);
-                                break;
-                            default:
-                                juego.setScreen(DidactiGame.menu_juegos);
-                                break;
-                        }
+                        acciones(pantalla_actual);
                         break;
                     case Input.Keys.HOME:
+                        juego.dispose();
                         Gdx.app.exit();
+                        break;
                     default:
                         break;
                 }
+                return true;
+            }
+
+            public boolean touchUp (int x, int y, int pointer, int button) {
+                if (button == 1) {
+                    acciones(pantalla_actual);
+                    return true;
+                }
                 return false;
             }
-        });
+
+            public void acciones (String pantalla_actual) {
+                switch (pantalla_actual) {
+                    case "Defecto":case "Menu_Inicial":
+                        juego.dispose();
+                        Gdx.app.exit();
+                        break;
+                    case "Menu_Opciones":case "Menu_Juegos":case "Menu_Datos":case "Menu_Nuevo":case "Menu_Personalizar":case "Clasificacion":
+                        juego.setScreen(DidactiGame.menu_inicial);
+                        break;
+                    case "Juego_Rosco":
+                        juego.setScreen(DidactiGame.menu_juegos);
+                        break;
+                    default:
+                        juego.setScreen(DidactiGame.menu_inicial);
+                        break;
+                }
+            }
+        };
     }
 
     public float proporcion_x (double valor) { return (float) (anchura_juego * valor); }
 
     public float proporcion_y (double valor) { return (float) (altura_juego * valor); }
 
+    public static Pixmap rectangulo_redondeado(float ancho, float alto, int radio, Color color) {
+
+        Pixmap pixmap = new Pixmap((int)ancho, (int)alto, Pixmap.Format.RGBA8888);
+        pixmap.setColor(color);
+
+        pixmap.fillRectangle(0, radio, pixmap.getWidth(), pixmap.getHeight() - 2 * radio);
+        pixmap.fillRectangle(radio, 0, pixmap.getWidth() - 2 * radio, pixmap.getHeight());
+
+        // Bottom-left circle
+        pixmap.fillCircle(radio, radio, radio);
+        // Top-left circle
+        pixmap.fillCircle(radio, pixmap.getHeight() - radio, radio);
+        // Bottom-right circle
+        pixmap.fillCircle(pixmap.getWidth() - radio, radio, radio);
+        // Top-right circle
+        pixmap.fillCircle(pixmap.getWidth() - radio, pixmap.getHeight() - radio, radio);
+
+        return pixmap;
+    }
+
     public void render(float delta) {}
 
-    public void resize(int width, int height) {}
+    public void resize(int width, int height) { anchura_juego = width; altura_juego = height; }
 
     public void pause() {}
 
@@ -65,9 +104,9 @@ public class Pantalla implements Screen {
 
     public void show() {}
 
-    public void hide() { dispose(); }
+    public void hide() {}
 
-    public void dispose () { generador_texto.dispose(); }
+    public void dispose () {}
 }
         /*
 
@@ -92,7 +131,7 @@ public class Pantalla implements Screen {
         BMF_boton.setColor(Color.BLACK);
         BMF_texto.setColor(Color.BLACK);*/
 /*
-    public ImageTextButton imagen_texto_boton_crear(final String imagen, String texto, final DidactiGame juego) {
+    public ImageTextButton imagen_texto_boton(final String imagen, String texto, final DidactiGame juego) {
         ImageTextButton.ImageTextButtonStyle estilo_boton = new ImageTextButton.ImageTextButtonStyle();
         Skin skin = new Skin();
         skin.add("boton", new Texture(imagen));
