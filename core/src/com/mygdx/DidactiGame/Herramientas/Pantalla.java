@@ -15,11 +15,12 @@ public class Pantalla implements Screen {
     public float anchura_juego = Gdx.graphics.getWidth();
     public float altura_juego = Gdx.graphics.getHeight();
     public float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
-    public static FreeTypeFontGenerator generador_texto = new FreeTypeFontGenerator(new FileHandle("fonts/pixel.ttf"));
+    public static FreeTypeFontGenerator generador_texto = new FreeTypeFontGenerator(new FileHandle("fuentes/pixel.ttf"));
     public static FreeTypeFontGenerator.FreeTypeFontParameter tamano_texto = new FreeTypeFontGenerator.FreeTypeFontParameter();
     public String pantalla_actual = "Defecto";
     public static InputAdapter botones_genericos;
-    public Fichero fichero = new Fichero("data/ficheros/rosco.txt");
+    public Fichero letras_rosco_fichero = new Fichero("data/ficheros/descripciones_letras.txt");
+    public Fichero jugadores_fichero = new Fichero("data/ficheros/nombres_jugadores.txt");
 
     public Pantalla() {}
 
@@ -39,7 +40,7 @@ public class Pantalla implements Screen {
                     default:
                         break;
                 }
-                return true;
+                return false;
             }
 
             public boolean touchUp (int x, int y, int pointer, int button) {

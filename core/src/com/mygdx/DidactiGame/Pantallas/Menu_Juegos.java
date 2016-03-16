@@ -13,7 +13,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.ImageButton;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.mygdx.DidactiGame.DidactiGame;
-import com.mygdx.DidactiGame.Herramientas.Fichero;
 import com.mygdx.DidactiGame.Herramientas.Pantalla;
 
 import java.util.ArrayList;
@@ -51,7 +50,7 @@ public class Menu_Juegos extends Pantalla {
 
         descripciones = new ArrayList<>(26);
         for (int i = 0; i < 26; ++i) descripciones.add(i, new ArrayList<String[]>(1));
-        fichero.fichero_leer(descripciones);
+        letras_rosco_fichero.leer(descripciones);
 
         texturas_cargar();
     }
@@ -93,7 +92,7 @@ public class Menu_Juegos extends Pantalla {
 
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
 
-        fichero.fichero_escribir(descripciones);
+        letras_rosco_fichero.escribir(descripciones);
         rosco.dispose();
         generador_texto.dispose();
         batch.dispose();
@@ -180,14 +179,14 @@ public class Menu_Juegos extends Pantalla {
         elementos_mostrar.tiempo = new Texture[3][10];
 
         for (int i = 0; i < 26; ++i){
-            elementos_mostrar.letras[i] = new Texture("data/rosco/digitos/letras/l" + i + ".png");
-            elementos_mostrar.rojos[i] = new Texture("data/rosco/rojo/r" + i + ".png");
-            elementos_mostrar.verdes[i] = new Texture("data/rosco/verde/v" + i + ".png");
+            elementos_mostrar.letras[i] = new Texture("data/menu_juegos/juego_rosco/digitos/letras/l" + i + ".png");
+            elementos_mostrar.rojos[i] = new Texture("data/menu_juegos/juego_rosco/rojo/r" + i + ".png");
+            elementos_mostrar.verdes[i] = new Texture("data/menu_juegos/juego_rosco/verde/v" + i + ".png");
             if (i < 3)
                 for (int j = 0; j < 10; ++j) {
                     if (i < 2)
-                        elementos_mostrar.puntuacion[i][j] = new Texture("data/rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
-                    elementos_mostrar.tiempo[i][j] = new Texture("data/rosco/digitos/tiempo/t" + i + "_" + j +".png");
+                        elementos_mostrar.puntuacion[i][j] = new Texture("data/menu_juegos/juego_rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
+                    elementos_mostrar.tiempo[i][j] = new Texture("data/menu_juegos/juego_rosco/digitos/tiempo/t" + i + "_" + j +".png");
                 }
         }
     }

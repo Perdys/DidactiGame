@@ -7,37 +7,44 @@ import java.util.ArrayList;
 public class Fichero {
 
     FileHandle fichero;
+    public String contenido;
 
-    public Fichero (String direccion) { fichero = Gdx.files.local(direccion); }
+    public Fichero (String direccion) {
+        fichero = Gdx.files.local(direccion);
+        contenido = fichero.readString();
+    }
 
-    public void fichero_escribir (ArrayList<ArrayList<String[]>> descripciones_entrada) {
+    public void escribir(ArrayList<ArrayList<String[]>> descripciones_entrada) {
 
-        String cadena_comprobacion = "";
+        contenido = "";
 
         if (!descripciones_entrada.isEmpty() && !descripciones_entrada.get(0).isEmpty()) {
-            cadena_comprobacion += descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n";
+            contenido += descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n";
             descripciones_entrada.get(0).remove(0);
         }
 
         while (!descripciones_entrada.isEmpty()) {
             while (!descripciones_entrada.get(0).isEmpty()) {
-                if (!cadena_comprobacion.contains(descripciones_entrada.get(0).get(0)[1]))
-                    cadena_comprobacion += descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n";
+                if (!contenido.contains(descripciones_entrada.get(0).get(0)[1]))
+                    contenido += descripciones_entrada.get(0).get(0)[0] + " " + descripciones_entrada.get(0).get(0)[1] + "\n";
                 descripciones_entrada.get(0).remove(0);
             }
             descripciones_entrada.remove(0);
         }
 
-        fichero.writeString(cadena_comprobacion, false);
+        fichero.writeString(contenido, false);
     }
 
-    public void fichero_leer (ArrayList<ArrayList<String[]>> descripciones) {
+    public void escribir (String contenido) { fichero.writeString(contenido, false); }
+
+    public void leer(ArrayList<ArrayList<String[]>> descripciones) {
 
         String[] letras = {"aA","bB","cC","dD","eE","fF","gG","hH","iI","jJ","kK","lL","mM",
                            "nN","oO","pP","qQ","rR","sS","tT","uU","vV","wW","xX","yY","zZ"};
         String palabra, descripcion;
 
-        String[] lineas = fichero.readString().split("\n"); //leo el fichero entero y lo almaceno en lineas
+        contenido = fichero.readString();
+        String[] lineas = contenido.split("\n"); //leo el fichero entero y lo almaceno en lineas
         if (lineas.length > 1)
             for (int i = 0, j = 0; i < lineas.length; ++i, j = 0) {
                 while (!letras[j].contains(Character.toString(lineas[i].charAt(0))))
@@ -52,4 +59,6 @@ public class Fichero {
                 }
             }
     }
+
+    public String[] leer() { return fichero.readString().split("\n"); }
 }

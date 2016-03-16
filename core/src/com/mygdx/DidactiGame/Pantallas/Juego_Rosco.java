@@ -59,16 +59,21 @@ public class Juego_Rosco extends Pantalla {
 
         clasificacion = new Clasificacion(juego);
         jugadores = new ArrayList<>(n_jugadores);
+        String[] nombres_jugadores = jugadores_fichero.leer();
 
-        for(int i = 0; i < n_jugadores; ++i)
-            jugadores.add(i, new Jugador(new int[26]));
+        for(int i = 0; i < n_jugadores; ++i) {
+            Jugador jug = new Jugador(new int[26]);
+            if (i < nombres_jugadores.length)
+                jug.nombre = nombres_jugadores[i];
+            jugadores.add(i, jug);
+        }
 
         tamano_texto.size = (int)proporcion_y(0.06);
         texto_estilo = new GlyphLayout();
         texto_fuente = generador_texto.generateFont(tamano_texto);
 
-        fondo = new Texture("data/rosco/fondo_rosco.png");
-        boton_jugando = new Texture("data/rosco/boton_on.png");
+        fondo = new Texture("data/menu_juegos/juego_rosco/fondo_rosco.png");
+        boton_jugando = new Texture("data/menu_juegos/juego_rosco/boton_on.png");
 
         botones();
     }
@@ -119,7 +124,6 @@ public class Juego_Rosco extends Pantalla {
 
         click = new InputAdapter() {
             public boolean touchUp (int x, int y, int pointer, int button) {
-                Gdx.app.log("punteo", " X: " + x + " Y: " + y);
                 if (boton_acierto.contains(x, y)) {
                     if (!jugadores.isEmpty())
                         if (jugadores.get(jugador_actual).jugando) {
@@ -275,7 +279,7 @@ public class Juego_Rosco extends Pantalla {
                     texto_fuente.draw(batch, texto_estilo, proporcion_x(0.2), proporcion_y(0.69));
                 }
 
-                //Mostrar el texto_estilo del jugador actual
+                //Mostrar el nombre del jugador actual
                 if (!jugadores.isEmpty()) {
                     texto_estilo.setText(texto_fuente, jugadores.get(jugador_actual).nombre, Color.BLACK, proporcion_x(0.14), 8, true);
                     texto_fuente.draw(batch, texto_estilo, proporcion_x(0.66), proporcion_y(0.68));
