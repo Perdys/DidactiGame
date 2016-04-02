@@ -10,7 +10,7 @@ public class Fichero {
     public String contenido;
 
     public Fichero (String direccion) {
-        fichero = Gdx.files.local(direccion);
+        fichero = Gdx.files.absolute(Gdx.files.getLocalStoragePath() + direccion);
         contenido = fichero.readString();
     }
 

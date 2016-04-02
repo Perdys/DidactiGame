@@ -11,10 +11,13 @@ import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.DidactiGame.DidactiGame;
-import com.mygdx.DidactiGame.Herramientas.Fichero;
 import com.mygdx.DidactiGame.Herramientas.Pantalla;
 
+import java.awt.*;
 import java.util.*;
 
 public class Juego_Rosco extends Pantalla {
@@ -46,9 +49,9 @@ public class Juego_Rosco extends Pantalla {
     Clasificacion clasificacion;
     ArrayList<ArrayList<String[]>> descripciones;
 
-    public Juego_Rosco(Integer n_jugadores, ArrayList<ArrayList<String[]>> descripciones, DidactiGame juego) {
+    public Juego_Rosco(ArrayList<String> nombres_jugadores, ArrayList<ArrayList<String[]>> descripciones, DidactiGame juego) {
         this.juego = juego;
-        this.n_jugadores = n_jugadores;
+        this.n_jugadores = nombres_jugadores.size();
         this.descripciones = descripciones;
 
         camara = new OrthographicCamera();
@@ -59,13 +62,17 @@ public class Juego_Rosco extends Pantalla {
 
         clasificacion = new Clasificacion(juego);
         jugadores = new ArrayList<>(n_jugadores);
-        String[] nombres_jugadores = jugadores_fichero.leer();
 
         for(int i = 0; i < n_jugadores; ++i) {
             Jugador jug = new Jugador(new int[26]);
-            if (i < nombres_jugadores.length)
-                jug.nombre = nombres_jugadores[i];
+            if (i < n_jugadores)
+                jug.nombre = nombres_jugadores.get(i);
             jugadores.add(i, jug);
+        }
+
+        if (n_jugadores == 0) {
+            jugadores.add(0, new Jugador(new int[26]));
+            n_jugadores = 1;
         }
 
         tamano_texto.size = (int)proporcion_y(0.06);
@@ -277,6 +284,9 @@ public class Juego_Rosco extends Pantalla {
                 if (jugadores.get(jugador_actual).letra_actual > -1) {
                     texto_estilo.setText(texto_fuente, descripcion_actual[0], Color.BLACK, proporcion_x(0.33), 8, true);
                     texto_fuente.draw(batch, texto_estilo, proporcion_x(0.2), proporcion_y(0.69));
+                    /*Label etiketa = new Label();
+                    Table tabla = new Table();
+                    ScrollPane panel_scroll = new ScrollPane(batch);*/
                 }
 
                 //Mostrar el nombre del jugador actual

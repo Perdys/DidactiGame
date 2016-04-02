@@ -5,14 +5,11 @@ import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.InputListener;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
-import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Herramientas.Pantalla;
@@ -68,7 +65,7 @@ public class Menu_Datos extends Pantalla{
     }
 
     public void hide() {
-        jugadores_fichero.escribir(jugadores_editor.getText());
+        nombres_jugadores_fichero.escribir(jugadores_editor.getText());
     }
 
     public void resume() { pantalla_actual = "Menu_Datos"; }
@@ -80,19 +77,7 @@ public class Menu_Datos extends Pantalla{
 
     public void jugadores_editor () {
 
-        tamano_texto.size = (int)proporcion_y(0.06);
-        TextField.TextFieldStyle estilo_texto = new TextField.TextFieldStyle(
-                generador_texto.generateFont(tamano_texto), Color.GREEN,
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/cursor_editor.png"))),
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/seleccion_editor.png"))),
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/fondo_editor.png"))));
-        estilo_texto.cursor.setMinWidth(proporcion_x(0.003));
-        estilo_texto.background.setLeftWidth(proporcion_x(0.01));
-        estilo_texto.background.setRightWidth(proporcion_x(0.01));
-        estilo_texto.background.setTopHeight(proporcion_y(0.01));
-        estilo_texto.background.setBottomHeight(proporcion_y(0.01));
-
-        jugadores_editor = new TextArea(jugadores_fichero.contenido, estilo_texto);
+        jugadores_editor = new TextArea(nombres_jugadores_fichero.contenido, estilo_texto("Vertical"));
         jugadores_editor.setPosition(proporcion_x(0.1), proporcion_y(0.1));
         jugadores_editor.setSize(proporcion_x(0.2), proporcion_y(0.8));
         jugadores_editor.addListener(new InputListener() {
@@ -104,19 +89,7 @@ public class Menu_Datos extends Pantalla{
 
     public void letras_rosco_editor () {
 
-        tamano_texto.size = (int)proporcion_y(0.06);
-        TextField.TextFieldStyle estilo_texto = new TextField.TextFieldStyle(
-                generador_texto.generateFont(tamano_texto), Color.GREEN,
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/cursor_editor.png"))),
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/seleccion_editor.png"))),
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/fondo_editor.png"))));
-        estilo_texto.cursor.setMinWidth(proporcion_x(0.003));
-        estilo_texto.background.setLeftWidth(proporcion_x(0.01));
-        estilo_texto.background.setRightWidth(proporcion_x(0.01));
-        estilo_texto.background.setTopHeight(proporcion_y(0.01));
-        estilo_texto.background.setBottomHeight(proporcion_y(0.01));
-
-        letras_rosco_editor = new TextArea(letras_rosco_fichero.contenido, estilo_texto);
+        letras_rosco_editor = new TextArea(letras_rosco_fichero.contenido, estilo_texto("Horizontal"));
         letras_rosco_editor.setPosition(proporcion_x(0.4), proporcion_y(0.55));
         letras_rosco_editor.setSize(proporcion_x(0.5), proporcion_y(0.35));
         letras_rosco_editor.addListener(new InputListener() {
@@ -130,5 +103,26 @@ public class Menu_Datos extends Pantalla{
 
         batch.draw(new Texture("data/menu_datos/rosco.png"), letras_rosco_editor.getX(), letras_rosco_editor.getY() + letras_rosco_editor.getHeight(), proporcion_x(0.07), proporcion_y(0.07));
         batch.draw(new Texture("data/menu_datos/jugadores.png"), jugadores_editor.getX(), jugadores_editor.getY() + jugadores_editor.getHeight(), proporcion_x(0.05), proporcion_y(0.07));
+    }
+
+    public TextField.TextFieldStyle estilo_texto(String tipo) {
+
+        tamano_texto.size = (int)proporcion_y(0.06);
+        TextField.TextFieldStyle estilo_texto = new TextField.TextFieldStyle(
+                generador_texto.generateFont(tamano_texto), Color.GREEN,
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/cursor_editor.png"))),
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/seleccion_editor.png"))),
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/fondo_editor_horizontal.png"))));
+
+        if(tipo == "Vertical")
+            estilo_texto.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/fondo_editor_vertical.png")));
+
+        estilo_texto.cursor.setMinWidth(proporcion_x(0.003));
+        estilo_texto.background.setLeftWidth(proporcion_x(0.01));
+        estilo_texto.background.setRightWidth(proporcion_x(0.01));
+        estilo_texto.background.setTopHeight(proporcion_y(0.01));
+        estilo_texto.background.setBottomHeight(proporcion_y(0.01));
+
+        return estilo_texto;
     }
 }

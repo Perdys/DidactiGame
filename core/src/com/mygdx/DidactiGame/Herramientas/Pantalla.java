@@ -4,7 +4,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
@@ -12,15 +11,23 @@ import com.mygdx.DidactiGame.DidactiGame;
 
 public class Pantalla implements Screen {
 
+    //Medidas
     public float anchura_juego = Gdx.graphics.getWidth();
     public float altura_juego = Gdx.graphics.getHeight();
     public float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
-    public static FreeTypeFontGenerator generador_texto = new FreeTypeFontGenerator(new FileHandle("fuentes/pixel.ttf"));
+
+    //Textos
+    public static FreeTypeFontGenerator generador_texto = new FreeTypeFontGenerator(Gdx.files.internal("fuentes/pixel.ttf"));
     public static FreeTypeFontGenerator.FreeTypeFontParameter tamano_texto = new FreeTypeFontGenerator.FreeTypeFontParameter();
+
+    //Manejo menus
     public String pantalla_actual = "Defecto";
     public static InputAdapter botones_genericos;
+
+    //Ficheros
     public Fichero letras_rosco_fichero = new Fichero("data/ficheros/descripciones_letras.txt");
-    public Fichero jugadores_fichero = new Fichero("data/ficheros/nombres_jugadores.txt");
+    public Fichero nombres_jugadores_fichero = new Fichero("data/ficheros/nombres_jugadores.txt");
+    public Fichero opciones_jugadores_fichero = new Fichero("data/ficheros/opciones_jugadores.txt");
 
     public Pantalla() {}
 

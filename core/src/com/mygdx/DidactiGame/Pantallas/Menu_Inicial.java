@@ -47,7 +47,6 @@ public class Menu_Inicial extends Pantalla{
         batch.begin();
         batch.draw(fondo, 0, 0, anchura_juego, altura_juego);
         batch.end();
-
     }
 
     public void show () {

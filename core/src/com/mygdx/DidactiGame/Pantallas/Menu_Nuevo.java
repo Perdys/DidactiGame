@@ -2,13 +2,12 @@ package com.mygdx.DidactiGame.Pantallas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Herramientas.Pantalla;
-
-import java.awt.*;
 
 public class Menu_Nuevo extends Pantalla{
 
@@ -27,7 +26,7 @@ public class Menu_Nuevo extends Pantalla{
     }
 
     public void render (float delta) {
-        Gdx.gl.glClearColor(Color.YELLOW.getRed(), Color.YELLOW.getGreen(), Color.YELLOW.getBlue(), Color.YELLOW.getAlpha());
+        Gdx.gl.glClearColor(Color.YELLOW.r, Color.YELLOW.g, Color.YELLOW.b, Color.YELLOW.a);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camara.update();
