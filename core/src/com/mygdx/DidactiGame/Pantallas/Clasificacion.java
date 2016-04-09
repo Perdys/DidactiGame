@@ -7,10 +7,14 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.mygdx.DidactiGame.Auxiliares.Jugador;
+import com.mygdx.DidactiGame.Auxiliares.Jugadores;
 import com.mygdx.DidactiGame.DidactiGame;
-import com.mygdx.DidactiGame.Herramientas.Pantalla;
+import com.mygdx.DidactiGame.Auxiliares.Pantalla;
 
 import java.util.ArrayList;
+
+import static com.mygdx.DidactiGame.DidactiGame.jugadores;
 
 public class Clasificacion extends Pantalla {
 
@@ -21,15 +25,6 @@ public class Clasificacion extends Pantalla {
 
     BitmapFont puntuaciones_tabla;
     String puntuaciones = "NADA";
-
-    public class Jugador {
-        int puntuacion = 0;
-        String nombre = "Jugador X";
-
-        public Jugador (int p, String n) { this.puntuacion = p; this.nombre = n; }
-    }
-
-    ArrayList<Jugador> jugadores;
 
     public Clasificacion (DidactiGame juego) {
         this.juego = juego;
@@ -43,7 +38,13 @@ public class Clasificacion extends Pantalla {
 
         puntuaciones_tabla = new BitmapFont();
         puntuaciones_tabla.setColor(Color.RED);
-        jugadores = new ArrayList<>(1);
+        //TODO mejorar esta mierda con varios ScrollPane
+        puntuaciones = "- TABLA PUNTUACIONES -\n\n\n-PUNTUACION-  -JUGADOR-\n\n";
+        for (int i = 0; i < jugadores.numeral(); ++i)
+            puntuaciones = puntuaciones.concat("             " + jugadores.jugador(i).n_aciertos_rosco +
+                    "                     " + jugadores.jugador(i).nombre + "\n");
+
+        jugadores = new Jugadores();
     }
 
     public void render(float delta) {	/*ejecutarse todas las veces posible por segundo, ejecuten todas las acciones del juego
@@ -63,19 +64,4 @@ public class Clasificacion extends Pantalla {
     }
 
     public void resume() { pantalla_actual = "Clasificacion"; }
-
-    public void anadir (int puntuacion, String nombre) {
-        int j = 0;
-        for (int i = 0; i < jugadores.size(); ++i) {
-            if (jugadores.get(i).puntuacion < puntuacion)
-                i = jugadores.size();
-            ++j;
-        }
-        jugadores.add(j, new Jugador(puntuacion, nombre));
-
-        puntuaciones = "- TABLA PUNTUACIONES -\n\n\n-PUNTUACION-  -JUGADOR-\n\n";
-        for (int i = 0; i < jugadores.size(); ++i)
-            puntuaciones = puntuaciones.concat("             " + jugadores.get(i).puntuacion +
-                    "                     " + jugadores.get(i).nombre + "\n");
-    }
 }

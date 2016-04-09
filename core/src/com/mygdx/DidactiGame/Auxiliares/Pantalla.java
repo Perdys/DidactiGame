@@ -1,4 +1,4 @@
-package com.mygdx.DidactiGame.Herramientas;
+package com.mygdx.DidactiGame.Auxiliares;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -6,8 +6,15 @@ import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.scenes.scene2d.ui.*;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.mygdx.DidactiGame.DidactiGame;
+
+import static com.mygdx.DidactiGame.DidactiGame.jugadores;
 
 public class Pantalla implements Screen {
 
@@ -26,8 +33,6 @@ public class Pantalla implements Screen {
 
     //Ficheros
     public Fichero letras_rosco_fichero = new Fichero("data/ficheros/descripciones_letras.txt");
-    public Fichero nombres_jugadores_fichero = new Fichero("data/ficheros/nombres_jugadores.txt");
-    public Fichero opciones_jugadores_fichero = new Fichero("data/ficheros/opciones_jugadores.txt");
 
     public Pantalla() {}
 
@@ -35,7 +40,6 @@ public class Pantalla implements Screen {
         botones_genericos = new InputAdapter() {
 
             public boolean keyUp(int keycode) {
-                Gdx.app.log("click", Integer.toString(keycode));
                 switch (keycode) {
                     case Input.Keys.BACK:
                         acciones(pantalla_actual);
@@ -64,10 +68,11 @@ public class Pantalla implements Screen {
                         juego.dispose();
                         Gdx.app.exit();
                         break;
-                    case "Menu_Opciones":case "Menu_Juegos":case "Menu_Datos":case "Menu_Nuevo":case "Menu_Personalizar":case "Clasificacion":
+                    case "Menu_Jugadores":case "Menu_Juegos":case "Menu_Datos":case "Menu_Ranking":case "Menu_Puntuaciones":case "Clasificacion":
                         juego.setScreen(DidactiGame.menu_inicial);
                         break;
                     case "Juego_Rosco":
+                        jugadores = new Jugadores();
                         juego.setScreen(DidactiGame.menu_juegos);
                         break;
                     default:
@@ -76,6 +81,71 @@ public class Pantalla implements Screen {
                 }
             }
         };
+    }
+
+    public TextField.TextFieldStyle estilo_editor(String tipo) {
+
+        tamano_texto.size = (int)proporcion_y(0.06);
+        TextField.TextFieldStyle estilo_texto = new TextField.TextFieldStyle(
+                generador_texto.generateFont(tamano_texto), Color.GREEN,
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/cursor_editor.png"))),
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/seleccion_editor.png"))),
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/fondo_editor_horizontal.png"))));
+
+        estilo_texto.cursor.setMinWidth(proporcion_x(0.003));
+        estilo_texto.background.setLeftWidth(proporcion_x(0.01));
+        estilo_texto.background.setRightWidth(proporcion_x(0.01));
+        estilo_texto.background.setTopHeight(proporcion_y(0.01));
+        estilo_texto.background.setBottomHeight(proporcion_y(0.01));
+
+        return estilo_texto;
+    }
+
+    public SelectBox.SelectBoxStyle estilo_selector() {
+
+        BitmapFont texto = generador_texto.generateFont(tamano_texto);
+        SelectBox.SelectBoxStyle estilo_selector = new SelectBox.SelectBoxStyle();
+
+        estilo_selector.font = texto;
+        estilo_selector.fontColor = Color.GREEN;
+        estilo_selector.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_jugadores/editor/rojo.png")));
+        estilo_selector.scrollStyle = new ScrollPane.ScrollPaneStyle();
+        estilo_selector.listStyle = new List.ListStyle();
+        estilo_selector.listStyle.font = texto;
+        estilo_selector.listStyle.fontColorSelected = Color.FOREST;
+        estilo_selector.listStyle.fontColorUnselected = Color.OLIVE;
+        estilo_selector.listStyle.selection = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_jugadores/editor/seleccion.png")));
+        estilo_selector.listStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_jugadores/editor/azul.png")));
+
+        return estilo_selector;
+    }
+
+    public Label.LabelStyle estilo_etiqueta(int tamano) {
+        tamano_texto.size = tamano;
+        BitmapFont texto_fuente = generador_texto.generateFont(tamano_texto);
+
+        Label.LabelStyle estilo_etiqueta = new Label.LabelStyle();
+        estilo_etiqueta.font = texto_fuente;
+        estilo_etiqueta.fontColor = Color.BLACK;
+
+        return estilo_etiqueta;
+    }
+
+    public Label.LabelStyle estilo_etiqueta(int tamano, String fondo) {
+        tamano_texto.size = tamano;
+        BitmapFont texto_fuente = generador_texto.generateFont(tamano_texto);
+
+        Label.LabelStyle estilo_etiqueta = new Label.LabelStyle();
+        estilo_etiqueta.font = texto_fuente;
+        estilo_etiqueta.fontColor = Color.GREEN;
+
+        estilo_etiqueta.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/" + fondo + ".png")));
+        estilo_etiqueta.background.setLeftWidth(proporcion_x(0.01));
+        estilo_etiqueta.background.setRightWidth(proporcion_x(0.01));
+        estilo_etiqueta.background.setTopHeight(proporcion_y(0.01));
+        estilo_etiqueta.background.setBottomHeight(proporcion_y(0.01));
+
+        return estilo_etiqueta;
     }
 
     public float proporcion_x (double valor) { return (float) (anchura_juego * valor); }
@@ -156,7 +226,7 @@ public class Pantalla implements Screen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 switch (imagen) {
-                    case "data/boton_inicio_parada.png": //reiniciar tiempo o pararlo;
+                    case "data/boton_inicio_parada.png": //reiniciar tiempo_rosco o pararlo;
                         break;
                     case "data/boton_reinicio.png": juego.setScreen(new Juego_Rosco(juego));
                         break;

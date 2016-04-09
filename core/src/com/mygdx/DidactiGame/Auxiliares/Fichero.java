@@ -1,7 +1,9 @@
-package com.mygdx.DidactiGame.Herramientas;
+package com.mygdx.DidactiGame.Auxiliares;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
+
 import java.util.ArrayList;
 
 public class Fichero {
@@ -9,9 +11,16 @@ public class Fichero {
     FileHandle fichero;
     public String contenido;
 
+    public Fichero() {}
+
     public Fichero (String direccion) {
         fichero = Gdx.files.absolute(Gdx.files.getLocalStoragePath() + direccion);
-        contenido = fichero.readString();
+        if (fichero.exists())
+            contenido = fichero.readString();
+        else {
+            fichero.writeString("99\n" + Color.WHITE.toIntBits(), true);
+            contenido = fichero.readString();
+        }
     }
 
     public void escribir(ArrayList<ArrayList<String[]>> descripciones_entrada) {
@@ -37,6 +46,16 @@ public class Fichero {
 
     public void escribir (String contenido) { fichero.writeString(contenido, false); }
 
+    public static void edad_escribir (String jugador, String edad) {
+        FileHandle fichero = Gdx.files.absolute(Gdx.files.getLocalStoragePath() + "data/ficheros/jugadores/" + jugador);
+        fichero.writeString(edad + "\n" + fichero.readString().split("\n")[1], false);
+    }
+
+    public static void color_escribir (String jugador, String color) {
+        FileHandle fichero = Gdx.files.absolute(Gdx.files.getLocalStoragePath() + "data/ficheros/jugadores/" + jugador);
+        fichero.writeString(fichero.readString().split("\n")[0] + "\n" + color, false);
+    }
+
     public void leer(ArrayList<ArrayList<String[]>> descripciones) {
 
         String[] letras = {"aA","bB","cC","dD","eE","fF","gG","hH","iI","jJ","kK","lL","mM",
@@ -60,5 +79,19 @@ public class Fichero {
             }
     }
 
-    public String[] leer() { return fichero.readString().split("\n"); }
+    public String nombre_jugador() { return fichero.name(); }
+
+    public String edad_jugador() {
+        if (contenido.isEmpty())
+            return "99";
+        else
+            return contenido.split("\n")[0];
+    }
+
+    public Color color_jugador() {
+        if (contenido.isEmpty())
+            return Color.WHITE;
+        else
+            return new Color(Integer.parseInt(contenido.split("\n")[1]));
+    }
 }

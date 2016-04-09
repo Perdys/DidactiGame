@@ -1,4 +1,4 @@
-package com.mygdx.DidactiGame.Pantallas;
+package com.mygdx.DidactiGame.Pantallas.Menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
@@ -10,7 +10,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Rectangle;
 import com.mygdx.DidactiGame.DidactiGame;
-import com.mygdx.DidactiGame.Herramientas.Pantalla;
+import com.mygdx.DidactiGame.Auxiliares.Pantalla;
 
 public class Menu_Inicial extends Pantalla{
 
@@ -74,13 +74,13 @@ public class Menu_Inicial extends Pantalla{
             public boolean touchUp(int x, int y, int pointer, int button) {
                 if (boton_juegos.contains(x, y)) { juego.setScreen(DidactiGame.menu_juegos); }
                 else
-                if (boton_opciones.contains(x, y)) { juego.setScreen(DidactiGame.menu_opciones); }
+                if (boton_opciones.contains(x, y)) { juego.setScreen(DidactiGame.menu_jugadores); }
                 else
                 if (boton_datos.contains(x, y)) { juego.setScreen(DidactiGame.menu_datos); }
                 else
-                if (boton_personalizar.contains(x, y)) { juego.setScreen(DidactiGame.menu_personalizar); }
+                if (boton_personalizar.contains(x, y)) { juego.setScreen(DidactiGame.menu_puntuaciones); }
                 else
-                if (boton_nuevo.contains(x, y)) { juego.setScreen(DidactiGame.menu_nuevo); }
+                if (boton_nuevo.contains(x, y)) { juego.setScreen(DidactiGame.menu_ranking); }
 
                 return false;
             }

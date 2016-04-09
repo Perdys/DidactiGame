@@ -1,4 +1,4 @@
-package com.mygdx.DidactiGame.Pantallas;
+package com.mygdx.DidactiGame.Pantallas.Menus;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
@@ -7,22 +7,24 @@ import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.mygdx.DidactiGame.DidactiGame;
-import com.mygdx.DidactiGame.Herramientas.Pantalla;
+import com.mygdx.DidactiGame.Auxiliares.Pantalla;
 
-public class Menu_Nuevo extends Pantalla{
+public class Menu_Ranking extends Pantalla{
 
     DidactiGame juego;
     OrthographicCamera camara;
     SpriteBatch batch;
 
-    public Menu_Nuevo(DidactiGame juego) {
+    public Menu_Ranking(DidactiGame juego) {
         this.juego = juego;
 
         camara = new OrthographicCamera();
         camara.setToOrtho(false);
         batch = new SpriteBatch();
 
-        pantalla_actual = "Menu_Nuevo";
+        pantalla_actual = "Menu_Ranking";
+
+        //TODO hacer rankings segun juegos con selector del juego
     }
 
     public void render (float delta) {
@@ -46,7 +48,7 @@ public class Menu_Nuevo extends Pantalla{
         Gdx.input.setCatchMenuKey(true);
     }
 
-    public void resume() { pantalla_actual = "Menu_Nuevo"; }
+    public void resume() { pantalla_actual = "Menu_Ranking"; }
 
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
 
