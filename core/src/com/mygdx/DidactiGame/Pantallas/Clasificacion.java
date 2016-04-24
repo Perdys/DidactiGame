@@ -1,19 +1,22 @@
 package com.mygdx.DidactiGame.Pantallas;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.mygdx.DidactiGame.Auxiliares.Jugador;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.utils.Array;
 import com.mygdx.DidactiGame.Auxiliares.Jugadores;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Auxiliares.Pantalla;
 
-import java.util.ArrayList;
-
+import static com.badlogic.gdx.utils.Align.topLeft;
 import static com.mygdx.DidactiGame.DidactiGame.jugadores;
 
 public class Clasificacion extends Pantalla {
@@ -23,8 +26,10 @@ public class Clasificacion extends Pantalla {
     OrthographicCamera camara;
     SpriteBatch batch;
 
-    BitmapFont puntuaciones_tabla;
-    String puntuaciones = "NADA";
+    String puntuaciones = "";
+    Label puntuaciones_etiqueta;
+    ScrollPane puntuaciones_scroll;
+    Texture particulas_texto;
 
     public Clasificacion (DidactiGame juego) {
         this.juego = juego;
@@ -36,15 +41,7 @@ public class Clasificacion extends Pantalla {
 
         pantalla_actual = "Clasificacion";
 
-        puntuaciones_tabla = new BitmapFont();
-        puntuaciones_tabla.setColor(Color.RED);
-        //TODO mejorar esta mierda con varios ScrollPane
-        puntuaciones = "- TABLA PUNTUACIONES -\n\n\n-PUNTUACION-  -JUGADOR-\n\n";
-        for (int i = 0; i < jugadores.numeral(); ++i)
-            puntuaciones = puntuaciones.concat("             " + jugadores.jugador(i).n_aciertos_rosco +
-                    "                     " + jugadores.jugador(i).nombre + "\n");
-
-        jugadores = new Jugadores();
+        texturas_cargar();
     }
 
     public void render(float delta) {	/*ejecutarse todas las veces posible por segundo, ejecuten todas las acciones del juego
@@ -56,12 +53,46 @@ public class Clasificacion extends Pantalla {
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
-        puntuaciones_tabla.draw(batch, puntuaciones, proporcion_x(0.33), proporcion_y(0.5));
+        batch.draw(particulas_texto, proporcion_x(0.325), proporcion_y(0.6) - particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth(),
+                proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
         batch.end();
 
         stage.act();
         stage.draw();
     }
 
+    public void show () {
+        puntuaciones_etiqueta.setText(puntuaciones);
+
+        sistema_botones(juego);
+        stage.addActor(puntuaciones_scroll);
+
+        InputMultiplexer inputs = new InputMultiplexer();
+        inputs.addProcessor(botones_genericos);
+        inputs.addProcessor(stage);
+        Gdx.input.setInputProcessor(inputs);
+        Gdx.input.setCatchBackKey(true);
+        Gdx.input.setCatchMenuKey(true);
+    }
+
     public void resume() { pantalla_actual = "Clasificacion"; }
+
+    public void hide() { jugadores = new Jugadores(); }
+
+    public void puntuacion_anadir(String nombre, String puntuacion) {
+        puntuaciones = puntuaciones.concat("\n" + nombre + ": \n  " + puntuacion);
+    }
+
+    public void texturas_cargar() {
+        particulas_texto = new Texture("data/texturas/texto/particulas.png");
+
+        puntuaciones_etiqueta = new Label("", texto_panel_scroll_estilo());
+        puntuaciones_etiqueta.setWidth(proporcion_x(0.2));
+        puntuaciones_etiqueta.setWrap(true);
+        puntuaciones_etiqueta.setAlignment(topLeft);
+        puntuaciones_scroll = new ScrollPane(puntuaciones_etiqueta);
+        puntuaciones_scroll.setBounds(proporcion_x(0.325), proporcion_y(0.1), proporcion_x(0.35), proporcion_y(0.5));
+        puntuaciones_scroll.layout();
+        puntuaciones_scroll.setTouchable(Touchable.enabled);
+    }
 }

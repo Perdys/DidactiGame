@@ -14,7 +14,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.badlogic.gdx.utils.Array;
-import com.mygdx.DidactiGame.Auxiliares.Fichero;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Auxiliares.Pantalla;
 
@@ -30,7 +29,7 @@ public class Menu_Jugadores extends Pantalla {
 
     public static SelectBox<String> jugador_selector;
     Pixmap color_selector, temp;
-    Texture color_selector_texture;
+    Texture color_selector_texture, botones_jugadores;
     boolean mostrando_color_selector = false;
     Color color_fondo = Color.WHITE;
     Label jugador_edad;
@@ -58,6 +57,7 @@ public class Menu_Jugadores extends Pantalla {
         batch.begin();
         if (mostrando_color_selector)
             batch.draw(color_selector_texture, 0, 0);
+        batch.draw(botones_jugadores, anchura_juego - proporcion_y(0.5), proporcion_y(0.1), proporcion_y(0.4), proporcion_y(0.4));
         jugador_edad.draw(batch, 1);
         batch.end();
 
@@ -89,44 +89,44 @@ public class Menu_Jugadores extends Pantalla {
     }
 
     public void texturas_cargar() {
+        botones_jugadores = new Texture("data/texturas/botones_jugador.png");
 
-        jugador_edad = new Label(jugadores.jugador_actual().edad, estilo_etiqueta((int)proporcion_y(0.06)));
-        jugador_edad.setPosition(proporcion_x(0.2), proporcion_y(0.7));
+        jugador_edad = new Label("99", texto_estilo());
+        jugador_edad.setPosition(proporcion_x(0.2), proporcion_y(0.1));
 
         //Selector del jugador del que se quiere ver el perfil
-        jugador_selector = new SelectBox<>(estilo_selector());
-        jugador_selector.setPosition(proporcion_x(0.2), proporcion_y(0.8));
-        jugador_selector.setSize(proporcion_x(0.2), proporcion_y(0.2));
+        jugador_selector = new SelectBox<>(selector_estilo());
+        jugador_selector.setPosition(proporcion_x(0.1), proporcion_y(0.75));
         jugador_selector.setMaxListCount(3);
         jugador_selector.addCaptureListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                jugador_edad.setText(jugadores.jugador(jugador_selector.getSelected()).edad);
-                color_fondo = jugadores.jugador(jugador_selector.getSelected()).color;
+                if (!jugadores.vacio()) {
+                    jugador_edad.setText(jugadores.jugador(jugador_selector.getSelected()).edad);
+                    color_fondo = jugadores.jugador(jugador_selector.getSelected()).color;
+                }
             }
         });
 
         //Selector del color personalizado del jugador actual
-        color_selector = new Pixmap(Gdx.files.absolute(Gdx.files.getLocalStoragePath() + "data/menu_jugadores/color_editor/picker.png"));
+        color_selector = new Pixmap(Gdx.files.internal("data/texturas/color_selector/selector.png"));
         temp = new Pixmap((int)anchura_juego, (int)altura_juego, Pixmap.Format.RGBA8888);
         temp.drawPixmap(color_selector, 0, 0, color_selector.getWidth(), color_selector.getHeight(), (int)proporcion_x(0.5) - (int)proporcion_y(0.25), (int)proporcion_y(0.25), (int)proporcion_y(0.5), (int)proporcion_y(0.5));
         color_selector_texture = new Texture(temp);
         final Circle selector_externo = new Circle(proporcion_x(0.5), proporcion_y(0.5), proporcion_y(0.49) / 2);
-        final Circle selector_interno = new Circle(proporcion_x(0.5), proporcion_y(0.5), proporcion_y(0.59) / 4);
-        final Rectangle selector_color = new Rectangle(proporcion_x(0.2), proporcion_y(0.8), proporcion_x(0.2), proporcion_y(0.2));
-        final Rectangle selector_edad = new Rectangle(proporcion_x(0.5), proporcion_y(0.8), proporcion_x(0.2), proporcion_y(0.2));
-        final Rectangle anadir_jugador = new Rectangle(proporcion_x(0.5), proporcion_y(0.2), proporcion_x(0.2), proporcion_y(0.2));
-        final Rectangle eliminar_jugador = new Rectangle(proporcion_x(0.7), proporcion_y(0.2), proporcion_x(0.2), proporcion_y(0.2));
+        final Rectangle selector_color = new Rectangle(anchura_juego - proporcion_y(0.5), proporcion_y(0.7), proporcion_y(0.2), proporcion_y(0.2));
+        final Rectangle selector_edad = new Rectangle(anchura_juego - proporcion_y(0.3), proporcion_y(0.7), proporcion_y(0.2), proporcion_y(0.2));
+        final Rectangle anadir_jugador = new Rectangle(anchura_juego - proporcion_y(0.5), proporcion_y(0.5), proporcion_y(0.2), proporcion_y(0.2));
+        final Rectangle eliminar_jugador = new Rectangle(anchura_juego - proporcion_y(0.3), proporcion_y(0.5), proporcion_y(0.2), proporcion_y(0.2));
 
         click = new InputAdapter() {
             public boolean touchUp (int x, int y, int pointer, int button) {
                 if (button == 1)
                     return false;
 
-                if (mostrando_color_selector && selector_externo.contains(x, y) && !selector_interno.contains(x, y)) {
+                if (mostrando_color_selector && selector_externo.contains(x, y) /*&& !selector_interno.contains(x, y)*/) {
                     color_fondo = new Color(temp.getPixel(x, y));
-                    Fichero.color_escribir(jugador_selector.getSelected(), Integer.toString(temp.getPixel(x, y)));
-                    jugadores.jugador(jugador_selector.getSelected()).color = color_fondo;
+                    jugadores.jugador(jugador_selector.getSelected()).color(color_fondo);
                     mostrando_color_selector = false;
                 }
                 else
@@ -139,8 +139,7 @@ public class Menu_Jugadores extends Pantalla {
                     public void input(String edad) {
                         if (edad.isEmpty())
                             edad = "99";
-                        Fichero.edad_escribir(jugador_selector.getSelected(), edad);
-                        jugadores.jugador(jugador_selector.getSelected()).edad = edad;
+                        jugadores.jugador(jugador_selector.getSelected()).edad(edad);
                         jugador_edad.setText(edad);
                     }
 

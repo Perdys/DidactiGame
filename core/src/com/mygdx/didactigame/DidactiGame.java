@@ -1,6 +1,7 @@
 package com.mygdx.DidactiGame;
 
 import com.badlogic.gdx.Game;
+import com.mygdx.DidactiGame.Auxiliares.Base_Datos;
 import com.mygdx.DidactiGame.Auxiliares.Jugadores;
 import com.mygdx.DidactiGame.Pantallas.Menus.*;
 
@@ -14,8 +15,11 @@ public class DidactiGame extends Game {
 	public static Menu_Ranking menu_ranking;
 
 	public static Jugadores jugadores;
+	public static Base_Datos BD;
 
 	public void create() {
+
+        BD = new Base_Datos();
         jugadores = new Jugadores();
 		menu_inicial = new Menu_Inicial(this);
         menu_juegos = new Menu_Juegos(this);

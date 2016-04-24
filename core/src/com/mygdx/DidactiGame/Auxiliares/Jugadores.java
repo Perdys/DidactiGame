@@ -1,35 +1,37 @@
 package com.mygdx.DidactiGame.Auxiliares;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 
 import java.util.ArrayList;
 
+import static com.mygdx.DidactiGame.DidactiGame.BD;
 import static com.mygdx.DidactiGame.DidactiGame.jugadores;
 
 public class Jugadores {
 
     ArrayList<Jugador> coleccion = new ArrayList<>();
-    FileHandle directorio = Gdx.files.absolute(Gdx.files.getLocalStoragePath() + "data/ficheros/jugadores/");
-    private int jugador_actual = 0;
+    private int jugador_actual = -1;
 
     public Jugadores() {
-        Fichero fichero;
 
-        for(int i = 0; i < directorio.list().length; ++i) {
-            fichero = new Fichero("data/ficheros/jugadores/" + directorio.list()[i].name());
-            Jugador jug = new Jugador(fichero);
-            coleccion.add(i, jug);
-        }
-
-        if (directorio.list().length == 0) {
-            coleccion.add(0, new Jugador());
-        }
+        BD.leer_jugadores(coleccion);
+        jugador_actual = 0;
     }
 
-    public Jugador jugador(int numero) { return coleccion.get(numero); }
+    public Jugador jugador(int numero) {
+        return coleccion.get(numero);
+    }
 
-    public Jugador jugador_actual() { return coleccion.get(jugador_actual); }
+    public Jugador jugador_actual() {
+        if (jugador_actual == -1)
+            return null;
+        else
+            return coleccion.get(jugador_actual);
+    }
+
+    public boolean jugadores_activados() {
+        return (jugador_actual != -1);
+    }
 
     public Jugador jugador(String nombre) {
         for (int i = 0; i < coleccion.size(); ++i) {
@@ -44,35 +46,58 @@ public class Jugadores {
     public int numeral() { return coleccion.size(); }
 
     public void eliminar(Jugador jugador) {
-        Fichero fichero = new Fichero("data/ficheros/jugadores/" + jugador.nombre);
-        fichero.fichero.delete();
+        BD.eliminar_jugador(jugador.nombre);
 
+        desmarcar(jugador.nombre);
         coleccion.remove(coleccion.indexOf(jugador));
     }
 
     public void anadir(String nombre) {
-        coleccion.add(new Jugador(new Fichero("data/ficheros/jugadores/" + nombre)));
+        coleccion.add(0, new Jugador(nombre, "99", Color.WHITE));
+
+        if (jugador_actual == -1)
+            jugador_actual = 0;
+    }
+
+    public void marcar (String nombre) {
+        jugadores.jugador(nombre).seleccionado = true;
+        if (jugador_actual == -1)
+            jugador_actual = coleccion.indexOf(jugadores.jugador(nombre));
+    }
+
+    public void desmarcar (String nombre) {
+        jugadores.jugador(nombre).seleccionado = false;
+
+        for (int i = jugador_actual; i < coleccion.size(); ++i) {
+            if (i + 1 == coleccion.size()) //Caso dar la vuelta hasta el primer jugador
+                i = -2;
+            else
+            if (coleccion.get(i + 1).seleccionado) { //Caso siguiente jugador
+                jugador_actual = i + 1;
+                i = coleccion.size(); //Salir
+            }
+            else
+            if (i == jugador_actual - 1) { //Caso ningun jugador restante despues de dar la vuelta
+                jugador_actual = -1;
+                i = coleccion.size(); //Salir
+            }
+        }
     }
 
     public boolean siguiente() {
 
         jugadores.jugador_actual().jugando = false;
 
-        if ((jugadores.jugador_actual().n_aciertos_rosco + jugadores.jugador_actual().n_fallos_rosco) >= 26) {
-            jugadores.jugador_actual().seleccionado = false;
-
-            if (coleccion.size() <= 1)
-                return false;
-        }
-
-        for (int i = jugador_actual + 1; i < coleccion.size(); ++i) {
-            if (coleccion.get(i).seleccionado) {
-                ++jugador_actual;
+        for (int i = jugador_actual; i < coleccion.size(); ++i) {
+            if (i + 1 >= coleccion.size()) //Caso dar la vuelta hasta el primer jugador
+                i = -2;
+            else
+            if (coleccion.get(i + 1).seleccionado) { //Caso siguiente jugador
+                jugador_actual = i + 1;
                 return true;
             }
-            if (i >= coleccion.size())
-                i = 0;
-            if (i == jugador_actual)
+            else
+            if (i == jugador_actual - 1) //Caso ningun jugador restante despues de dar la vuelta
                 return false;
         }
 
@@ -80,11 +105,11 @@ public class Jugadores {
     }
 
     public String nombres() {
-        String nombres = "";
+        String nombres = BD.leer_nombres_jugadores();
 
-        for(int i = 0; i < directorio.list().length; ++i)
-            nombres += directorio.list()[i].name() + "\n";
-
-        return nombres;
+        if (nombres.isEmpty())
+            return "Añadir jugador";
+        else
+            return nombres;
     }
 }

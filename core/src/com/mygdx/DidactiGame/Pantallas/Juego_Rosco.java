@@ -32,15 +32,16 @@ public class Juego_Rosco extends Pantalla {
     Texture fondo, boton_jugando;
     Rectangle boton_inicio, boton_acierto, boton_fallo, boton_pregunta, boton_tiempo;
 
-    String[] descripcion_actual = {"", ""};
-    ScrollPane descripcion_scroll, nombre_scroll;
-    Label descripcion_cuadro, nombre_cuadro;
+    String[] letra_descripcion_actual = {"", ""};
+    ScrollPane letra_descripcion_scroll, nombre_jugador_scroll;
+    Label letra_descripcion_etiqueta, nombre_jugador_etiqueta;
 
-    ArrayList<ArrayList<String[]>> descripciones;
+    ArrayList<ArrayList<String[]>> letras_descripciones;
+    Clasificacion clasificacion;
 
-    public Juego_Rosco(ArrayList<ArrayList<String[]>> descripciones, DidactiGame juego) {
+    public Juego_Rosco(ArrayList<ArrayList<String[]>> letras_descripciones, DidactiGame juego) {
         this.juego = juego;
-        this.descripciones = descripciones;
+        this.letras_descripciones = letras_descripciones;
 
         camara = new OrthographicCamera();
         camara.setToOrtho(false);
@@ -49,8 +50,10 @@ public class Juego_Rosco extends Pantalla {
 
         pantalla_actual = "Juego_Rosco";
 
-        fondo = new Texture("data/menu_juegos/juego_rosco/fondo_rosco.png");
-        boton_jugando = new Texture("data/menu_juegos/juego_rosco/boton_on.png");
+        clasificacion = new Clasificacion(juego);
+
+        fondo = new Texture("data/texturas/fondo/rosco.png");
+        boton_jugando = new Texture("data/texturas/juego_rosco/boton_on.png");
 
         botones_cargar();
         textos_cargar();
@@ -80,8 +83,8 @@ public class Juego_Rosco extends Pantalla {
 
     public void show() {
         sistema_botones(juego);
-        stage.addActor(descripcion_scroll);
-        stage.addActor(nombre_scroll);
+        stage.addActor(letra_descripcion_scroll);
+        stage.addActor(nombre_jugador_scroll);
 
         InputMultiplexer inputs = new InputMultiplexer();
         inputs.addProcessor(botones_genericos);
@@ -110,7 +113,7 @@ public class Juego_Rosco extends Pantalla {
                 if (boton_acierto.contains(x, y)) {
                     if (!jugadores.vacio())
                         if (jugadores.jugador_actual().jugando) {
-                            jugadores.jugador_actual().letras[jugadores.jugador_actual().letra_actual] = 1;
+                            jugadores.jugador_actual().letras_visitadas[jugadores.jugador_actual().letra_actual] = 1;
                             ++jugadores.jugador_actual().n_aciertos_rosco;
 
                             if ((jugadores.jugador_actual().n_aciertos_rosco + jugadores.jugador_actual().n_fallos_rosco) < 26)
@@ -122,7 +125,7 @@ public class Juego_Rosco extends Pantalla {
                 if (boton_fallo.contains(x, y)) {
                     if (!jugadores.vacio())
                         if (jugadores.jugador_actual().jugando) {
-                            jugadores.jugador_actual().letras[jugadores.jugador_actual().letra_actual] = 2;
+                            jugadores.jugador_actual().letras_visitadas[jugadores.jugador_actual().letra_actual] = 2;
                             ++jugadores.jugador_actual().n_fallos_rosco;
 
                             jugador_siguiente();
@@ -144,9 +147,9 @@ public class Juego_Rosco extends Pantalla {
                 if (boton_pregunta.contains(x, y)) {
                     if (!jugadores.vacio())
                         if (jugadores.jugador_actual().jugando) {
-                            String aux = descripcion_actual[0];
-                            descripcion_actual[0] = descripcion_actual[1];
-                            descripcion_actual[1] = aux;
+                            String aux = letra_descripcion_actual[0];
+                            letra_descripcion_actual[0] = letra_descripcion_actual[1];
+                            letra_descripcion_actual[1] = aux;
                         }
                 } else
                 if (boton_tiempo.contains(x, y)) {
@@ -170,44 +173,50 @@ public class Juego_Rosco extends Pantalla {
     }
 
     public void letra_siguiente() {
-        for (; jugadores.jugador_actual().letras[jugadores.jugador_actual().letra_actual] != 0; ++jugadores.jugador_actual().letra_actual)
+        for (; jugadores.jugador_actual().letras_visitadas[jugadores.jugador_actual().letra_actual] != 0; ++jugadores.jugador_actual().letra_actual)
             if (jugadores.jugador_actual().letra_actual == 25)
                 jugadores.jugador_actual().letra_actual = -1;
 
-        if (descripciones.size() != 0)
-            if (descripciones.get(jugadores.jugador_actual().letra_actual).size() != 0) {
-                int descripcion_aleatoria = MathUtils.random(descripciones.get(jugadores.jugador_actual().letra_actual).size() - 1);
-                descripcion_actual = new String[]{descripciones.get(jugadores.jugador_actual().letra_actual).get(descripcion_aleatoria)[1],
-                                                  descripciones.get(jugadores.jugador_actual().letra_actual).get(descripcion_aleatoria)[0]};
+        if (letras_descripciones.size() != 0)
+            if (letras_descripciones.get(jugadores.jugador_actual().letra_actual).size() != 0) {
+                int descripcion_aleatoria = MathUtils.random(letras_descripciones.get(jugadores.jugador_actual().letra_actual).size() - 1);
+                letra_descripcion_actual = new String[]{letras_descripciones.get(jugadores.jugador_actual().letra_actual).get(descripcion_aleatoria)[1],
+                                                  letras_descripciones.get(jugadores.jugador_actual().letra_actual).get(descripcion_aleatoria)[0]};
             }
             else
-                descripcion_actual = new String[]{"INTRODUZCA UNA DESCRIPCION PARA ESTA LETRA", "NINGUNA"};
+                letra_descripcion_actual = new String[]{"INTRODUZCA UNA DESCRIPCION PARA ESTA LETRA", "NINGUNA"};
     }
 
     public void jugador_siguiente() {
+        letra_descripcion_actual[0] = "";
+
+        if ((jugadores.jugador_actual().n_aciertos_rosco + jugadores.jugador_actual().n_fallos_rosco) >= 26 || jugadores.jugador_actual().tiempo_rosco < 1) {
+            jugadores.jugador_actual().seleccionado = false;
+            clasificacion.puntuacion_anadir(jugadores.jugador_actual().nombre, jugadores.jugador_actual().guardar_puntuacion("Rosco"));
+        }
 
         if (!jugadores.siguiente())
-            juego.setScreen(new Clasificacion(juego));
+            juego.setScreen(clasificacion);
     }
 
     public void textos_cargar() {
-        descripcion_cuadro = new Label("", estilo_etiqueta((int)proporcion_y(0.06)));
-        descripcion_cuadro.setWidth(proporcion_x(0.33));
-        descripcion_cuadro.setWrap(true);
-        descripcion_cuadro.setAlignment(topLeft);
-        descripcion_scroll = new ScrollPane(descripcion_cuadro);
-        descripcion_scroll.setBounds(proporcion_x(0.2), proporcion_y(0.505), proporcion_x(0.33), proporcion_y(0.19));
-        descripcion_scroll.layout();
-        descripcion_scroll.setTouchable(Touchable.enabled);
+        letra_descripcion_etiqueta = new Label("", texto_estilo());
+        letra_descripcion_etiqueta.setWidth(proporcion_x(0.33));
+        letra_descripcion_etiqueta.setWrap(true);
+        letra_descripcion_etiqueta.setAlignment(topLeft);
+        letra_descripcion_scroll = new ScrollPane(letra_descripcion_etiqueta);
+        letra_descripcion_scroll.setBounds(proporcion_x(0.2), proporcion_y(0.505), proporcion_x(0.33), proporcion_y(0.19));
+        letra_descripcion_scroll.layout();
+        letra_descripcion_scroll.setTouchable(Touchable.enabled);
 
-        nombre_cuadro = new Label("", estilo_etiqueta((int)proporcion_y(0.09)));
-        nombre_cuadro.setWidth(proporcion_x(0.14));
-        nombre_cuadro.setWrap(true);
-        nombre_cuadro.setAlignment(topLeft);
-        nombre_scroll = new ScrollPane(nombre_cuadro);
-        nombre_scroll.setBounds(proporcion_x(0.66), proporcion_y(0.63), proporcion_x(0.14), proporcion_y(0.07));
-        nombre_scroll.layout();
-        nombre_scroll.setTouchable(Touchable.enabled);
+        nombre_jugador_etiqueta = new Label("", texto_estilo());
+        nombre_jugador_etiqueta.setWidth(proporcion_x(0.14));
+        nombre_jugador_etiqueta.setWrap(true);
+        nombre_jugador_etiqueta.setAlignment(topLeft);
+        nombre_jugador_scroll = new ScrollPane(nombre_jugador_etiqueta);
+        nombre_jugador_scroll.setBounds(proporcion_x(0.66), proporcion_y(0.63), proporcion_x(0.14), proporcion_y(0.07));
+        nombre_jugador_scroll.layout();
+        nombre_jugador_scroll.setTouchable(Touchable.enabled);
     }
 
     public void texturas_mostrar() {
@@ -216,12 +225,12 @@ public class Juego_Rosco extends Pantalla {
 
             //Mostrar letras, aciertos y fallos
             for (int i = 0; i < 26; ++i) {
-                if (jugadores.jugador_actual().letras[i] != 0 || jugadores.jugador_actual().letra_actual == i) {
-                    batch.draw(Menu_Juegos.elementos_mostrar.letras[i], 0, 0, anchura_juego, altura_juego);
-                    if (jugadores.jugador_actual().letras[i] == 2)
-                        batch.draw(Menu_Juegos.elementos_mostrar.rojos[i], 0, 0, anchura_juego, altura_juego);
-                    else if (jugadores.jugador_actual().letras[i] == 1)
-                        batch.draw(Menu_Juegos.elementos_mostrar.verdes[i], 0, 0, anchura_juego, altura_juego);
+                if (jugadores.jugador_actual().letras_visitadas[i] != 0 || jugadores.jugador_actual().letra_actual == i) {
+                    batch.draw(Menu_Juegos.texturas.letras[i], 0, 0, anchura_juego, altura_juego);
+                    if (jugadores.jugador_actual().letras_visitadas[i] == 2)
+                        batch.draw(Menu_Juegos.texturas.fallos[i], 0, 0, anchura_juego, altura_juego);
+                    else if (jugadores.jugador_actual().letras_visitadas[i] == 1)
+                        batch.draw(Menu_Juegos.texturas.aciertos[i], 0, 0, anchura_juego, altura_juego);
                 }
             }
 
@@ -235,23 +244,22 @@ public class Juego_Rosco extends Pantalla {
 
             //Comprobar si se ha acabado el tiempo_rosco
             if (jugadores.jugador_actual().tiempo_rosco < 1) {
-                jugadores.jugador_actual().n_fallos_rosco = 26 - jugadores.jugador_actual().n_aciertos_rosco;
                 jugador_siguiente();
             }
 
             if (!jugadores.vacio()) {
                 //Mostrar el tiempo_rosco y la puntuacion
-                batch.draw(Menu_Juegos.elementos_mostrar.puntuacion[0][jugadores.jugador_actual().n_aciertos_rosco % 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.elementos_mostrar.puntuacion[1][jugadores.jugador_actual().n_aciertos_rosco / 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[0][jugadores.jugador_actual().tiempo_rosco % 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[1][(jugadores.jugador_actual().tiempo_rosco % 100) / 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.elementos_mostrar.tiempo[2][(jugadores.jugador_actual().tiempo_rosco % 1000) / 100], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu_Juegos.texturas.puntuacion[0][jugadores.jugador_actual().n_aciertos_rosco % 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu_Juegos.texturas.puntuacion[1][jugadores.jugador_actual().n_aciertos_rosco / 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu_Juegos.texturas.tiempo[0][jugadores.jugador_actual().tiempo_rosco % 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu_Juegos.texturas.tiempo[1][(jugadores.jugador_actual().tiempo_rosco % 100) / 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(Menu_Juegos.texturas.tiempo[2][(jugadores.jugador_actual().tiempo_rosco % 1000) / 100], 0, 0, anchura_juego, altura_juego);
 
                 //Mostrar el texto de la letra actual
-                if (jugadores.jugador_actual().letra_actual > -1) { descripcion_cuadro.setText(descripcion_actual[0]); }
+                letra_descripcion_etiqueta.setText(letra_descripcion_actual[0]);
 
                 //Mostrar el jugador del jugador actual
-                if (!jugadores.vacio()) { nombre_cuadro.setText(jugadores.jugador_actual().nombre); }
+                if (!jugadores.vacio()) { nombre_jugador_etiqueta.setText(jugadores.jugador_actual().nombre); }
             }
         }
     }

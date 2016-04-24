@@ -16,7 +16,9 @@ import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Auxiliares.Pantalla;
 
 import static com.badlogic.gdx.utils.Align.topLeft;
+import static com.mygdx.DidactiGame.DidactiGame.BD;
 import static com.mygdx.DidactiGame.DidactiGame.jugadores;
+import static com.mygdx.DidactiGame.Pantallas.Menus.Menu_Juegos.letras_descripciones;
 
 public class Menu_Datos extends Pantalla{
 
@@ -28,6 +30,8 @@ public class Menu_Datos extends Pantalla{
     TextArea letras_rosco_editor;
     Label jugadores_etiqueta;
     ScrollPane jugadores_scroll;
+    Texture rosco_icono, jugadores_icono;
+    boolean editado = false;
 
     public Menu_Datos(DidactiGame juego) {
         this.juego = juego;
@@ -39,7 +43,8 @@ public class Menu_Datos extends Pantalla{
 
         pantalla_actual = "Menu_Datos";
 
-        jugadores_editor();
+        texturas_cargar();
+        jugadores_cargar();
         letras_rosco_editor();
     }
 
@@ -51,9 +56,9 @@ public class Menu_Datos extends Pantalla{
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
-        letras_rosco_editor.draw(batch, 1);
         //TODO añadir editor de QQSM
-        texturas_mostrar();
+        batch.draw(rosco_icono, letras_rosco_editor.getX(), letras_rosco_editor.getY() + letras_rosco_editor.getHeight(), proporcion_x(0.07), proporcion_y(0.07));
+        batch.draw(jugadores_icono, jugadores_scroll.getX(), jugadores_scroll.getY() + jugadores_scroll.getHeight(), proporcion_x(0.05), proporcion_y(0.07));
         batch.end();
 
         stage.act();
@@ -61,6 +66,8 @@ public class Menu_Datos extends Pantalla{
     }
 
     public void show () {
+        jugadores_etiqueta.setText(jugadores.nombres());
+
         sistema_botones(juego);
         stage.addActor(jugadores_scroll);
         stage.addActor(letras_rosco_editor);
@@ -74,7 +81,11 @@ public class Menu_Datos extends Pantalla{
     }
 
     public void hide() {
-        letras_rosco_fichero.escribir(letras_rosco_editor.getText());
+        if (editado) {
+            BD.escribir_descripciones(letras_rosco_editor.getText());
+            BD.leer_descripciones(letras_descripciones);
+            editado = false;
+        }
     }
 
     public void resume() { pantalla_actual = "Menu_Datos"; }
@@ -84,9 +95,9 @@ public class Menu_Datos extends Pantalla{
         batch.dispose();
     }
 
-    public void jugadores_editor () {
+    public void jugadores_cargar() {
 
-        jugadores_etiqueta = new Label(jugadores.nombres(), estilo_etiqueta((int)proporcion_y(0.06), "fondo_editor_vertical"));
+        jugadores_etiqueta = new Label(jugadores.nombres(), texto_panel_scroll_estilo());
         jugadores_etiqueta.setWidth(proporcion_x(0.2));
         jugadores_etiqueta.setWrap(true);
         jugadores_etiqueta.setAlignment(topLeft);
@@ -98,19 +109,19 @@ public class Menu_Datos extends Pantalla{
 
     public void letras_rosco_editor () {
 
-        letras_rosco_editor = new TextArea(letras_rosco_fichero.contenido, estilo_editor("Horizontal"));
+        letras_rosco_editor = new TextArea(BD.leer_letras(), editor_estilo());
         letras_rosco_editor.setPosition(proporcion_x(0.4), proporcion_y(0.55));
         letras_rosco_editor.setSize(proporcion_x(0.5), proporcion_y(0.35));
         letras_rosco_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
+                editado = true;
                 return false;
             }
         });
     }
 
-    public void texturas_mostrar() {
-
-        batch.draw(new Texture("data/menu_datos/rosco.png"), letras_rosco_editor.getX(), letras_rosco_editor.getY() + letras_rosco_editor.getHeight(), proporcion_x(0.07), proporcion_y(0.07));
-        batch.draw(new Texture("data/menu_datos/jugadores.png"), jugadores_scroll.getX(), jugadores_scroll.getY() + jugadores_scroll.getHeight(), proporcion_x(0.05), proporcion_y(0.07));
+    public void texturas_cargar() {
+        rosco_icono = new Texture("data/texturas/rosco.png");
+        jugadores_icono = new Texture("data/texturas/jugadores.png");
     }
 }

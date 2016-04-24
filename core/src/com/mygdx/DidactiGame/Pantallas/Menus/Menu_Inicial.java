@@ -32,7 +32,7 @@ public class Menu_Inicial extends Pantalla{
 
         pantalla_actual = "Menu_Inicial";
 
-        fondo = new Texture("data/menu_inicial/fondo_inicial.jpg");
+        fondo = new Texture("data/texturas/fondo/inicial.jpg");
 
         botones_cargar();
     }
@@ -72,15 +72,17 @@ public class Menu_Inicial extends Pantalla{
 
         click = new InputAdapter() {
             public boolean touchUp(int x, int y, int pointer, int button) {
-                if (boton_juegos.contains(x, y)) { juego.setScreen(DidactiGame.menu_juegos); }
-                else
-                if (boton_opciones.contains(x, y)) { juego.setScreen(DidactiGame.menu_jugadores); }
-                else
-                if (boton_datos.contains(x, y)) { juego.setScreen(DidactiGame.menu_datos); }
-                else
-                if (boton_personalizar.contains(x, y)) { juego.setScreen(DidactiGame.menu_puntuaciones); }
-                else
-                if (boton_nuevo.contains(x, y)) { juego.setScreen(DidactiGame.menu_ranking); }
+                if (boton_juegos.contains(x, y)) {
+                    juego.setScreen(DidactiGame.menu_juegos);
+                } else if (boton_opciones.contains(x, y)) {
+                    juego.setScreen(DidactiGame.menu_jugadores);
+                } else if (boton_datos.contains(x, y)) {
+                    juego.setScreen(DidactiGame.menu_datos);
+                } else if (boton_personalizar.contains(x, y)) {
+                    juego.setScreen(DidactiGame.menu_puntuaciones);
+                } else if (boton_nuevo.contains(x, y)) {
+                    juego.setScreen(DidactiGame.menu_ranking);
+                }
 
                 return false;
             }

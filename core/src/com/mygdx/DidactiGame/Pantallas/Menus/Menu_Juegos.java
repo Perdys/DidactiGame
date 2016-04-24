@@ -3,24 +3,23 @@ package com.mygdx.DidactiGame.Pantallas.Menus;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Auxiliares.Pantalla;
+import com.mygdx.DidactiGame.Pantallas.Juego_QQSM;
 import com.mygdx.DidactiGame.Pantallas.Juego_Rosco;
 
 import java.util.ArrayList;
 
+import static com.mygdx.DidactiGame.DidactiGame.BD;
 import static com.mygdx.DidactiGame.DidactiGame.jugadores;
 
 public class Menu_Juegos extends Pantalla {
@@ -31,16 +30,21 @@ public class Menu_Juegos extends Pantalla {
     InputAdapter click;
 
     Juego_Rosco rosco;
-    Texture fondo;
-    Rectangle boton_jugar;
+    Juego_QQSM qqsm;
+    Texture fondo, botones_juegos;
+    Rectangle boton_jugar_rosco, boton_jugar_qqsm;
 
-    public static class Elementos_Mostrar {
-        public Texture[] letras, rojos, verdes;
+    Table panel_checkboxs;
+    Table table;
+    CheckBox.CheckBoxStyle estilo_checkbox = checkbox_estilo();
+
+    public static class Texturas {
+        public Texture[] letras, fallos, aciertos;
         public Texture[][] tiempo, puntuacion;
     }
 
-    ArrayList<ArrayList<String[]>> descripciones;
-    public static Elementos_Mostrar elementos_mostrar;
+    public static ArrayList<ArrayList<String[]>> letras_descripciones;
+    public static Texturas texturas;
 
     public Menu_Juegos(DidactiGame juego) {
         this.juego = juego;
@@ -52,11 +56,11 @@ public class Menu_Juegos extends Pantalla {
 
         pantalla_actual = "Menu_Juegos";
 
-        elementos_mostrar = new Elementos_Mostrar();
+        texturas = new Texturas();
 
-        descripciones = new ArrayList<>(26);
-        for (int i = 0; i < 26; ++i) descripciones.add(i, new ArrayList<String[]>(1));
-        letras_rosco_fichero.leer(descripciones);
+        letras_descripciones = new ArrayList<>(26);
+        for (int i = 0; i < 26; ++i) letras_descripciones.add(i, new ArrayList<String[]>(1));
+        BD.leer_descripciones(letras_descripciones);
 
         texturas_cargar();
         botones_cargar();
@@ -71,7 +75,7 @@ public class Menu_Juegos extends Pantalla {
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
-        batch.draw(fondo, 0, 0, anchura_juego, altura_juego);
+        batch.draw(botones_juegos, anchura_juego - proporcion_x(0.5) - proporcion_y(0.1), proporcion_y(0.1), proporcion_x(0.5), proporcion_y(0.25));
         batch.end();
 
         stage.act();
@@ -81,6 +85,7 @@ public class Menu_Juegos extends Pantalla {
     public void resume() { pantalla_actual = "Menu_Juegos"; }
 
     public void show() {
+        actualizar_checkbox();
         sistema_botones(juego);
 
         InputMultiplexer inputs = new InputMultiplexer();
@@ -94,22 +99,39 @@ public class Menu_Juegos extends Pantalla {
 
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
 
-        letras_rosco_fichero.escribir(descripciones);
+        BD.escribir_descripciones(letras_descripciones);
         rosco.dispose();
         generador_texto.dispose();
         batch.dispose();
         stage.dispose();
     }
 
+    public void actualizar_checkbox() {
+        panel_checkboxs.clearChildren();
+        for (int i = 0; i < jugadores.numeral(); ++i) {
+            CheckBox cb = new CheckBox(jugadores.jugador(i).nombre, estilo_checkbox);
+            cb.setChecked(jugadores.jugador(i).seleccionado);
+            panel_checkboxs.add(cb).left();
+            panel_checkboxs.row();
+        }
+    }
+
     public void botones_cargar() {
 
-        boton_jugar = new Rectangle(proporcion_x(0.5), proporcion_y(0), proporcion_x(0.5), proporcion_y(1));
-        //TODO añadir boton jugar QQSM
+        boton_jugar_rosco = new Rectangle(anchura_juego - proporcion_x(0.5) - proporcion_y(0.1), proporcion_y(0.65), proporcion_x(0.25), proporcion_y(0.25));
+        boton_jugar_qqsm = new Rectangle(anchura_juego - proporcion_x(0.25) - proporcion_y(0.1), proporcion_y(0.65), proporcion_x(0.25), proporcion_y(0.25));
+
         click = new InputAdapter() {
             public boolean touchUp (int x, int y, int pointer, int button) {
-                if (boton_jugar.contains(x, y)) {
-                        rosco = new Juego_Rosco(descripciones, juego);
+                if (boton_jugar_rosco.contains(x, y)) {
+                    rosco = new Juego_Rosco(letras_descripciones, juego);
+                    if (jugadores.jugadores_activados())
                         juego.setScreen(rosco);
+                } else
+                if (boton_jugar_qqsm.contains(x, y)) {
+                    qqsm = new Juego_QQSM(juego);
+                    if (jugadores.jugadores_activados())
+                        juego.setScreen(qqsm);
                 }
                 return false;
             }
@@ -117,27 +139,12 @@ public class Menu_Juegos extends Pantalla {
     }
 
     public void texturas_cargar() {
-        fondo = new Texture("data/menu_juegos/fondo_juegos.jpg");
+        fondo = new Texture("data/texturas/fondo/juegos.jpg");
+        botones_juegos = new Texture("data/texturas/botones_juegos.png");
 
-        tamano_texto.size = (int)proporcion_y(0.06);
-        CheckBox.CheckBoxStyle estilo_checkbox = new CheckBox.CheckBoxStyle(
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_juegos/checkOFF.png"))),
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_juegos/checkON.png"))),
-                generador_texto.generateFont(tamano_texto), Color.GREEN);
-        estilo_checkbox.checkboxOn.setMinWidth((int) proporcion_y(0.06));
-        estilo_checkbox.checkboxOn.setMinHeight((int) proporcion_y(0.06));
-        estilo_checkbox.checkboxOff.setMinWidth((int) proporcion_y(0.06));
-        estilo_checkbox.checkboxOff.setMinHeight((int) proporcion_y(0.06));
-
-        Table panel_checkboxs = new Table();
-        for (int i = 0; i < jugadores.numeral(); ++i) {
-            CheckBox cb = new CheckBox(jugadores.jugador(i).nombre, estilo_checkbox);
-            cb.setChecked(jugadores.jugador(i).seleccionado);
-            panel_checkboxs.add(cb).left();
-            panel_checkboxs.row();
-        }
+        panel_checkboxs = new Table();
         ScrollPane panel_scroll = new ScrollPane(panel_checkboxs);
-        Table table = new Table();
+        table = new Table();
         table.setSize(proporcion_x(0.2), proporcion_y(0.8));
         table.setPosition(proporcion_x(0.1), proporcion_y(0.5) - table.getHeight() / 2);
         table.add(panel_scroll);
@@ -146,25 +153,28 @@ public class Menu_Juegos extends Pantalla {
         panel_checkboxs.addCaptureListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                jugadores.jugador(((CheckBox)(actor)).getText().toString()).seleccionado = ((CheckBox)(actor)).isChecked();
+                if (((CheckBox)(actor)).isChecked())
+                    jugadores.marcar(((CheckBox)(actor)).getText().toString());
+                else
+                    jugadores.desmarcar(((CheckBox)(actor)).getText().toString());
             }
         });
 
-        elementos_mostrar.letras = new Texture[26];
-        elementos_mostrar.rojos = new Texture[26];
-        elementos_mostrar.verdes = new Texture[26];
-        elementos_mostrar.puntuacion = new Texture[2][10];
-        elementos_mostrar.tiempo = new Texture[3][10];
+        texturas.letras = new Texture[26];
+        texturas.fallos = new Texture[26];
+        texturas.aciertos = new Texture[26];
+        texturas.puntuacion = new Texture[2][10];
+        texturas.tiempo = new Texture[3][10];
 
         for (int i = 0; i < 26; ++i){
-            elementos_mostrar.letras[i] = new Texture("data/menu_juegos/juego_rosco/digitos/letras/l" + i + ".png");
-            elementos_mostrar.rojos[i] = new Texture("data/menu_juegos/juego_rosco/rojo/r" + i + ".png");
-            elementos_mostrar.verdes[i] = new Texture("data/menu_juegos/juego_rosco/verde/v" + i + ".png");
+            texturas.letras[i] = new Texture("data/texturas/juego_rosco/digitos/letras/l" + i + ".png");
+            texturas.fallos[i] = new Texture("data/texturas/juego_rosco/rojo/r" + i + ".png");
+            texturas.aciertos[i] = new Texture("data/texturas/juego_rosco/verde/v" + i + ".png");
             if (i < 3)
                 for (int j = 0; j < 10; ++j) {
                     if (i < 2)
-                        elementos_mostrar.puntuacion[i][j] = new Texture("data/menu_juegos/juego_rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
-                    elementos_mostrar.tiempo[i][j] = new Texture("data/menu_juegos/juego_rosco/digitos/tiempo/t" + i + "_" + j +".png");
+                        texturas.puntuacion[i][j] = new Texture("data/texturas/juego_rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
+                    texturas.tiempo[i][j] = new Texture("data/texturas/juego_rosco/digitos/tiempo/t" + i + "_" + j +".png");
                 }
         }
     }

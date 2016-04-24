@@ -14,6 +14,7 @@ import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.mygdx.DidactiGame.DidactiGame;
 
+import static com.mygdx.DidactiGame.DidactiGame.BD;
 import static com.mygdx.DidactiGame.DidactiGame.jugadores;
 
 public class Pantalla implements Screen {
@@ -24,15 +25,12 @@ public class Pantalla implements Screen {
     public float lado = anchura_juego < altura_juego ? anchura_juego : altura_juego;
 
     //Textos
-    public static FreeTypeFontGenerator generador_texto = new FreeTypeFontGenerator(Gdx.files.internal("fuentes/pixel.ttf"));
+    public static FreeTypeFontGenerator generador_texto = new FreeTypeFontGenerator(Gdx.files.internal("fuentes/TitilliumWeb-SemiBold.ttf"));
     public static FreeTypeFontGenerator.FreeTypeFontParameter tamano_texto = new FreeTypeFontGenerator.FreeTypeFontParameter();
 
     //Manejo menus
     public String pantalla_actual = "Defecto";
     public static InputAdapter botones_genericos;
-
-    //Ficheros
-    public Fichero letras_rosco_fichero = new Fichero("data/ficheros/descripciones_letras.txt");
 
     public Pantalla() {}
 
@@ -45,6 +43,7 @@ public class Pantalla implements Screen {
                         acciones(pantalla_actual);
                         break;
                     case Input.Keys.HOME:
+                        BD.liberar();
                         juego.dispose();
                         Gdx.app.exit();
                         break;
@@ -71,7 +70,7 @@ public class Pantalla implements Screen {
                     case "Menu_Jugadores":case "Menu_Juegos":case "Menu_Datos":case "Menu_Ranking":case "Menu_Puntuaciones":case "Clasificacion":
                         juego.setScreen(DidactiGame.menu_inicial);
                         break;
-                    case "Juego_Rosco":
+                    case "Juego_Rosco":case "Juego_QQSM":
                         jugadores = new Jugadores();
                         juego.setScreen(DidactiGame.menu_juegos);
                         break;
@@ -83,45 +82,53 @@ public class Pantalla implements Screen {
         };
     }
 
-    public TextField.TextFieldStyle estilo_editor(String tipo) {
+    public TextField.TextFieldStyle editor_estilo() {
 
-        tamano_texto.size = (int)proporcion_y(0.06);
+        tamano_texto.size = (int)proporcion_y(0.05);
         TextField.TextFieldStyle estilo_texto = new TextField.TextFieldStyle(
-                generador_texto.generateFont(tamano_texto), Color.GREEN,
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/cursor_editor.png"))),
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/seleccion_editor.png"))),
-                new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/fondo_editor_horizontal.png"))));
+                generador_texto.generateFont(tamano_texto), Color.BLACK,
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/editor/cursor.png"))),
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/editor/seleccion.png"))),
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/editor/fondo.png"))));
 
         estilo_texto.cursor.setMinWidth(proporcion_x(0.003));
-        estilo_texto.background.setLeftWidth(proporcion_x(0.01));
-        estilo_texto.background.setRightWidth(proporcion_x(0.01));
-        estilo_texto.background.setTopHeight(proporcion_y(0.01));
-        estilo_texto.background.setBottomHeight(proporcion_y(0.01));
+        estilo_texto.background.setLeftWidth(proporcion_x(0.02));
+        estilo_texto.background.setRightWidth(proporcion_x(0.02));
+        estilo_texto.background.setTopHeight(proporcion_y(0.02));
+        estilo_texto.background.setBottomHeight(proporcion_y(0.02));
 
         return estilo_texto;
     }
 
-    public SelectBox.SelectBoxStyle estilo_selector() {
-
+    public SelectBox.SelectBoxStyle selector_estilo() {
+        tamano_texto.size = (int)proporcion_y(0.15);
         BitmapFont texto = generador_texto.generateFont(tamano_texto);
         SelectBox.SelectBoxStyle estilo_selector = new SelectBox.SelectBoxStyle();
 
         estilo_selector.font = texto;
-        estilo_selector.fontColor = Color.GREEN;
-        estilo_selector.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_jugadores/editor/rojo.png")));
+        estilo_selector.fontColor = Color.BLACK;
+        estilo_selector.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/jugador_selector/fondo.png")));
+        estilo_selector.background.setLeftWidth(proporcion_x(0.02));
+        estilo_selector.background.setRightWidth(proporcion_x(0.02));
+        estilo_selector.background.setBottomHeight(proporcion_y(0.02));
+        estilo_selector.background.setTopHeight(proporcion_y(0.02));
         estilo_selector.scrollStyle = new ScrollPane.ScrollPaneStyle();
         estilo_selector.listStyle = new List.ListStyle();
         estilo_selector.listStyle.font = texto;
-        estilo_selector.listStyle.fontColorSelected = Color.FOREST;
-        estilo_selector.listStyle.fontColorUnselected = Color.OLIVE;
-        estilo_selector.listStyle.selection = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_jugadores/editor/seleccion.png")));
-        estilo_selector.listStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_jugadores/editor/azul.png")));
+        estilo_selector.listStyle.fontColorSelected = Color.BLACK;
+        estilo_selector.listStyle.fontColorUnselected = Color.DARK_GRAY;
+        estilo_selector.listStyle.selection = new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/jugador_selector/seleccion.png")));
+        estilo_selector.listStyle.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/jugador_selector/desplegable.png")));
+        estilo_selector.listStyle.background.setLeftWidth(proporcion_x(0.02));
+        estilo_selector.listStyle.background.setRightWidth(proporcion_x(0.02));
+        estilo_selector.listStyle.background.setTopHeight(proporcion_y(0.02));
+        estilo_selector.listStyle.background.setBottomHeight(proporcion_y(0.02));
 
         return estilo_selector;
     }
 
-    public Label.LabelStyle estilo_etiqueta(int tamano) {
-        tamano_texto.size = tamano;
+    public Label.LabelStyle texto_estilo() {
+        tamano_texto.size = (int)proporcion_y(0.044);
         BitmapFont texto_fuente = generador_texto.generateFont(tamano_texto);
 
         Label.LabelStyle estilo_etiqueta = new Label.LabelStyle();
@@ -131,21 +138,35 @@ public class Pantalla implements Screen {
         return estilo_etiqueta;
     }
 
-    public Label.LabelStyle estilo_etiqueta(int tamano, String fondo) {
-        tamano_texto.size = tamano;
+    public Label.LabelStyle texto_panel_scroll_estilo() {
+        tamano_texto.size = (int)proporcion_y(0.04);
         BitmapFont texto_fuente = generador_texto.generateFont(tamano_texto);
 
         Label.LabelStyle estilo_etiqueta = new Label.LabelStyle();
         estilo_etiqueta.font = texto_fuente;
-        estilo_etiqueta.fontColor = Color.GREEN;
+        estilo_etiqueta.fontColor = Color.BLACK;
 
-        estilo_etiqueta.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/menu_datos/editor/" + fondo + ".png")));
-        estilo_etiqueta.background.setLeftWidth(proporcion_x(0.01));
+        estilo_etiqueta.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/texto/fondo.png")));
+        estilo_etiqueta.background.setLeftWidth(proporcion_x(0.02));
         estilo_etiqueta.background.setRightWidth(proporcion_x(0.01));
-        estilo_etiqueta.background.setTopHeight(proporcion_y(0.01));
-        estilo_etiqueta.background.setBottomHeight(proporcion_y(0.01));
+        estilo_etiqueta.background.setTopHeight(proporcion_y(0.02));
+        estilo_etiqueta.background.setBottomHeight(proporcion_y(0.02));
 
         return estilo_etiqueta;
+    }
+
+    public CheckBox.CheckBoxStyle checkbox_estilo() {
+        tamano_texto.size = (int)proporcion_y(0.06);
+        CheckBox.CheckBoxStyle estilo_checkbox = new CheckBox.CheckBoxStyle(
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/checkbox/off.png"))),
+                new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/checkbox/on.png"))),
+                generador_texto.generateFont(tamano_texto), Color.BLACK);
+        estilo_checkbox.checkboxOn.setMinWidth((int) proporcion_y(0.06));
+        estilo_checkbox.checkboxOn.setMinHeight((int) proporcion_y(0.06));
+        estilo_checkbox.checkboxOff.setMinWidth((int) proporcion_y(0.06));
+        estilo_checkbox.checkboxOff.setMinHeight((int) proporcion_y(0.06));
+
+        return estilo_checkbox;
     }
 
     public float proporcion_x (double valor) { return (float) (anchura_juego * valor); }
