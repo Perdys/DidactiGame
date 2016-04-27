@@ -29,7 +29,7 @@ public class Menu_Puntuaciones extends Pantalla{
     Texture particulas_texto;
 
     public SelectBox<String> jugador_selector;
-    Label puntuaciones_rosco, puntuaciones_qqsm;
+    Label puntuaciones_rosco, puntuaciones_qqsm, rosco_etiqueta, qqsm_etiqueta;
     ScrollPane puntuaciones_scroll_rosco, puntuaciones_scroll_qqsm;
 
     public Menu_Puntuaciones(DidactiGame juego) {
@@ -53,8 +53,10 @@ public class Menu_Puntuaciones extends Pantalla{
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
-        batch.draw(particulas_texto, proporcion_x(0.1), proporcion_y(0.6), proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
-        batch.draw(particulas_texto, proporcion_x(0.55), proporcion_y(0.6), proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
+        batch.draw(particulas_texto, proporcion_x(0.1), proporcion_y(0.55), proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
+        batch.draw(particulas_texto, proporcion_x(0.55), proporcion_y(0.55), proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
+        rosco_etiqueta.draw(batch, 1);
+        qqsm_etiqueta.draw(batch, 1);
         batch.end();
 
         stage.act();
@@ -64,6 +66,8 @@ public class Menu_Puntuaciones extends Pantalla{
     public void show () {
         jugador_selector.setItems(new Array<>(jugadores.nombres().split("\n")));
         jugador_selector.pack();
+        jugador_selector.setWidth(proporcion_x(0.4));
+
         if (!jugadores.vacio()) {
             puntuaciones_rosco.setText(jugadores.jugador(jugador_selector.getSelected()).puntuaciones("Rosco"));
             puntuaciones_qqsm.setText(jugadores.jugador(jugador_selector.getSelected()).puntuaciones("QQSM"));
@@ -93,12 +97,17 @@ public class Menu_Puntuaciones extends Pantalla{
     public void texturas_cargar() {
         particulas_texto = new Texture("data/texturas/texto/particulas.png");
 
+        rosco_etiqueta = new Label("Rosco", texto_estilo(0.055));
+        rosco_etiqueta.setPosition(proporcion_x(0.11), proporcion_y(0.5) + particulas_texto.getHeight());
+        qqsm_etiqueta = new Label("QQSM", texto_estilo(0.055));
+        qqsm_etiqueta.setPosition(proporcion_x(0.56), proporcion_y(0.5) + particulas_texto.getHeight());
+
         puntuaciones_rosco = new Label("", texto_panel_scroll_estilo());
         puntuaciones_rosco.setWidth(proporcion_x(0.2));
         puntuaciones_rosco.setWrap(true);
         puntuaciones_rosco.setAlignment(topLeft);
         puntuaciones_scroll_rosco = new ScrollPane(puntuaciones_rosco);
-        puntuaciones_scroll_rosco.setBounds(proporcion_x(0.1), proporcion_y(0.1), proporcion_x(0.35), proporcion_y(0.5));
+        puntuaciones_scroll_rosco.setBounds(proporcion_x(0.1), proporcion_y(0.05), proporcion_x(0.35), proporcion_y(0.5));
         puntuaciones_scroll_rosco.layout();
         puntuaciones_scroll_rosco.setTouchable(Touchable.enabled);
 
@@ -107,11 +116,11 @@ public class Menu_Puntuaciones extends Pantalla{
         puntuaciones_qqsm.setWrap(true);
         puntuaciones_qqsm.setAlignment(topLeft);
         puntuaciones_scroll_qqsm = new ScrollPane(puntuaciones_qqsm);
-        puntuaciones_scroll_qqsm.setBounds(proporcion_x(0.55), proporcion_y(0.1), proporcion_x(0.35), proporcion_y(0.5));
+        puntuaciones_scroll_qqsm.setBounds(proporcion_x(0.55), proporcion_y(0.05), proporcion_x(0.35), proporcion_y(0.5));
         puntuaciones_scroll_qqsm.layout();
         puntuaciones_scroll_qqsm.setTouchable(Touchable.enabled);
 
-        //Selector del jugador del que se quiere ver las puntuaciones
+        //Selector del jugador del que se quiere ver las leer_puntuaciones
         jugador_selector = new SelectBox<>(selector_estilo());
         jugador_selector.setPosition(proporcion_x(0.1), proporcion_y(0.75));
         jugador_selector.setMaxListCount(3);

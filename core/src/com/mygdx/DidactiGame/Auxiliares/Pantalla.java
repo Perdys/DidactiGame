@@ -82,6 +82,14 @@ public class Pantalla implements Screen {
         };
     }
 
+    public TextField.TextFieldStyle editor_estilo(double tamano) {
+        tamano_texto.size = (int) proporcion_y(tamano);
+        TextField.TextFieldStyle estilo = editor_estilo();
+        estilo.font = generador_texto.generateFont(tamano_texto);
+
+        return estilo;
+    }
+
     public TextField.TextFieldStyle editor_estilo() {
 
         tamano_texto.size = (int)proporcion_y(0.05);
@@ -95,9 +103,19 @@ public class Pantalla implements Screen {
         estilo_texto.background.setLeftWidth(proporcion_x(0.02));
         estilo_texto.background.setRightWidth(proporcion_x(0.02));
         estilo_texto.background.setTopHeight(proporcion_y(0.02));
-        estilo_texto.background.setBottomHeight(proporcion_y(0.02));
 
         return estilo_texto;
+    }
+
+    public SelectBox.SelectBoxStyle selector_estilo (double tamano) {
+        tamano_texto.size = (int)proporcion_y(tamano);
+        BitmapFont texto = generador_texto.generateFont(tamano_texto);
+        SelectBox.SelectBoxStyle estilo = selector_estilo();
+        estilo.background.setMinHeight(proporcion_y(tamano));
+        estilo.listStyle.background.setMinHeight(proporcion_y(tamano));
+        estilo.font = texto;
+        estilo.listStyle.font = texto;
+        return estilo;
     }
 
     public SelectBox.SelectBoxStyle selector_estilo() {
@@ -112,6 +130,7 @@ public class Pantalla implements Screen {
         estilo_selector.background.setRightWidth(proporcion_x(0.02));
         estilo_selector.background.setBottomHeight(proporcion_y(0.02));
         estilo_selector.background.setTopHeight(proporcion_y(0.02));
+        estilo_selector.background.setMinHeight(proporcion_y(0.15));
         estilo_selector.scrollStyle = new ScrollPane.ScrollPaneStyle();
         estilo_selector.listStyle = new List.ListStyle();
         estilo_selector.listStyle.font = texto;
@@ -123,12 +142,13 @@ public class Pantalla implements Screen {
         estilo_selector.listStyle.background.setRightWidth(proporcion_x(0.02));
         estilo_selector.listStyle.background.setTopHeight(proporcion_y(0.02));
         estilo_selector.listStyle.background.setBottomHeight(proporcion_y(0.02));
+        estilo_selector.listStyle.background.setMinHeight(proporcion_y(0.15));
 
         return estilo_selector;
     }
 
-    public Label.LabelStyle texto_estilo() {
-        tamano_texto.size = (int)proporcion_y(0.044);
+    public Label.LabelStyle texto_estilo(double tamano) {
+        tamano_texto.size = (int)proporcion_y(tamano);
         BitmapFont texto_fuente = generador_texto.generateFont(tamano_texto);
 
         Label.LabelStyle estilo_etiqueta = new Label.LabelStyle();

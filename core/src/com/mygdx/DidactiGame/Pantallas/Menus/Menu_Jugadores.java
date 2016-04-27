@@ -68,6 +68,7 @@ public class Menu_Jugadores extends Pantalla {
     public void show () {
         jugador_selector.setItems(new Array<>(jugadores.nombres().split("\n")));
         jugador_selector.pack();
+        jugador_selector.setWidth(proporcion_x(0.4));
 
         sistema_botones(juego);
         stage.addActor(jugador_selector);
@@ -91,8 +92,8 @@ public class Menu_Jugadores extends Pantalla {
     public void texturas_cargar() {
         botones_jugadores = new Texture("data/texturas/botones_jugador.png");
 
-        jugador_edad = new Label("99", texto_estilo());
-        jugador_edad.setPosition(proporcion_x(0.2), proporcion_y(0.1));
+        jugador_edad = new Label("Edad: 99 años", texto_estilo(0.055));
+        jugador_edad.setPosition(proporcion_x(0.1), proporcion_y(0.1));
 
         //Selector del jugador del que se quiere ver el perfil
         jugador_selector = new SelectBox<>(selector_estilo());
@@ -102,7 +103,7 @@ public class Menu_Jugadores extends Pantalla {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
                 if (!jugadores.vacio()) {
-                    jugador_edad.setText(jugadores.jugador(jugador_selector.getSelected()).edad);
+                    jugador_edad.setText("Edad: " + jugadores.jugador(jugador_selector.getSelected()).edad + " años");
                     color_fondo = jugadores.jugador(jugador_selector.getSelected()).color;
                 }
             }
@@ -138,9 +139,9 @@ public class Menu_Jugadores extends Pantalla {
                 Gdx.input.getTextInput (new Input.TextInputListener() {
                     public void input(String edad) {
                         if (edad.isEmpty())
-                            edad = "99";
+                            edad = "Edad: 99 años";
                         jugadores.jugador(jugador_selector.getSelected()).edad(edad);
-                        jugador_edad.setText(edad);
+                        jugador_edad.setText("Edad: " + edad + " años");
                     }
 
                     public void canceled() {}
@@ -151,6 +152,7 @@ public class Menu_Jugadores extends Pantalla {
                     jugadores.eliminar(jugadores.jugador(jugador_selector.getSelected()));
                     jugador_selector.setItems(new Array<>(jugadores.nombres().split("\n")));
                     jugador_selector.pack();
+                    jugador_selector.setWidth(proporcion_x(0.4));
                     stage.addActor(jugador_selector);
                 }
                 else
@@ -163,8 +165,9 @@ public class Menu_Jugadores extends Pantalla {
                             jugador_selector.setItems(new Array<>(jugadores.nombres().split("\n")));
                             jugador_selector.setSelected(nombre);
                             jugador_selector.pack();
+                            jugador_selector.setWidth(proporcion_x(0.4));
                             stage.addActor(jugador_selector);
-                            jugador_edad.setText(jugadores.jugador(nombre).edad);
+                            jugador_edad.setText("Edad: " + jugadores.jugador(nombre).edad + " años");
                         }
 
                         public void canceled() {}

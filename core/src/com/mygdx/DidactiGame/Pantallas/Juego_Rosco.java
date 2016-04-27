@@ -14,12 +14,13 @@ import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Auxiliares.Pantalla;
-import com.mygdx.DidactiGame.Pantallas.Menus.Menu_Juegos;
 
-import java.util.*;
+import java.util.ArrayList;
 
 import static com.badlogic.gdx.utils.Align.topLeft;
+import static com.mygdx.DidactiGame.DidactiGame.BD;
 import static com.mygdx.DidactiGame.DidactiGame.jugadores;
+import static com.mygdx.DidactiGame.Pantallas.Menus.Menu_Juegos.*;
 
 public class Juego_Rosco extends Pantalla {
 
@@ -32,16 +33,15 @@ public class Juego_Rosco extends Pantalla {
     Texture fondo, boton_jugando;
     Rectangle boton_inicio, boton_acierto, boton_fallo, boton_pregunta, boton_tiempo;
 
-    String[] letra_descripcion_actual = {"", ""};
+    String[] letra_descripcion_actual = {"descripcion", "palabra"};
     ScrollPane letra_descripcion_scroll, nombre_jugador_scroll;
     Label letra_descripcion_etiqueta, nombre_jugador_etiqueta;
 
-    ArrayList<ArrayList<String[]>> letras_descripciones;
     Clasificacion clasificacion;
+    public static ArrayList<ArrayList<Palabra>> letras_descripciones;
 
-    public Juego_Rosco(ArrayList<ArrayList<String[]>> letras_descripciones, DidactiGame juego) {
+    public Juego_Rosco(DidactiGame juego) {
         this.juego = juego;
-        this.letras_descripciones = letras_descripciones;
 
         camara = new OrthographicCamera();
         camara.setToOrtho(false);
@@ -51,6 +51,10 @@ public class Juego_Rosco extends Pantalla {
         pantalla_actual = "Juego_Rosco";
 
         clasificacion = new Clasificacion(juego);
+
+        letras_descripciones = new ArrayList<>(26);
+        for (int i = 0; i < 26; ++i) letras_descripciones.add(i, new ArrayList<Palabra>(1));
+        BD.leer_descripciones(letras_descripciones);
 
         fondo = new Texture("data/texturas/fondo/rosco.png");
         boton_jugando = new Texture("data/texturas/juego_rosco/boton_on.png");
@@ -82,6 +86,9 @@ public class Juego_Rosco extends Pantalla {
     public void resume() { pantalla_actual = "Juego_Rosco"; }
 
     public void show() {
+        //Mostrar el nombre del jugador actual
+        if (!jugadores.vacio()) { nombre_jugador_etiqueta.setText(jugadores.jugador_actual().nombre); }
+
         sistema_botones(juego);
         stage.addActor(letra_descripcion_scroll);
         stage.addActor(nombre_jugador_scroll);
@@ -150,6 +157,8 @@ public class Juego_Rosco extends Pantalla {
                             String aux = letra_descripcion_actual[0];
                             letra_descripcion_actual[0] = letra_descripcion_actual[1];
                             letra_descripcion_actual[1] = aux;
+                            //Mostrar el texto de la letra actual
+                            letra_descripcion_etiqueta.setText(letra_descripcion_actual[0]);
                         }
                 } else
                 if (boton_tiempo.contains(x, y)) {
@@ -180,15 +189,20 @@ public class Juego_Rosco extends Pantalla {
         if (letras_descripciones.size() != 0)
             if (letras_descripciones.get(jugadores.jugador_actual().letra_actual).size() != 0) {
                 int descripcion_aleatoria = MathUtils.random(letras_descripciones.get(jugadores.jugador_actual().letra_actual).size() - 1);
-                letra_descripcion_actual = new String[]{letras_descripciones.get(jugadores.jugador_actual().letra_actual).get(descripcion_aleatoria)[1],
-                                                  letras_descripciones.get(jugadores.jugador_actual().letra_actual).get(descripcion_aleatoria)[0]};
+                letra_descripcion_actual = new String[]{letras_descripciones.get(jugadores.jugador_actual().letra_actual).get(descripcion_aleatoria).descripcion,
+                                                  letras_descripciones.get(jugadores.jugador_actual().letra_actual).get(descripcion_aleatoria).palabra};
             }
             else
                 letra_descripcion_actual = new String[]{"INTRODUZCA UNA DESCRIPCION PARA ESTA LETRA", "NINGUNA"};
+
+        //Mostrar el texto de la letra actual
+        letra_descripcion_etiqueta.setText(letra_descripcion_actual[0]);
     }
 
     public void jugador_siguiente() {
         letra_descripcion_actual[0] = "";
+        //Mostrar el texto de la letra actual
+        letra_descripcion_etiqueta.setText(letra_descripcion_actual[0]);
 
         if ((jugadores.jugador_actual().n_aciertos_rosco + jugadores.jugador_actual().n_fallos_rosco) >= 26 || jugadores.jugador_actual().tiempo_rosco < 1) {
             jugadores.jugador_actual().seleccionado = false;
@@ -197,10 +211,13 @@ public class Juego_Rosco extends Pantalla {
 
         if (!jugadores.siguiente())
             juego.setScreen(clasificacion);
+
+        //Mostrar el nombre del jugador actual
+        if (!jugadores.vacio()) { nombre_jugador_etiqueta.setText(jugadores.jugador_actual().nombre); }
     }
 
     public void textos_cargar() {
-        letra_descripcion_etiqueta = new Label("", texto_estilo());
+        letra_descripcion_etiqueta = new Label("", texto_estilo(0.055));
         letra_descripcion_etiqueta.setWidth(proporcion_x(0.33));
         letra_descripcion_etiqueta.setWrap(true);
         letra_descripcion_etiqueta.setAlignment(topLeft);
@@ -209,7 +226,7 @@ public class Juego_Rosco extends Pantalla {
         letra_descripcion_scroll.layout();
         letra_descripcion_scroll.setTouchable(Touchable.enabled);
 
-        nombre_jugador_etiqueta = new Label("", texto_estilo());
+        nombre_jugador_etiqueta = new Label("", texto_estilo(0.055));
         nombre_jugador_etiqueta.setWidth(proporcion_x(0.14));
         nombre_jugador_etiqueta.setWrap(true);
         nombre_jugador_etiqueta.setAlignment(topLeft);
@@ -226,15 +243,15 @@ public class Juego_Rosco extends Pantalla {
             //Mostrar letras, aciertos y fallos
             for (int i = 0; i < 26; ++i) {
                 if (jugadores.jugador_actual().letras_visitadas[i] != 0 || jugadores.jugador_actual().letra_actual == i) {
-                    batch.draw(Menu_Juegos.texturas.letras[i], 0, 0, anchura_juego, altura_juego);
+                    batch.draw(texturas_rosco.letras[i], 0, 0, anchura_juego, altura_juego);
                     if (jugadores.jugador_actual().letras_visitadas[i] == 2)
-                        batch.draw(Menu_Juegos.texturas.fallos[i], 0, 0, anchura_juego, altura_juego);
+                        batch.draw(texturas_rosco.fallos[i], 0, 0, anchura_juego, altura_juego);
                     else if (jugadores.jugador_actual().letras_visitadas[i] == 1)
-                        batch.draw(Menu_Juegos.texturas.aciertos[i], 0, 0, anchura_juego, altura_juego);
+                        batch.draw(texturas_rosco.aciertos[i], 0, 0, anchura_juego, altura_juego);
                 }
             }
 
-            //Obtener tiempo_rosco restante
+            //Obtener tiempo restante
             jugadores.jugador_actual().contador_rosco += Gdx.graphics.getDeltaTime();
             if (jugadores.jugador_actual().contador_rosco >= 1.0f) {
                 jugadores.jugador_actual().contador_rosco = 0;
@@ -248,18 +265,12 @@ public class Juego_Rosco extends Pantalla {
             }
 
             if (!jugadores.vacio()) {
-                //Mostrar el tiempo_rosco y la puntuacion
-                batch.draw(Menu_Juegos.texturas.puntuacion[0][jugadores.jugador_actual().n_aciertos_rosco % 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.texturas.puntuacion[1][jugadores.jugador_actual().n_aciertos_rosco / 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.texturas.tiempo[0][jugadores.jugador_actual().tiempo_rosco % 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.texturas.tiempo[1][(jugadores.jugador_actual().tiempo_rosco % 100) / 10], 0, 0, anchura_juego, altura_juego);
-                batch.draw(Menu_Juegos.texturas.tiempo[2][(jugadores.jugador_actual().tiempo_rosco % 1000) / 100], 0, 0, anchura_juego, altura_juego);
-
-                //Mostrar el texto de la letra actual
-                letra_descripcion_etiqueta.setText(letra_descripcion_actual[0]);
-
-                //Mostrar el jugador del jugador actual
-                if (!jugadores.vacio()) { nombre_jugador_etiqueta.setText(jugadores.jugador_actual().nombre); }
+                //Mostrar el tiempo y la puntuacion
+                batch.draw(texturas_rosco.puntuacion[0][jugadores.jugador_actual().n_aciertos_rosco % 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(texturas_rosco.puntuacion[1][jugadores.jugador_actual().n_aciertos_rosco / 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(texturas_rosco.tiempo[0][jugadores.jugador_actual().tiempo_rosco % 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(texturas_rosco.tiempo[1][(jugadores.jugador_actual().tiempo_rosco % 100) / 10], 0, 0, anchura_juego, altura_juego);
+                batch.draw(texturas_rosco.tiempo[2][(jugadores.jugador_actual().tiempo_rosco % 1000) / 100], 0, 0, anchura_juego, altura_juego);
             }
         }
     }

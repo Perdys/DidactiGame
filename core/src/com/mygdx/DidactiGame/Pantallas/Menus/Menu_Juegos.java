@@ -31,20 +31,41 @@ public class Menu_Juegos extends Pantalla {
 
     Juego_Rosco rosco;
     Juego_QQSM qqsm;
-    Texture fondo, botones_juegos;
+    Texture botones_juegos;
     Rectangle boton_jugar_rosco, boton_jugar_qqsm;
 
     Table panel_checkboxs;
     Table table;
     CheckBox.CheckBoxStyle estilo_checkbox = checkbox_estilo();
 
-    public static class Texturas {
+    public static class Texturas_Rosco {
         public Texture[] letras, fallos, aciertos;
         public Texture[][] tiempo, puntuacion;
     }
 
-    public static ArrayList<ArrayList<String[]>> letras_descripciones;
-    public static Texturas texturas;
+    public static class Texturas_QQSM {
+        public Texture[] fallos, aciertos;
+    }
+
+    public static class Palabra {
+        public Palabra() {}
+        public Palabra (String palabra, int posicion_letra, String descripcion) {
+            this.palabra = palabra;
+            this.posicion_letra = posicion_letra;
+            this.descripcion = descripcion;
+        }
+        public String palabra = "", descripcion = "";
+        public int posicion_letra = 0;
+    }
+
+    public static class Pregunta {
+        public String pregunta = "?";
+        public String[] respuestas;
+        public String correcta;
+    }
+
+    public static Texturas_Rosco texturas_rosco;
+    public static Texturas_QQSM texturas_qqsm;
 
     public Menu_Juegos(DidactiGame juego) {
         this.juego = juego;
@@ -56,11 +77,8 @@ public class Menu_Juegos extends Pantalla {
 
         pantalla_actual = "Menu_Juegos";
 
-        texturas = new Texturas();
-
-        letras_descripciones = new ArrayList<>(26);
-        for (int i = 0; i < 26; ++i) letras_descripciones.add(i, new ArrayList<String[]>(1));
-        BD.leer_descripciones(letras_descripciones);
+        texturas_rosco = new Texturas_Rosco();
+        texturas_qqsm = new Texturas_QQSM();
 
         texturas_cargar();
         botones_cargar();
@@ -98,8 +116,6 @@ public class Menu_Juegos extends Pantalla {
     }
 
     public void dispose() { //es la ultima en ejecutarse, se encarga de liberar recursos y dejar la memoria limpia
-
-        BD.escribir_descripciones(letras_descripciones);
         rosco.dispose();
         generador_texto.dispose();
         batch.dispose();
@@ -124,7 +140,7 @@ public class Menu_Juegos extends Pantalla {
         click = new InputAdapter() {
             public boolean touchUp (int x, int y, int pointer, int button) {
                 if (boton_jugar_rosco.contains(x, y)) {
-                    rosco = new Juego_Rosco(letras_descripciones, juego);
+                    rosco = new Juego_Rosco(juego);
                     if (jugadores.jugadores_activados())
                         juego.setScreen(rosco);
                 } else
@@ -139,7 +155,6 @@ public class Menu_Juegos extends Pantalla {
     }
 
     public void texturas_cargar() {
-        fondo = new Texture("data/texturas/fondo/juegos.jpg");
         botones_juegos = new Texture("data/texturas/botones_juegos.png");
 
         panel_checkboxs = new Table();
@@ -160,22 +175,30 @@ public class Menu_Juegos extends Pantalla {
             }
         });
 
-        texturas.letras = new Texture[26];
-        texturas.fallos = new Texture[26];
-        texturas.aciertos = new Texture[26];
-        texturas.puntuacion = new Texture[2][10];
-        texturas.tiempo = new Texture[3][10];
+        texturas_rosco.letras = new Texture[26];
+        texturas_rosco.fallos = new Texture[26];
+        texturas_rosco.aciertos = new Texture[26];
+        texturas_rosco.puntuacion = new Texture[2][10];
+        texturas_rosco.tiempo = new Texture[3][10];
 
         for (int i = 0; i < 26; ++i){
-            texturas.letras[i] = new Texture("data/texturas/juego_rosco/digitos/letras/l" + i + ".png");
-            texturas.fallos[i] = new Texture("data/texturas/juego_rosco/rojo/r" + i + ".png");
-            texturas.aciertos[i] = new Texture("data/texturas/juego_rosco/verde/v" + i + ".png");
+            texturas_rosco.letras[i] = new Texture("data/texturas/juego_rosco/digitos/letras/l" + i + ".png");
+            texturas_rosco.fallos[i] = new Texture("data/texturas/juego_rosco/rojo/r" + i + ".png");
+            texturas_rosco.aciertos[i] = new Texture("data/texturas/juego_rosco/verde/v" + i + ".png");
             if (i < 3)
                 for (int j = 0; j < 10; ++j) {
                     if (i < 2)
-                        texturas.puntuacion[i][j] = new Texture("data/texturas/juego_rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
-                    texturas.tiempo[i][j] = new Texture("data/texturas/juego_rosco/digitos/tiempo/t" + i + "_" + j +".png");
+                        texturas_rosco.puntuacion[i][j] = new Texture("data/texturas/juego_rosco/digitos/puntuacion/p" + i + "_" + j + ".png");
+                    texturas_rosco.tiempo[i][j] = new Texture("data/texturas/juego_rosco/digitos/tiempo/t" + i + "_" + j +".png");
                 }
+        }
+
+        texturas_qqsm.fallos = new Texture[4];
+        texturas_qqsm.aciertos = new Texture[4];
+
+        for (int i = 0; i < 4; ++i) {
+            texturas_qqsm.fallos[i] = new Texture("data/texturas/juego_qqsm/rojo/r" + i + ".png");
+            texturas_qqsm.aciertos[i] = new Texture("data/texturas/juego_qqsm/verde/v" + i + ".png");
         }
     }
 }

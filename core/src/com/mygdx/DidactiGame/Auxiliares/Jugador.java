@@ -27,7 +27,7 @@ public class Jugador {
     public Integer n_aciertos_qqsm = 0, n_fallos_qqsm = 0;
     public int tiempo_qqsm = 0;
     public float contador_qqsm = 0;
-    public boolean cincuenta_porciento_usado = false;
+    public boolean comodin50_usado = false;
 
     public Jugador() {}
 
@@ -68,22 +68,18 @@ public class Jugador {
 
         if (juego_tipo.compareTo("QQSM") == 0) {
             puntuacion = "\nQ " + n_aciertos_qqsm + " " + n_fallos_qqsm + " " + tiempo_qqsm + fecha;
-            BD.escribir_puntuacion(nombre,
-                    puntuacion_formato(new String[]{n_aciertos_qqsm.toString(), n_fallos_qqsm.toString(), Integer.toString(tiempo_qqsm), fecha}),
-                    "QQSM");
+            BD.escribir_puntuacion(nombre, n_aciertos_qqsm, n_fallos_qqsm, tiempo_qqsm, fecha, "QQSM");
         }
         else
         if (juego_tipo.compareTo("Rosco") == 0) {
             puntuacion = "\nR " + n_aciertos_rosco + " " + n_fallos_rosco + " " + tiempo_rosco + fecha;
-            BD.escribir_puntuacion(nombre,
-                    puntuacion_formato(new String[]{n_aciertos_rosco.toString(), n_fallos_rosco.toString(), Integer.toString(tiempo_rosco), fecha}),
-                    "Rosco");
+            BD.escribir_puntuacion(nombre, n_aciertos_rosco, n_fallos_rosco, tiempo_rosco, fecha, "Rosco");
         }
 
         return puntuacion_formato(new String[] {puntuacion.split(" ")[1], puntuacion.split(" ")[2], puntuacion.split(" ")[3], puntuacion.split(" ")[4]});
     }
 
-    public String puntuacion_formato(String[] registros) {
+    public static String puntuacion_formato(String[] registros) {
         if (registros[0].length() == 1) registros[0] = " ".concat(registros[0] + "  ");
         if (registros[1].length() == 1) registros[1] = " ".concat(registros[1] + " ");
         if (registros[2].length() == 1) registros[2] = "   ".concat(registros[2] + "  ");
@@ -93,7 +89,7 @@ public class Jugador {
     }
 
     public String puntuaciones(String juego_tipo) {
-        return BD.puntuaciones(nombre, juego_tipo);
+        return BD.leer_puntuaciones(nombre, juego_tipo);
     }
 
     public void edad (String edad) {

@@ -83,7 +83,7 @@ public class Menu_Ranking extends Pantalla{
         puntuaciones = new Label("", texto_panel_scroll_estilo());
         puntuaciones.setPosition(proporcion_x(0.2), proporcion_y(0.4));
 
-        //Selector del juego para ver puntuaciones
+        //Selector del juego para ver leer_puntuaciones
         juego_selector = new SelectBox<>(selector_estilo());
         juego_selector.setPosition(proporcion_x(0.2), proporcion_y(0.2));
         juego_selector.setSize(proporcion_x(0.2), proporcion_y(0.2));
@@ -113,7 +113,7 @@ public class Menu_Ranking extends Pantalla{
             if (i > 10) {
                 String[] puntuaciones_jugador_rosco = jugadores.jugador(i).puntuaciones("Rosco").split("\n");
                 String[] puntuaciones_jugador_qqsm = jugadores.jugador(i).puntuaciones("QQSM").split("\n");
-                //TODO meter en temp las puntuaciones ordenadas por puntuaciones
+                //TODO meter en temp las leer_puntuaciones ordenadas por leer_puntuaciones
             }
 
         }
