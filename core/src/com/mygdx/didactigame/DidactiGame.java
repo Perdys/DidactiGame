@@ -1,9 +1,13 @@
 package com.mygdx.DidactiGame;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Gdx;
 import com.mygdx.DidactiGame.Auxiliares.Base_Datos;
 import com.mygdx.DidactiGame.Auxiliares.Jugadores;
 import com.mygdx.DidactiGame.Pantallas.Menus.*;
+
+import static com.mygdx.DidactiGame.Auxiliares.Pantalla.modo_escritorio;
 
 public class DidactiGame extends Game {
 

@@ -1,15 +1,14 @@
 package com.mygdx.DidactiGame.Auxiliares;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
+import com.badlogic.gdx.math.Circle;
+import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.mygdx.DidactiGame.DidactiGame;
@@ -31,10 +30,16 @@ public class Pantalla implements Screen {
     //Manejo menus
     public String pantalla_actual = "Defecto";
     public static InputAdapter botones_genericos;
+    public static boolean modo_escritorio = false;
+    public Texture boton_atras = new Texture("data/texturas/boton_atras.png");
 
-    public Pantalla() {}
+    public Pantalla() {
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            modo_escritorio = true;
+    }
 
     public void sistema_botones (final DidactiGame juego) {
+
         botones_genericos = new InputAdapter() {
 
             public boolean keyUp(int keycode) {
@@ -54,7 +59,9 @@ public class Pantalla implements Screen {
             }
 
             public boolean touchUp (int x, int y, int pointer, int button) {
-                if (button == 1) {
+                Circle atras = new Circle(0, altura_juego, proporcion_x(0.1));
+
+                if (button == 1 || (atras.contains(x, y) && modo_escritorio)) {
                     acciones(pantalla_actual);
                     return true;
                 }
@@ -64,6 +71,7 @@ public class Pantalla implements Screen {
             public void acciones (String pantalla_actual) {
                 switch (pantalla_actual) {
                     case "Defecto":case "Menu_Inicial":
+                        BD.liberar();
                         juego.dispose();
                         Gdx.app.exit();
                         break;
@@ -169,7 +177,7 @@ public class Pantalla implements Screen {
         estilo_etiqueta.background = new TextureRegionDrawable(new TextureRegion(new Texture("data/texturas/texto/fondo.png")));
         estilo_etiqueta.background.setLeftWidth(proporcion_x(0.02));
         estilo_etiqueta.background.setRightWidth(proporcion_x(0.01));
-        estilo_etiqueta.background.setTopHeight(proporcion_y(0.02));
+        estilo_etiqueta.background.setTopHeight(proporcion_y(0.03));
         estilo_etiqueta.background.setBottomHeight(proporcion_y(0.02));
 
         return estilo_etiqueta;

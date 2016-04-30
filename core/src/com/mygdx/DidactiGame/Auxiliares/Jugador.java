@@ -35,7 +35,7 @@ public class Jugador {
         this.nombre = nombre;
         this.edad = edad;
         this.color = color;
-        BD.escribir_jugador(nombre, edad, color.toString());
+        BD.anadir_jugador(nombre, edad, color.toString());
     }
 
     public Jugador (String nombre, String edad, String color) {
@@ -68,19 +68,19 @@ public class Jugador {
 
         if (juego_tipo.compareTo("QQSM") == 0) {
             puntuacion = "\nQ " + n_aciertos_qqsm + " " + n_fallos_qqsm + " " + tiempo_qqsm + fecha;
-            BD.escribir_puntuacion(nombre, n_aciertos_qqsm, n_fallos_qqsm, tiempo_qqsm, fecha, "QQSM");
+            BD.anadir_puntuacion(nombre, n_aciertos_qqsm, n_fallos_qqsm, tiempo_qqsm, fecha, "QQSM");
         }
         else
         if (juego_tipo.compareTo("Rosco") == 0) {
             puntuacion = "\nR " + n_aciertos_rosco + " " + n_fallos_rosco + " " + tiempo_rosco + fecha;
-            BD.escribir_puntuacion(nombre, n_aciertos_rosco, n_fallos_rosco, tiempo_rosco, fecha, "Rosco");
+            BD.anadir_puntuacion(nombre, n_aciertos_rosco, n_fallos_rosco, tiempo_rosco, fecha, "Rosco");
         }
 
         return puntuacion_formato(new String[] {puntuacion.split(" ")[1], puntuacion.split(" ")[2], puntuacion.split(" ")[3], puntuacion.split(" ")[4]});
     }
 
     public static String puntuacion_formato(String[] registros) {
-        if (registros[0].length() == 1) registros[0] = " ".concat(registros[0] + "  ");
+        if (registros[0].length() == 1) registros[0] = "".concat(registros[0] + "  ");
         if (registros[1].length() == 1) registros[1] = " ".concat(registros[1] + " ");
         if (registros[2].length() == 1) registros[2] = "   ".concat(registros[2] + "  ");
         else if (registros[2].length() == 2) registros[2] = " ".concat(registros[2] + " ");
@@ -88,17 +88,15 @@ public class Jugador {
         return (registros[0] + "        " + registros[1] + "        " + registros[2] + "  " + registros[3]);
     }
 
-    public String puntuaciones(String juego_tipo) {
-        return BD.leer_puntuaciones(nombre, juego_tipo);
-    }
+    public String puntuaciones(String juego_tipo) { return BD.leer_puntuaciones(nombre, juego_tipo); }
 
     public void edad (String edad) {
         this.edad = edad;
-        BD.escribir_edad(nombre, edad);
+        BD.actualizar_edad(nombre, edad);
     }
 
     public void color (Color color) {
         this.color = color;
-        BD.escribir_color(nombre, color.toString());
+        BD.actualizar_color(nombre, color.toString());
     }
 }

@@ -1,5 +1,6 @@
 package com.mygdx.DidactiGame.Pantallas.Menus;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.*;
@@ -53,6 +54,8 @@ public class Menu_Puntuaciones extends Pantalla{
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            batch.draw(boton_atras, 0, 0, anchura_juego, altura_juego);
         batch.draw(particulas_texto, proporcion_x(0.1), proporcion_y(0.55), proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
         batch.draw(particulas_texto, proporcion_x(0.55), proporcion_y(0.55), proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
         rosco_etiqueta.draw(batch, 1);
@@ -64,7 +67,7 @@ public class Menu_Puntuaciones extends Pantalla{
     }
 
     public void show () {
-        jugador_selector.setItems(new Array<>(jugadores.nombres().split("\n")));
+        jugador_selector.setItems(jugadores.nombres().split("\n"));
         jugador_selector.pack();
         jugador_selector.setWidth(proporcion_x(0.4));
 

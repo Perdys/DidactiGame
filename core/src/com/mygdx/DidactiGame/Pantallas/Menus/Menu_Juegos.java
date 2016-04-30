@@ -1,5 +1,6 @@
 package com.mygdx.DidactiGame.Pantallas.Menus;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -17,9 +18,6 @@ import com.mygdx.DidactiGame.Auxiliares.Pantalla;
 import com.mygdx.DidactiGame.Pantallas.Juego_QQSM;
 import com.mygdx.DidactiGame.Pantallas.Juego_Rosco;
 
-import java.util.ArrayList;
-
-import static com.mygdx.DidactiGame.DidactiGame.BD;
 import static com.mygdx.DidactiGame.DidactiGame.jugadores;
 
 public class Menu_Juegos extends Pantalla {
@@ -93,6 +91,8 @@ public class Menu_Juegos extends Pantalla {
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            batch.draw(boton_atras, 0, 0, anchura_juego, altura_juego);
         batch.draw(botones_juegos, anchura_juego - proporcion_x(0.5) - proporcion_y(0.1), proporcion_y(0.1), proporcion_x(0.5), proporcion_y(0.25));
         batch.end();
 
@@ -139,16 +139,17 @@ public class Menu_Juegos extends Pantalla {
 
         click = new InputAdapter() {
             public boolean touchUp (int x, int y, int pointer, int button) {
-                if (boton_jugar_rosco.contains(x, y)) {
-                    rosco = new Juego_Rosco(juego);
-                    if (jugadores.jugadores_activados())
-                        juego.setScreen(rosco);
-                } else
-                if (boton_jugar_qqsm.contains(x, y)) {
-                    qqsm = new Juego_QQSM(juego);
-                    if (jugadores.jugadores_activados())
-                        juego.setScreen(qqsm);
-                }
+                if (jugadores.activados())
+                    if (boton_jugar_rosco.contains(x, y)) {
+                        rosco = new Juego_Rosco(juego);
+                        if (jugadores.activados())
+                            juego.setScreen(rosco);
+                    } else
+                    if (boton_jugar_qqsm.contains(x, y)) {
+                        qqsm = new Juego_QQSM(juego);
+                        if (jugadores.activados())
+                            juego.setScreen(qqsm);
+                    }
                 return false;
             }
         };

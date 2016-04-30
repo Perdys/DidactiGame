@@ -1,9 +1,6 @@
 package com.mygdx.DidactiGame.Pantallas.Menus;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -14,13 +11,11 @@ import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.ui.TextArea;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Auxiliares.Pantalla;
+import javafx.scene.input.KeyCode;
 
 import javax.swing.*;
-
-import java.awt.*;
 
 import static com.badlogic.gdx.utils.Align.topLeft;
 import static com.mygdx.DidactiGame.DidactiGame.BD;
@@ -76,6 +71,8 @@ public class Menu_Datos extends Pantalla{
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            batch.draw(boton_atras, 0, 0, anchura_juego, altura_juego);
         batch.draw(rosco_botones, anchura_juego - proporcion_x(0.2), rosco_etiqueta.getY(), proporcion_x(0.1), proporcion_y(0.062));
         batch.draw(qqsm_botones, anchura_juego - proporcion_x(0.2), qqsm_etiqueta.getY(), proporcion_x(0.1), proporcion_y(0.062));
         jugadores_etiqueta.draw(batch, 1);
@@ -90,27 +87,11 @@ public class Menu_Datos extends Pantalla{
     public void show () {
         nombres_etiqueta.setText(jugadores.nombres());
 
-        palabra_selector.setItems(new Array<>(BD.leer_rosco("palabra").split("\n")));
-        palabra_selector.pack();
-        letra_selector.setItems(new Array<>(BD.leer_rosco("posicion_letra").split("\n")));
-        letra_selector.pack();
-        descripcion_editor.setText(BD.leer_descripcion((String)palabra_selector.getSelected()));
-
-        pregunta_selector.setItems(new Array<>(BD.leer_qqsm("pregunta").split("\n")));
-        pregunta_selector.pack();
-        pregunta_selector.setWidth(proporcion_x(0.25));
-        String[] respuestas = BD.leer_respuestas((String)pregunta_selector.getSelected()).split("\n");
-        respuesta_correcta_selector.setItems(new Array<>(respuestas));
-        for (int i = 0; i < respuestas.length; ++i)
-            if (BD.leer_respuesta_correcta((String)pregunta_selector.getSelected()).contains(respuestas[i]))
-                respuesta_correcta_selector.setSelectedIndex(i);
-        respuesta_correcta_selector.pack();
-        respuesta0_editor.setText(BD.leer_respuesta0((String)pregunta_selector.getSelected()));
-        respuesta1_editor.setText(BD.leer_respuesta1((String)pregunta_selector.getSelected()));
-        respuesta2_editor.setText(BD.leer_respuesta2((String)pregunta_selector.getSelected()));
-        respuesta3_editor.setText(BD.leer_respuesta3((String)pregunta_selector.getSelected()));
+        actualizar_palabras();
+        actualizar_preguntas();
 
         sistema_botones(juego);
+        stage.addActor(respuesta_correcta_selector);
         stage.addActor(nombres_scroll);
         stage.addActor(descripcion_editor);
         stage.addActor(respuesta0_editor);
@@ -132,39 +113,39 @@ public class Menu_Datos extends Pantalla{
 
     public void hide() {
         if (editados.descripcion_editado) {
-            int posicion_letra = ((String)palabra_selector.getSelected()).indexOf((char)letra_selector.getSelected());
-            BD.escribir_descripcion((String)palabra_selector.getSelected(), posicion_letra, descripcion_editor.getText());
+            int posicion_letra = ((String)palabra_selector.getSelected()).indexOf((String)letra_selector.getSelected());
+            BD.actualizar_palabra((String)palabra_selector.getSelected(), posicion_letra, descripcion_editor.getText());
             editados.descripcion_editado = false;
         }
         if (editados.respuesta0_editado) {
-            if (((String)respuesta_correcta_selector.getSelected()).contains(respuesta0_editor.getText()))
-                BD.escribir_acierto((String)pregunta_selector.getSelected(), respuesta0_editor.getText());
+            if (((String)respuesta_correcta_selector.getSelected()).compareTo(respuesta0_editor.getText()) == 0)
+                BD.actualizar_correcta((String)pregunta_selector.getSelected(), respuesta0_editor.getText());
 
-            BD.escribir_respuesta0((String)pregunta_selector.getSelected(), respuesta0_editor.getText());
+            BD.actualizar_respuesta0((String)pregunta_selector.getSelected(), respuesta0_editor.getText());
 
             editados.respuesta0_editado = false;
         }
         if (editados.respuesta1_editado) {
-            if (((String)respuesta_correcta_selector.getSelected()).contains(respuesta1_editor.getText()))
-                BD.escribir_acierto((String)pregunta_selector.getSelected(), respuesta1_editor.getText());
+            if (((String)respuesta_correcta_selector.getSelected()).compareTo(respuesta1_editor.getText()) == 0)
+                BD.actualizar_correcta((String)pregunta_selector.getSelected(), respuesta1_editor.getText());
 
-            BD.escribir_respuesta1((String)pregunta_selector.getSelected(), respuesta1_editor.getText());
+            BD.actualizar_respuesta1((String)pregunta_selector.getSelected(), respuesta1_editor.getText());
 
             editados.respuesta1_editado = false;
         }
         if (editados.respuesta2_editado) {
-            if (((String)respuesta_correcta_selector.getSelected()).contains(respuesta2_editor.getText()))
-                BD.escribir_acierto((String)pregunta_selector.getSelected(), respuesta2_editor.getText());
+            if (((String)respuesta_correcta_selector.getSelected()).compareTo(respuesta2_editor.getText()) == 0)
+                BD.actualizar_correcta((String)pregunta_selector.getSelected(), respuesta2_editor.getText());
 
-            BD.escribir_respuesta2((String)pregunta_selector.getSelected(), respuesta2_editor.getText());
+            BD.actualizar_respuesta2((String)pregunta_selector.getSelected(), respuesta2_editor.getText());
 
             editados.respuesta2_editado = false;
         }
         if (editados.respuesta3_editado) {
-            if (((String)respuesta_correcta_selector.getSelected()).contains(respuesta3_editor.getText()))
-                BD.escribir_acierto((String)pregunta_selector.getSelected(), respuesta3_editor.getText());
+            if (((String)respuesta_correcta_selector.getSelected()).compareTo(respuesta3_editor.getText()) == 0)
+                BD.actualizar_correcta((String)pregunta_selector.getSelected(), respuesta3_editor.getText());
 
-            BD.escribir_respuesta3((String)pregunta_selector.getSelected(), respuesta3_editor.getText());
+            BD.actualizar_respuesta3((String)pregunta_selector.getSelected(), respuesta3_editor.getText());
 
             editados.respuesta3_editado = false;
         }
@@ -187,31 +168,38 @@ public class Menu_Datos extends Pantalla{
         rosco_etiqueta.setPosition(proporcion_x(0.41), proporcion_y(0.9));
 
         palabra_selector = new SelectBox<>(selector_estilo(0.05));
-        palabra_selector.setPosition(proporcion_x(0.4), proporcion_y(0.7));
+        palabra_selector.setPosition(proporcion_x(0.4), proporcion_y(0.8));
         palabra_selector.setMaxListCount(3);
         palabra_selector.addCaptureListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //TODO
+                Palabra palabra = BD.leer_palabra((String)((SelectBox)actor).getSelected());
+                letra_selector.setItems(palabra.palabra.split(""));
+                letra_selector.setSelectedIndex(palabra.posicion_letra);
+                descripcion_editor.setText(palabra.descripcion);
             }
         });
 
         letra_selector = new SelectBox<>(selector_estilo(0.05));
-        letra_selector.setPosition(proporcion_x(0.7), proporcion_y(0.7));
+        letra_selector.setPosition(proporcion_x(0.7), proporcion_y(0.8));
         letra_selector.setMaxListCount(3);
         letra_selector.addCaptureListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //TODO
+                BD.actualizar_posicion_letra(((String)palabra_selector.getSelected()), letra_selector.getSelectedIndex());
             }
         });
 
         descripcion_editor = new TextArea("", editor_estilo(0.02));
         descripcion_editor.setPosition(proporcion_x(0.4), proporcion_y(0.55));
-        descripcion_editor.setSize(proporcion_x(0.5), proporcion_y(0.1));
+        descripcion_editor.setSize(proporcion_x(0.5), proporcion_y(0.2));
         descripcion_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
-                editados.descripcion_editado = true;
+                if (66 == keycode)
+                    BD.actualizar_descripcion(((String)palabra_selector.getSelected()), descripcion_editor.getText());
+                else
+                    editados.descripcion_editado = true;
+
                 return false;
             }
         });
@@ -227,7 +215,18 @@ public class Menu_Datos extends Pantalla{
         pregunta_selector.addCaptureListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //TODO
+
+                String[] respuestas = BD.leer_respuestas((String)pregunta_selector.getSelected()).split("\n");
+                respuesta_correcta_selector.setItems(respuestas);
+                for (int i = 0; i < respuestas.length; ++i)
+                    if (BD.leer_respuesta_correcta((String)pregunta_selector.getSelected()).compareTo(respuestas[i]) == 0) {
+                        respuesta_correcta_selector.setSelectedIndex(i);
+                    }
+                respuesta_correcta_selector.pack();
+                respuesta0_editor.setText(BD.leer_respuesta0((String)pregunta_selector.getSelected()));
+                respuesta1_editor.setText(BD.leer_respuesta1((String)pregunta_selector.getSelected()));
+                respuesta2_editor.setText(BD.leer_respuesta2((String)pregunta_selector.getSelected()));
+                respuesta3_editor.setText(BD.leer_respuesta3((String)pregunta_selector.getSelected()));
             }
         });
 
@@ -237,46 +236,58 @@ public class Menu_Datos extends Pantalla{
         respuesta_correcta_selector.addCaptureListener(new ChangeListener() {
             @Override
             public void changed(ChangeEvent event, Actor actor) {
-                //TODO
+                BD.actualizar_correcta((String)pregunta_selector.getSelected(), (String)respuesta_correcta_selector.getSelected());
             }
         });
 
         respuesta0_editor = new TextArea("", editor_estilo(0.02));
         respuesta0_editor.setPosition(proporcion_x(0.4), proporcion_y(0.2));
-        respuesta0_editor.setSize(proporcion_x(0.2), proporcion_y(0.1));
+        respuesta0_editor.setSize(proporcion_x(0.18), proporcion_y(0.1));
         respuesta0_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
-                editados.respuesta0_editado = true;
+                if (66 == keycode)
+                    BD.actualizar_respuesta0(((String)pregunta_selector.getSelected()), respuesta0_editor.getText());
+                else
+                    editados.respuesta0_editado = true;
                 return false;
             }
         });
 
         respuesta1_editor = new TextArea("", editor_estilo(0.02));
         respuesta1_editor.setPosition(proporcion_x(0.7), proporcion_y(0.2));
-        respuesta1_editor.setSize(proporcion_x(0.2), proporcion_y(0.1));
+        respuesta1_editor.setSize(proporcion_x(0.18), proporcion_y(0.1));
         respuesta1_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
-                editados.respuesta1_editado = true;
+                if (66 == keycode)
+                    BD.actualizar_respuesta1(((String)pregunta_selector.getSelected()), respuesta1_editor.getText());
+                else
+                    editados.respuesta1_editado = true;
                 return false;
             }
         });
 
         respuesta2_editor = new TextArea("", editor_estilo(0.02));
         respuesta2_editor.setPosition(proporcion_x(0.4), proporcion_y(0.1));
-        respuesta2_editor.setSize(proporcion_x(0.2), proporcion_y(0.1));
+        respuesta2_editor.setSize(proporcion_x(0.18), proporcion_y(0.1));
         respuesta2_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
-                editados.respuesta2_editado = true;
+                if (66 == keycode)
+                    BD.actualizar_respuesta2(((String)pregunta_selector.getSelected()), respuesta2_editor.getText());
+                else
+                    editados.respuesta2_editado = true;
                 return false;
             }
         });
 
         respuesta3_editor = new TextArea("", editor_estilo(0.02));
         respuesta3_editor.setPosition(proporcion_x(0.7), proporcion_y(0.1));
-        respuesta3_editor.setSize(proporcion_x(0.2), proporcion_y(0.1));
+        respuesta3_editor.setSize(proporcion_x(0.18), proporcion_y(0.1));
         respuesta3_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
-                editados.respuesta3_editado = true;
+                if (66 == keycode)
+                    BD.actualizar_respuesta3(((String)pregunta_selector.getSelected()), respuesta3_editor.getText());
+                else
+                    editados.respuesta3_editado = true;
                 return false;
             }
         });
@@ -318,7 +329,8 @@ public class Menu_Datos extends Pantalla{
                                     public void input(String descripcion) {
                                         if (!descripcion.isEmpty()) {
                                             nueva_palabra.descripcion = descripcion;
-                                            BD.escribir_descripcion(nueva_palabra);
+                                            BD.anadir_palabra(nueva_palabra);
+                                            actualizar_palabras();
                                         }
                                     }
 
@@ -336,13 +348,16 @@ public class Menu_Datos extends Pantalla{
                     }, "Introduzca la nueva palabra", "", "palabra");
                 } else
                 if (eliminar_rosco.contains(x, y)) {
-                    BD.eliminar_descripcion((String)palabra_selector.getSelected());
+                    BD.eliminar_palabra((String)palabra_selector.getSelected());
+                    actualizar_palabras();
                 } else
                 if (anadir_fichero_rosco.contains(x, y)) {
                     JFileChooser fichero = new JFileChooser();
                     fichero.showOpenDialog(null);
-                    if (fichero.getSelectedFile() != null)
-                        BD.escribir_descripciones(fichero.getSelectedFile());
+                    if (fichero.getSelectedFile() != null) {
+                        BD.anadir_fichero_palabras(fichero.getSelectedFile());
+                        actualizar_palabras();
+                    }
                 } else
                 if (anadir_qqsm.contains(x, y)) {
                     Gdx.input.getTextInput(new Input.TextInputListener() {
@@ -354,6 +369,7 @@ public class Menu_Datos extends Pantalla{
                                     public void input(String respuesta0) {
                                         if (!respuesta0.isEmpty()) {
                                             nueva_pregunta.respuestas[0] = respuesta0;
+                                            nueva_pregunta.correcta = respuesta0;
 
                                             Gdx.input.getTextInput(new Input.TextInputListener() {
                                                 public void input(String respuesta1) {
@@ -369,7 +385,8 @@ public class Menu_Datos extends Pantalla{
                                                                         public void input(String respuesta3) {
                                                                             if (!respuesta3.isEmpty()) {
                                                                                 nueva_pregunta.respuestas[3] = respuesta3;
-                                                                                BD.escribir_pregunta(nueva_pregunta);
+                                                                                BD.anadir_pregunta(nueva_pregunta);
+                                                                                actualizar_preguntas();
                                                                             }
                                                                         }
 
@@ -405,7 +422,7 @@ public class Menu_Datos extends Pantalla{
                                         nueva_pregunta.respuestas = new String[4];
                                     }
 
-                                }, "Introduzca la primera respuesta", "", "primera respuesta");
+                                }, "Introduzca la respuesta correcta", "", "respuesta correcta");
                             }
                         }
 
@@ -415,17 +432,47 @@ public class Menu_Datos extends Pantalla{
                     }, "Introduzca la nueva pregunta", "", "pregunta");
                 } else
                 if (eliminar_qqsm.contains(x, y)) {
-                    BD.eliminar_descripcion((String)palabra_selector.getSelected());
+                    BD.eliminar_pregunta((String)pregunta_selector.getSelected());
+                    actualizar_preguntas();
                 } else
                 if (anadir_fichero_qqsm.contains(x, y)) {
                     JFileChooser fichero = new JFileChooser();
                     fichero.showOpenDialog(null);
-                    if (fichero.getSelectedFile() != null)
-                        BD.escribir_preguntas(fichero.getSelectedFile());
+                    if (fichero.getSelectedFile() != null) {
+                        BD.anadir_fichero_preguntas(fichero.getSelectedFile());
+                        actualizar_preguntas();
+                    }
                 }
 
-                    return false;
+                return false;
             }
         };
+    }
+
+    public void actualizar_palabras() {
+        palabra_selector.setItems(BD.leer_columna_rosco("palabra").split("\n"));
+        palabra_selector.pack();
+        Palabra palabra = BD.leer_palabra((String)palabra_selector.getSelected());
+        letra_selector.setItems(palabra.palabra.split(""));
+        letra_selector.setSelectedIndex(palabra.posicion_letra);
+        letra_selector.pack();
+        descripcion_editor.setText(palabra.descripcion);
+    }
+
+    public void actualizar_preguntas() {
+        pregunta_selector.setItems(BD.leer_columna_qqsm("pregunta").split("\n"));
+        pregunta_selector.pack();
+        pregunta_selector.setWidth(proporcion_x(0.25));
+        String[] respuestas = BD.leer_respuestas((String)pregunta_selector.getSelected()).split("\n");
+        respuesta_correcta_selector.setItems(respuestas);
+        for (int i = 0; i < respuestas.length; ++i)
+            if (BD.leer_respuesta_correcta((String) pregunta_selector.getSelected()).compareTo(respuestas[i]) == 0)
+                respuesta_correcta_selector.setSelectedIndex(i);
+
+        respuesta_correcta_selector.pack();
+        respuesta0_editor.setText(BD.leer_respuesta0((String)pregunta_selector.getSelected()));
+        respuesta1_editor.setText(BD.leer_respuesta1((String)pregunta_selector.getSelected()));
+        respuesta2_editor.setText(BD.leer_respuesta2((String)pregunta_selector.getSelected()));
+        respuesta3_editor.setText(BD.leer_respuesta3((String)pregunta_selector.getSelected()));
     }
 }

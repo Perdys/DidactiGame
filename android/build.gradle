@@ -1,6 +1,6 @@
 android {
     buildToolsVersion "23.0.1"
-    compileSdkVersion 23
+    compileSdkVersion 20
     sourceSets {
         main {
             manifest.srcFile 'AndroidManifest.xml'
@@ -17,7 +17,7 @@ android {
     defaultConfig {
         applicationId "com.mygdx.DidactiGame"
         minSdkVersion 8
-        targetSdkVersion 23
+        targetSdkVersion 20
     }
 }
 // called every time gradle gets executed, takes the native dependencies of

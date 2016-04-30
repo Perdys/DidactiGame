@@ -1,5 +1,6 @@
 package com.mygdx.DidactiGame.Pantallas;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
 import com.badlogic.gdx.graphics.GL20;
@@ -10,8 +11,6 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
-import com.badlogic.gdx.scenes.scene2d.ui.Table;
-import com.badlogic.gdx.utils.Array;
 import com.mygdx.DidactiGame.Auxiliares.Jugadores;
 import com.mygdx.DidactiGame.DidactiGame;
 import com.mygdx.DidactiGame.Auxiliares.Pantalla;
@@ -26,13 +25,14 @@ public class Clasificacion extends Pantalla {
     OrthographicCamera camara;
     SpriteBatch batch;
 
-    String puntuaciones = "";
-    Label puntuaciones_etiqueta;
+    String puntuaciones = "", nombre_juego;
+    Label puntuaciones_etiqueta, juego_etiqueta;
     ScrollPane puntuaciones_scroll;
     Texture particulas_texto;
 
-    public Clasificacion (DidactiGame juego) {
+    public Clasificacion (String nombre_juego, DidactiGame juego) {
         this.juego = juego;
+        this.nombre_juego = nombre_juego;
 
         camara = new OrthographicCamera();
         camara.setToOrtho(false);
@@ -53,8 +53,11 @@ public class Clasificacion extends Pantalla {
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
-        batch.draw(particulas_texto, proporcion_x(0.325), proporcion_y(0.6) - particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth(),
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            batch.draw(boton_atras, 0, 0, anchura_juego, altura_juego);
+        batch.draw(particulas_texto, proporcion_x(0.325), proporcion_y(0.77) - particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth(),
                 proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
+        juego_etiqueta.draw(batch, 1);
         batch.end();
 
         stage.act();
@@ -91,8 +94,14 @@ public class Clasificacion extends Pantalla {
         puntuaciones_etiqueta.setWrap(true);
         puntuaciones_etiqueta.setAlignment(topLeft);
         puntuaciones_scroll = new ScrollPane(puntuaciones_etiqueta);
-        puntuaciones_scroll.setBounds(proporcion_x(0.325), proporcion_y(0.1), proporcion_x(0.35), proporcion_y(0.5));
+        puntuaciones_scroll.setBounds(proporcion_x(0.325), proporcion_y(0.1), proporcion_x(0.35), proporcion_y(0.65));
         puntuaciones_scroll.layout();
         puntuaciones_scroll.setTouchable(Touchable.enabled);
+
+        juego_etiqueta = new Label(nombre_juego, texto_estilo(0.1));
+        juego_etiqueta.setWidth(proporcion_x(0.35));
+        juego_etiqueta.setWrap(true);
+        juego_etiqueta.setAlignment(topLeft);
+        juego_etiqueta.setPosition(proporcion_x(0.4), proporcion_y(0.8));
     }
 }

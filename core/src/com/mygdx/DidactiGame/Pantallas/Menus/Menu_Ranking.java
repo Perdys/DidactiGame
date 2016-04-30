@@ -1,14 +1,15 @@
 package com.mygdx.DidactiGame.Pantallas.Menus;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputMultiplexer;
-import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.GL20;
-import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
 import com.badlogic.gdx.scenes.scene2d.ui.SelectBox;
 import com.badlogic.gdx.scenes.scene2d.utils.ChangeListener;
 import com.mygdx.DidactiGame.DidactiGame;
@@ -16,6 +17,8 @@ import com.mygdx.DidactiGame.Auxiliares.Pantalla;
 
 import java.util.ArrayList;
 
+import static com.badlogic.gdx.utils.Align.topLeft;
+import static com.mygdx.DidactiGame.DidactiGame.BD;
 import static com.mygdx.DidactiGame.DidactiGame.jugadores;
 
 public class Menu_Ranking extends Pantalla{
@@ -28,6 +31,16 @@ public class Menu_Ranking extends Pantalla{
     SelectBox<String> juego_selector;
     Label puntuaciones;
     String rosco_ranking = "", qqsm_ranking = "";
+    ScrollPane puntuaciones_scroll;
+    Texture particulas_texto;
+
+    public static class Puntuacion {
+        public String jugador, juego_tipo;
+        public int aciertos = 0, fallos = 0, tiempo = 0;
+        public String fecha = "";
+        public String puntuacion_mostrar;
+    }
+    ArrayList<Puntuacion> puntuaciones_rosco, puntuaciones_qqsm;
 
     public Menu_Ranking(DidactiGame juego) {
         this.juego = juego;
@@ -39,18 +52,25 @@ public class Menu_Ranking extends Pantalla{
 
         pantalla_actual = "Menu_Ranking";
 
+        puntuaciones_rosco = new ArrayList<>();
+        puntuaciones_qqsm = new ArrayList<>();
+
         texturas_cargar();
-        //TODO hacer rankings segun juegos con selector del juego
+        crear_ranking();
     }
 
     public void render (float delta) {
-        Gdx.gl.glClearColor(Color.YELLOW.r, Color.YELLOW.g, Color.YELLOW.b, Color.YELLOW.a);
+        Gdx.gl.glClearColor(1, 1, 1, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 
         camara.update();
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            batch.draw(boton_atras, 0, 0, anchura_juego, altura_juego);
+        batch.draw(particulas_texto, proporcion_x(0.325), proporcion_y(0.74) - particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth(),
+                proporcion_x(0.35), particulas_texto.getHeight() * proporcion_x(0.35) / particulas_texto.getWidth());
         batch.end();
 
         stage.act();
@@ -59,9 +79,14 @@ public class Menu_Ranking extends Pantalla{
 
     public void show () {
         crear_ranking();
+        if ("Rosco".compareTo(juego_selector.getSelected()) == 0)
+            puntuaciones.setText(rosco_ranking);
+        else
+            puntuaciones.setText(qqsm_ranking);
 
         sistema_botones(juego);
         stage.addActor(juego_selector);
+        stage.addActor(puntuaciones_scroll);
 
         InputMultiplexer inputs = new InputMultiplexer();
         inputs.addProcessor(botones_genericos);
@@ -79,13 +104,19 @@ public class Menu_Ranking extends Pantalla{
     }
 
     public void texturas_cargar() {
+        particulas_texto = new Texture("data/texturas/texto/particulas.png");
 
         puntuaciones = new Label("", texto_panel_scroll_estilo());
         puntuaciones.setPosition(proporcion_x(0.2), proporcion_y(0.4));
+        puntuaciones.setSize(proporcion_x(0.7), proporcion_y(0.5));
+        puntuaciones_scroll = new ScrollPane(puntuaciones);
+        puntuaciones_scroll.setBounds(proporcion_x(0.325), proporcion_y(0.05), proporcion_x(0.35), proporcion_y(0.60));
+        puntuaciones_scroll.layout();
+        puntuaciones_scroll.setTouchable(Touchable.enabled);
 
         //Selector del juego para ver leer_puntuaciones
         juego_selector = new SelectBox<>(selector_estilo());
-        juego_selector.setPosition(proporcion_x(0.2), proporcion_y(0.2));
+        juego_selector.setPosition(proporcion_x(0.35), proporcion_y(0.75));
         juego_selector.setSize(proporcion_x(0.2), proporcion_y(0.2));
         juego_selector.setMaxListCount(3);
         juego_selector.setItems("Rosco", "QQSM");
@@ -102,20 +133,14 @@ public class Menu_Ranking extends Pantalla{
     }
 
     public void crear_ranking() {
-        ArrayList<String> puntuaciones_temp_rosco = new ArrayList<>(10);
-        puntuaciones_temp_rosco.ensureCapacity(10);
-        puntuaciones_temp_rosco.add(0, "0 26 0");
-        ArrayList<String> puntuaciones_temp_qqsm = new ArrayList<>(10);
-        puntuaciones_temp_qqsm.ensureCapacity(10);
-        puntuaciones_temp_qqsm.add(0, "0 26 0");
+        rosco_ranking = "";
+        qqsm_ranking = "";
+        ArrayList<Puntuacion> puntuaciones_rosco = BD.leer_puntuaciones("Rosco");
+        ArrayList<Puntuacion> puntuaciones_qqsm = BD.leer_puntuaciones("QQSM");
+        for (int i = 0; i < puntuaciones_rosco.size(); ++i)
+            rosco_ranking += (i + 1) + " posición -> " + puntuaciones_rosco.get(i).jugador + ":\n" + puntuaciones_rosco.get(i).puntuacion_mostrar;
 
-        for (int i = 0; i < jugadores.numeral(); ++i) {
-            if (i > 10) {
-                String[] puntuaciones_jugador_rosco = jugadores.jugador(i).puntuaciones("Rosco").split("\n");
-                String[] puntuaciones_jugador_qqsm = jugadores.jugador(i).puntuaciones("QQSM").split("\n");
-                //TODO meter en temp las leer_puntuaciones ordenadas por leer_puntuaciones
-            }
-
-        }
+        for (int i = 0; i < puntuaciones_qqsm.size(); ++i)
+            qqsm_ranking += (i + 1) + " posición -> " + puntuaciones_qqsm.get(i).jugador + ":\n" + puntuaciones_qqsm.get(i).puntuacion_mostrar;
     }
 }

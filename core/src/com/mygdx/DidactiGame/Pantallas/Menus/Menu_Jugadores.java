@@ -1,9 +1,6 @@
 package com.mygdx.DidactiGame.Pantallas.Menus;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.InputAdapter;
-import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.*;
 import com.badlogic.gdx.graphics.*;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -55,6 +52,8 @@ public class Menu_Jugadores extends Pantalla {
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            batch.draw(boton_atras, 0, 0, anchura_juego, altura_juego);
         if (mostrando_color_selector)
             batch.draw(color_selector_texture, 0, 0);
         batch.draw(botones_jugadores, anchura_juego - proporcion_y(0.5), proporcion_y(0.1), proporcion_y(0.4), proporcion_y(0.4));
@@ -66,7 +65,7 @@ public class Menu_Jugadores extends Pantalla {
     }
 
     public void show () {
-        jugador_selector.setItems(new Array<>(jugadores.nombres().split("\n")));
+        jugador_selector.setItems(jugadores.nombres().split("\n"));
         jugador_selector.pack();
         jugador_selector.setWidth(proporcion_x(0.4));
 
@@ -150,7 +149,7 @@ public class Menu_Jugadores extends Pantalla {
                 else
                 if (eliminar_jugador.contains(x, y)) {
                     jugadores.eliminar(jugadores.jugador(jugador_selector.getSelected()));
-                    jugador_selector.setItems(new Array<>(jugadores.nombres().split("\n")));
+                    jugador_selector.setItems(jugadores.nombres().split("\n"));
                     jugador_selector.pack();
                     jugador_selector.setWidth(proporcion_x(0.4));
                     stage.addActor(jugador_selector);
@@ -162,7 +161,7 @@ public class Menu_Jugadores extends Pantalla {
                             if (nombre.isEmpty())
                                 nombre = "Jugador";
                             jugadores.anadir(nombre);
-                            jugador_selector.setItems(new Array<>(jugadores.nombres().split("\n")));
+                            jugador_selector.setItems(jugadores.nombres().split("\n"));
                             jugador_selector.setSelected(nombre);
                             jugador_selector.pack();
                             jugador_selector.setWidth(proporcion_x(0.4));

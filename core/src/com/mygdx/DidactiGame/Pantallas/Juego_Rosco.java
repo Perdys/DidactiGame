@@ -50,11 +50,11 @@ public class Juego_Rosco extends Pantalla {
 
         pantalla_actual = "Juego_Rosco";
 
-        clasificacion = new Clasificacion(juego);
+        clasificacion = new Clasificacion("Rosco", juego);
 
         letras_descripciones = new ArrayList<>(26);
         for (int i = 0; i < 26; ++i) letras_descripciones.add(i, new ArrayList<Palabra>(1));
-        BD.leer_descripciones(letras_descripciones);
+        BD.leer_palabras(letras_descripciones);
 
         fondo = new Texture("data/texturas/fondo/rosco.png");
         boton_jugando = new Texture("data/texturas/juego_rosco/boton_on.png");
@@ -73,6 +73,8 @@ public class Juego_Rosco extends Pantalla {
 
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            batch.draw(boton_atras, 0, 0, anchura_juego, altura_juego);
         batch.draw(fondo, 0, 0, anchura_juego, altura_juego);
         if (jugadores.jugador_actual().jugando)
             batch.draw(boton_jugando, 0, 0, anchura_juego, altura_juego);

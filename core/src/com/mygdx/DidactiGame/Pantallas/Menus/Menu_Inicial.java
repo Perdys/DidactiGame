@@ -1,5 +1,6 @@
 package com.mygdx.DidactiGame.Pantallas.Menus;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputAdapter;
 import com.badlogic.gdx.InputMultiplexer;
@@ -46,6 +47,8 @@ public class Menu_Inicial extends Pantalla{
         batch.setProjectionMatrix(camara.combined);
         batch.begin();
         batch.draw(fondo, 0, 0, anchura_juego, altura_juego);
+        if (Gdx.app.getType() == Application.ApplicationType.Desktop)
+            batch.draw(boton_atras, 0, 0, anchura_juego, altura_juego);
         batch.end();
     }
 

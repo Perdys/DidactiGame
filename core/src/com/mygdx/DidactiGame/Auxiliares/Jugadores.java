@@ -15,7 +15,8 @@ public class Jugadores {
     public Jugadores() {
 
         BD.leer_jugadores(coleccion);
-        jugador_actual = 0;
+        if (!vacio())
+            jugador_actual = 0;
     }
 
     public Jugador jugador(int numero) {
@@ -29,7 +30,7 @@ public class Jugadores {
             return coleccion.get(jugador_actual);
     }
 
-    public boolean jugadores_activados() {
+    public boolean activados() {
         return (jugador_actual != -1);
     }
 
