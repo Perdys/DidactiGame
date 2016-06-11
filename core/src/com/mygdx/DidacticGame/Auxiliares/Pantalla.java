@@ -139,9 +139,12 @@ public class Pantalla implements Screen {
         tamano_texto.size = (int)proporcion_y(tamano);
         BitmapFont texto = generador_texto.generateFont(tamano_texto);
         SelectBox.SelectBoxStyle estilo = selector_estilo();
-        estilo.background.setMinHeight(proporcion_y(tamano));
-        estilo.listStyle.background.setMinHeight(proporcion_y(tamano));
-        estilo.listStyle.background = new TextureRegionDrawable(new TextureRegion((Texture)tarea.asset.get("data/texturas/selector/desplegablegris.png")));
+        estilo.background.setLeftWidth(proporcion_x(0.01));
+        estilo.background.setRightWidth(proporcion_x(0.01));
+        estilo.background.setMinHeight(proporcion_y(0.08));
+        estilo.listStyle.background.setLeftWidth(proporcion_x(tamano));
+        estilo.listStyle.background.setRightWidth(proporcion_x(tamano));
+        estilo.listStyle.background.setMinHeight(proporcion_y(0.08));
         estilo.font = texto;
         estilo.listStyle.font = texto;
         return estilo;

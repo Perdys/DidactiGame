@@ -243,7 +243,7 @@ public class Juego_QQSM extends Pantalla{
         respuesta0_etiqueta.setWrap(true);
         respuesta0_etiqueta.setAlignment(center);
         respuesta0_scroll = new ScrollPane(respuesta0_etiqueta);
-        respuesta0_scroll.setBounds(0, proporcion_y(0.25), proporcion_x(0.5), proporcion_y(0.25));
+        respuesta0_scroll.setBounds(proporcion_x(0.05), proporcion_y(0.3), proporcion_x(0.4), proporcion_y(0.2));
         respuesta0_scroll.layout();
         respuesta0_scroll.setTouchable(Touchable.enabled);
 
@@ -251,7 +251,7 @@ public class Juego_QQSM extends Pantalla{
         respuesta1_etiqueta.setWrap(true);
         respuesta1_etiqueta.setAlignment(center);
         respuesta1_scroll = new ScrollPane(respuesta1_etiqueta);
-        respuesta1_scroll.setBounds(proporcion_x(0.5), proporcion_y(0.25), proporcion_x(0.5), proporcion_y(0.25));
+        respuesta1_scroll.setBounds(proporcion_x(0.55), proporcion_y(0.3), proporcion_x(0.4), proporcion_y(0.2));
         respuesta1_scroll.layout();
         respuesta1_scroll.setTouchable(Touchable.enabled);
 
@@ -259,7 +259,7 @@ public class Juego_QQSM extends Pantalla{
         respuesta2_etiqueta.setWrap(true);
         respuesta2_etiqueta.setAlignment(center);
         respuesta2_scroll = new ScrollPane(respuesta2_etiqueta);
-        respuesta2_scroll.setBounds(0, 0, proporcion_x(0.5), proporcion_y(0.25));
+        respuesta2_scroll.setBounds(proporcion_x(0.05), proporcion_y(0.05), proporcion_x(0.4), proporcion_y(0.2));
         respuesta2_scroll.layout();
         respuesta2_scroll.setTouchable(Touchable.enabled);
 
@@ -267,7 +267,7 @@ public class Juego_QQSM extends Pantalla{
         respuesta3_etiqueta.setWrap(true);
         respuesta3_etiqueta.setAlignment(center);
         respuesta3_scroll = new ScrollPane(respuesta3_etiqueta);
-        respuesta3_scroll.setBounds(proporcion_x(0.5), 0, proporcion_x(0.5), proporcion_y(0.25));
+        respuesta3_scroll.setBounds(proporcion_x(0.55), proporcion_y(0.05), proporcion_x(0.4), proporcion_y(0.2));
         respuesta3_scroll.layout();
         respuesta3_scroll.setTouchable(Touchable.enabled);
     }

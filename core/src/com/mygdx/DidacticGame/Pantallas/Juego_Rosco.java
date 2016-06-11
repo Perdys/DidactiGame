@@ -207,7 +207,7 @@ public class Juego_Rosco extends Pantalla {
         letra_descripcion_etiqueta.setText(letra_descripcion_actual[0]);
 
         //si se ha completado el rosco o se ha acabado el tiempo se añade la puntuacion a la clasificacion
-        if ((jugadores.jugador_actual().n_aciertos + jugadores.jugador_actual().n_fallos) >= 26 || jugadores.jugador_actual().tiempo_rosco < 1) {
+        if ((jugadores.jugador_actual().n_aciertos + jugadores.jugador_actual().n_fallos) >= 26 || jugadores.jugador_actual().tiempo_rosco == 0) {
             jugadores.jugador_actual().seleccionado = false;
             clasificacion.puntuacion_anadir(jugadores.jugador_actual().nombre, jugadores.jugador_actual().guardar_puntuacion("Rosco"));
         }

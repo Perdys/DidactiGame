@@ -86,7 +86,6 @@ public class DidacticGame extends Game {
 			asset.load("data/texturas/selector/seleccion.png", Texture.class);
 			asset.load("data/texturas/selector/desplegable.png", Texture.class);
 			asset.load("data/texturas/selector/fondo.png", Texture.class);
-			asset.load("data/texturas/selector/desplegablegris.png", Texture.class);
 			asset.load("data/texturas/editor/cursor.png", Texture.class);
 			asset.load("data/texturas/editor/seleccion.png", Texture.class);
 			asset.load("data/texturas/editor/fondo.png", Texture.class);

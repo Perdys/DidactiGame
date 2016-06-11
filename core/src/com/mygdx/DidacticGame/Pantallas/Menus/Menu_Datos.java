@@ -241,7 +241,7 @@ public class Menu_Datos extends Pantalla{
 
         respuesta0_editor = new TextArea("", editor_estilo(0.03));
         respuesta0_editor.setPosition(proporcion_x(0.4), proporcion_y(0.2));
-        respuesta0_editor.setSize(proporcion_x(0.18), proporcion_y(0.1));
+        respuesta0_editor.setSize(proporcion_x(0.23), proporcion_y(0.1));
         respuesta0_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
                 if (66 == keycode)
@@ -253,8 +253,8 @@ public class Menu_Datos extends Pantalla{
         });
 
         respuesta1_editor = new TextArea("", editor_estilo(0.03));
-        respuesta1_editor.setPosition(proporcion_x(0.7), proporcion_y(0.2));
-        respuesta1_editor.setSize(proporcion_x(0.18), proporcion_y(0.1));
+        respuesta1_editor.setPosition(proporcion_x(0.67), proporcion_y(0.2));
+        respuesta1_editor.setSize(proporcion_x(0.23), proporcion_y(0.1));
         respuesta1_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
                 if (66 == keycode)
@@ -267,7 +267,7 @@ public class Menu_Datos extends Pantalla{
 
         respuesta2_editor = new TextArea("", editor_estilo(0.03));
         respuesta2_editor.setPosition(proporcion_x(0.4), proporcion_y(0.1));
-        respuesta2_editor.setSize(proporcion_x(0.18), proporcion_y(0.1));
+        respuesta2_editor.setSize(proporcion_x(0.23), proporcion_y(0.1));
         respuesta2_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
                 if (66 == keycode)
@@ -279,8 +279,8 @@ public class Menu_Datos extends Pantalla{
         });
 
         respuesta3_editor = new TextArea("", editor_estilo(0.03));
-        respuesta3_editor.setPosition(proporcion_x(0.7), proporcion_y(0.1));
-        respuesta3_editor.setSize(proporcion_x(0.18), proporcion_y(0.1));
+        respuesta3_editor.setPosition(proporcion_x(0.67), proporcion_y(0.1));
+        respuesta3_editor.setSize(proporcion_x(0.23), proporcion_y(0.1));
         respuesta3_editor.addListener(new InputListener() {
             public boolean keyUp (InputEvent event, int keycode) {
                 if (66 == keycode)
@@ -469,6 +469,7 @@ public class Menu_Datos extends Pantalla{
                 respuesta_correcta_selector.setSelectedIndex(i);
 
         respuesta_correcta_selector.pack();
+        respuesta_correcta_selector.setWidth(proporcion_x(0.2));
         respuesta0_editor.setText(BD.leer_respuesta0((String)pregunta_selector.getSelected()));
         respuesta1_editor.setText(BD.leer_respuesta1((String)pregunta_selector.getSelected()));
         respuesta2_editor.setText(BD.leer_respuesta2((String)pregunta_selector.getSelected()));
